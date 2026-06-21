@@ -20,7 +20,7 @@ What it does:
 
 It's a single HTML file — works offline, no signup, no tracking, your data stays on your machine. Just open it in a browser and start tracking.
 
-👉 Free demo: [YOUR NETLIFY URL]/ftmo_challenge_tracker.html
+👉 Free demo: https://cd6094cc3547dc.lhr.life/ftmo_challenge_tracker.html
 
 Would love feedback from the community!
 
@@ -40,7 +40,7 @@ Hey everyone! I built a real-time FTMO challenge tracker that I've been using pe
 • Equity curve chart
 • Trade log with export
 
-**Free to use:** [YOUR NETLIFY URL]/ftmo_challenge_tracker.html
+**Free to use:** https://cd6094cc3547dc.lhr.life/ftmo_challenge_tracker.html
 
 No account needed, works offline, your data stays on your machine. Let me know if you have feature requests!
 
@@ -53,14 +53,14 @@ Built a free FTMO Challenge Tracker over the weekend 📊
 • Drawdown guardian 🛑
 • Trading day counter 📅
 • Equity curve chart 📈
-Try it free: [YOUR NETLIFY URL]
+Try it free: https://cd6094cc3547dc.lhr.life
 #FTMO #PropTrading #DayTrading
 
 Post 2:
 Failed your FTMO challenge because of a rule you didn't track? 😅
 Same. So I built a tracker.
 Free to use, works offline, no signup needed.
-[YOUR NETLIFY URL]/ftmo_challenge_tracker.html
+https://cd6094cc3547dc.lhr.life/ftmo_challenge_tracker.html
 #FTMO #TradingTools #DayTrading
 
 Post 3:
@@ -70,7 +70,7 @@ Track your:
 🛑 Drawdown limits
 📅 Trading days
 All in real-time. For free.
-[YOUR NETLIFY URL]
+https://cd6094cc3547dc.lhr.life
 #PropTrading #FTMO
 
 
@@ -84,7 +84,7 @@ Track your FTMO challenge progress in real-time:
 ✅ Trading days counter (4 minimum)
 ✅ Equity chart & trade log
 
-Free, no signup, works offline: [YOUR NETLIFY URL]/ftmo_challenge_tracker.html
+Free, no signup, works offline: https://cd6094cc3547dc.lhr.life/ftmo_challenge_tracker.html
 
 Built by a fellow trader. Feedback welcome!
 

@@ -18,6 +18,7 @@ mkdir -p "$DEPLOY_DIR"
 echo "[1/5] Copying trading assets..."
 cp "$TRADING_DIR/ftmo_challenge_tracker.html" "$DEPLOY_DIR/"
 cp "$TRADING_DIR/sell.html" "$DEPLOY_DIR/index.html"
+cp "$TRADING_DIR/waitlist.html" "$DEPLOY_DIR/"
 echo "  ✅ Trading assets ready"
 
 # Copy income/bugflow assets
