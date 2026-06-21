@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FTMO Challenge Tracker</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #0d1117;
+  --card: #161b22;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --green: #2ea043;
+  --green-bg: rgba(46,160,67,0.15);
+  --red: #da3633;
+  --red-bg: rgba(218,54,51,0.15);
+  --yellow: #d29922;
+  --yellow-bg: rgba(210,153,34,0.15);
+  --blue: #58a6ff;
+  --blue-bg: rgba(88,166,255,0.12);
+  --accent: #7c3aed;
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container { max-width: 1200px; margin: 0 auto; }
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header-right {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Setup Panel */
+.setup-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+
+.setup-panel h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+}
+
+.setup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.form-group select,
+.form-group input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+  border-color: var(--accent);
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s;
+}
+
+.stat-card:hover { transform: translateY(-2px); }
+
+.stat-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.stat-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Progress Bars */
+.progress-container {
+  margin-top: 12px;
+}
+
+.progress-bar {
+  height: 8px;
+  background: var(--bg);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.progress-fill.green { background: var(--green); }
+.progress-fill.red { background: var(--red); }
+.progress-fill.yellow { background: var(--yellow); }
+.progress-fill.blue { background: var(--blue); }
+.progress-fill.accent { background: var(--accent); }
+
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Trade Log */
+.section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+
+.section h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+}
+
+.trade-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: end;
+}
+
+.trade-form .form-group { margin-bottom: 0; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.btn-danger {
+  background: var(--red);
+  color: white;
+}
+
+.btn-danger:hover { opacity: 0.9; }
+
+.btn-secondary {
+  background: var(--border);
+  color: var(--text);
+}
+
+.btn-secondary:hover { background: #484f58; }
+
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+
+/* Table */
+.table-container { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead th {
+  text-align: left;
+  padding: 10px 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+}
+
+tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+.text-green { color: var(--green); }
+.text-red { color: var(--red); }
+
+/* Chart container */
+.chart-container {
+  position: relative;
+  height: 300px;
+  margin-top: 16px;
+}
+
+/* Status badge */
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-pass { background: var(--green-bg); color: var(--green); }
+.status-fail { background: var(--red-bg); color: var(--red); }
+.status-risk { background: var(--yellow-bg); color: var(--yellow); }
+.status-info { background: var(--blue-bg); color: var(--blue); }
+
+/* Price tag */
+.price-tag {
+  text-align: center;
+  padding: 16px;
+  background: var(--blue-bg);
+  border-radius: var(--radius);
+  margin-top: 20px;
+}
+
+.price-tag p {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.price-tag .price {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header h1 { font-size: 22px; }
+  .stat-value { font-size: 22px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in { animation: fadeIn 0.3s ease; }
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+}
+
+.empty-state p { font-size: 15px; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<div class="container" id="app">
+  <!-- Header -->
+  <div class="header">
+    <h1>📊 FTMO Challenge Tracker</h1>
+    <div class="header-right">
+      <button class="btn btn-secondary btn-sm" onclick="exportData()">📥 Export</button>
+      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importInput').click()">📤 Import</button>
+      <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
+      <button class="btn btn-primary btn-sm" onclick="promotePhase()" id="promoteBtn" style="display:none">📈 Promote to Phase 2</button>
+      <button class="btn btn-danger btn-sm" onclick="resetAll()">↺ Reset</button>
+    </div>
+  </div>
+
+  <!-- Quick Start Guide -->
+  <div class="setup-panel animate-in" style="background:var(--green-bg);border-color:var(--green)">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <div style="flex:1">
+        <h2 style="color:var(--green);margin-bottom:8px">🚀 Ready to track your FTMO Challenge?</h2>
+        <p style="color:var(--text);font-size:14px;line-height:1.6">
+          <strong>1.</strong> Set your challenge type &amp; account size below<br>
+          <strong>2.</strong> After each trading day, enter your <strong>ending balance</strong><br>
+          <strong>3.</strong> Watch real-time progress — profit target, drawdown, and days<br>
+          <strong>4.</strong> Export your data anytime to back it up
+        </p>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">Full version with cloud sync</div>
+        <a href="#" onclick="alert('Set up your Gumroad link here! Go to gumroad.com to create a product and paste the link.');return false" style="text-decoration:none">
+          <button class="btn btn-primary" style="font-size:16px;padding:14px 32px">🔥 Buy Full Access $19.99</button>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Setup Panel -->
+  <div class="setup-panel animate-in" id="setupPanel">
+    <h2>⚙️ Challenge Setup</h2>
+    <div class="setup-grid">
+      <div class="form-group">
+        <label>Challenge Type</label>
+        <select id="challengeType" onchange="updateSetup()">
+          <option value="2step">2-Step Challenge</option>
+          <option value="1step">1-Step Challenge</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Account Size</label>
+        <select id="accountSize" onchange="updateSetup()">
+          <option value="10000">$10,000 (Fee: $155)</option>
+          <option value="25000">$25,000 (Fee: $250)</option>
+          <option value="50000" selected>$50,000 (Fee: $345)</option>
+          <option value="100000">$100,000 (Fee: $540)</option>
+          <option value="200000">$200,000 (Fee: $1,080)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Phase</label>
+        <select id="phase" onchange="updateSetup()">
+          <option value="1">Phase 1</option>
+          <option value="2">Phase 2</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Starting Balance ($)</label>
+        <input type="number" id="startBalance" value="50000" step="100" onchange="updateSetup()">
+      </div>
+      <div class="form-group">
+        <label>Current Balance ($)</label>
+        <input type="number" id="currentBalance" value="50000" step="100" readonly style="opacity:0.7;cursor:not-allowed;background:#0d1117;">
+        <span style="font-size:11px;color:var(--text-muted)">Auto-calculated from trades</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card animate-in">
+      <div class="stat-label">Challenge Status</div>
+      <div id="statusDisplay"><span class="status-badge status-info">In Progress</span></div>
+      <div class="stat-sub" id="statusDetail">Phase 1 · $50,000 account</div>
+    </div>
+    <div class="stat-card animate-in">
+      <div class="stat-label">Profit Target</div>
+      <div class="stat-value" id="profitTarget">$5,000</div>
+      <div class="progress-container">
+        <div class="progress-bar"><div class="progress-fill green" id="profitFill" style="width:0%"></div></div>
+        <div class="progress-text"><span id="profitEarned">$0</span><span id="profitRemaining">$5,000 left</span></div>
+      </div>
+    </div>
+    <div class="stat-card animate-in">
+      <div class="stat-label">Current Drawdown</div>
+      <div class="stat-value" id="drawdownValue">0.00%</div>
+      <div class="progress-container">
+        <div class="progress-bar"><div class="progress-fill red" id="drawdownFill" style="width:0%"></div></div>
+        <div class="progress-text"><span id="drawdownUsed">$0</span><span id="drawdownLimit">$5,000 max</span></div>
+      </div>
+    </div>
+    <div class="stat-card animate-in">
+      <div class="stat-label">Trading Days</div>
+      <div class="stat-value" id="tradingDays">0</div>
+      <div class="progress-container">
+        <div class="progress-bar"><div class="progress-fill blue" id="daysFill" style="width:0%"></div></div>
+        <div class="progress-text"><span id="daysTraded">0 traded</span><span id="daysRequired">4 required</span></div>
+      </div>
+    </div>
+    <div class="stat-card animate-in" id="bestDayCard" style="display:none">
+      <div class="stat-label">📌 Best Day Rule</div>
+      <div class="stat-value" id="bestDayValue" style="font-size:22px">0%</div>
+      <div class="progress-container">
+        <div class="progress-bar"><div class="progress-fill yellow" id="bestDayFill" style="width:0%"></div></div>
+        <div class="progress-text"><span id="bestDayDesc">Best day of total</span><span id="bestDayLimit">50% max</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Trade Entry -->
+  <div class="section animate-in">
+    <h2>📝 Add Trading Day</h2>
+    <div class="trade-form">
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="tradeDate">
+      </div>
+      <div class="form-group">
+        <label>Ending Balance ($)</label>
+        <input type="number" id="tradeBalance" step="10" placeholder="e.g. 50200">
+      </div>
+      <div class="form-group">
+        <label>Notes (optional)</label>
+        <input type="text" id="tradeNotes" placeholder="Good day, followed plan">
+      </div>
+      <button class="btn btn-primary" onclick="addTrade()" style="height: 38px; align-self: end;">+ Add Day</button>
+    </div>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">💡 Enter your ending balance at the end of each trading day. The tracker automatically calculates P&L, drawdown, and progress.</p>
+  </div>
+
+  <!-- Trade Log Table -->
+  <div class="section animate-in">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+      <h2 style="margin-bottom:0">📋 Trading Days Log</h2>
+      <span id="totalPnl" style="font-size:14px;color:var(--text-muted)">Total P&L: <strong style="color:var(--text)">$0</strong></span>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>Balance</th>
+            <th>Daily P&L</th>
+            <th>Cumulative P&L</th>
+            <th>Drawdown</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tradeTableBody">
+          <tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:30px">No trading days yet. Add your first day above!</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="section animate-in">
+    <h2>📈 Equity Curve</h2>
+    <div class="chart-container">
+      <canvas id="equityChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Email Capture / Waitlist -->
+  <div class="section animate-in" id="waitlist" style="background:linear-gradient(135deg, var(--card), rgba(124,58,237,0.08));border-color:var(--accent)">
+    <div style="text-align:center;max-width:500px;margin:0 auto">
+      <h2 style="color:var(--accent);text-transform:none;font-size:18px">🚀 Get Pro Access When It Launches</h2>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px">Cloud sync, multi-account tracking, PDF reports, and email alerts. Join the waitlist — early birds get 50% off.</p>
+      
+      <form id="waitlistForm" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+        <input type="email" id="waitlistEmail" placeholder="your@email.com" required
+          style="flex:1;min-width:200px;padding:12px 18px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:14px;outline:none">
+        <button type="submit" class="btn btn-primary" style="padding:12px 28px;font-size:14px">📩 Join Waitlist</button>
+      </form>
+      
+      <div id="waitlistSuccess" style="display:none;padding:16px;background:var(--green-bg);border-radius:8px;color:var(--green);font-size:14px">
+        ✅ You're on the list! Early bird pricing coming soon.
+      </div>
+      
+      <p style="font-size:11px;color:var(--text-muted);margin-top:12px">
+        <span id="waitlistCount">0</span> traders already joined. No spam, unsubscribe anytime.
+      </p>
+    </div>
+  </div>
+
+  <!-- Sell CTA -->
+  <div class="price-tag animate-in">
+    <p>🚀 Want this as a premium web app with cloud sync, mobile app, and multi-account support?</p>
+    <div class="price">$19.99 <span style="font-size:16px;color:var(--text-muted)">/ month</span></div>
+    <p style="margin-top:8px;color:var(--text-muted);font-size:13px">Try it free now. Start tracking your FTMO challenge today.</p>
+  </div>
+</div>
+
+<script>
+// ====== STATE ======
+let state = {
+  challengeType: '2step',
+  accountSize: 50000,
+  phase: 1,
+  startBalance: 50000,
+  currentBalance: 50000,
+  trades: []
+};
+
+let chart = null;
+
+// ====== FTMO RULES ======
+function getRules(type, phase) {
+  const rules = {
+    '2step': {
+      profitTargets: { 1: 0.10, 2: 0.05 },
+      maxDailyLoss: 0.05,
+      maxTotalDrawdown: 0.10,
+      minTradingDays: 4
+    },
+    '1step': {
+      profitTargets: { 1: 0.10, 2: 0.05 },
+      maxDailyLoss: 0.03,
+      maxTotalDrawdown: 0.10,
+      minTradingDays: 0,
+      bestDayRule: true
+    }
+  };
+  return rules[type] || rules['2step'];
+}
+
+function getMaxDrawdown(startBalance) {
+  return startBalance * 0.10; // 10% of initial balance
+}
+
+function getProfitTarget(startBalance, type, phase) {
+  const rules = getRules(type, phase);
+  return startBalance * rules.profitTargets[phase];
+}
+
+function getDailyLossLimit(startBalance, type) {
+  const rules = getRules(type, 1);
+  return startBalance * rules.maxDailyLoss;
+}
+
+// ====== SETUP ======
+function updateSetup() {
+  state.challengeType = document.getElementById('challengeType').value;
+  state.accountSize = parseInt(document.getElementById('accountSize').value);
+  state.phase = parseInt(document.getElementById('phase').value);
+  
+  const startBal = parseFloat(document.getElementById('startBalance').value);
+  if (!isNaN(startBal) && startBal > 0) state.startBalance = startBal;
+  
+saveState();
+  render();
+}
+
+function loadSetup() {
+  document.getElementById('challengeType').value = state.challengeType;
+  document.getElementById('accountSize').value = state.accountSize;
+  document.getElementById('phase').value = state.phase;
+  document.getElementById('startBalance').value = state.startBalance;
+  document.getElementById('currentBalance').value = state.currentBalance;
+}
+
+// ====== TRADES ======
+function addTrade() {
+  if (state.startBalance <= 0) {
+    alert('Starting balance must be greater than $0.');
+    return;
+  }
+  const dateInput = document.getElementById('tradeDate');
+  const balanceInput = document.getElementById('tradeBalance');
+  const notesInput = document.getElementById('tradeNotes');
+  
+  let date = dateInput.value;
+  const balance = parseFloat(balanceInput.value);
+  const notes = notesInput.value.trim();
+  
+  if (!date) {
+    date = new Date().toISOString().split('T')[0];
+  }
+  
+  if (isNaN(balance) || balance <= 0) {
+    alert('Please enter a valid ending balance.');
+    return;
+  }
+  
+  state.trades.push({ date, balance, notes });
+  state.trades.sort((a, b) => a.date.localeCompare(b.date));
+  
+  // Update current balance to last trade
+  if (state.trades.length > 0) {
+    state.currentBalance = state.trades[state.trades.length - 1].balance;
+    document.getElementById('currentBalance').value = state.currentBalance;
+  }
+  
+  // Clear inputs
+  balanceInput.value = '';
+  notesInput.value = '';
+  dateInput.value = new Date().toISOString().split('T')[0];
+  
+  saveState();
+  render();
+  
+  // Scroll to table
+  document.querySelector('.section:last-of-type').scrollIntoView({ behavior: 'smooth' });
+}
+
+function deleteTrade(index) {
+  state.trades.splice(index, 1);
+  
+  // Update current balance
+  if (state.trades.length > 0) {
+    state.currentBalance = state.trades[state.trades.length - 1].balance;
+  } else {
+    state.currentBalance = state.startBalance;
+  }
+  document.getElementById('currentBalance').value = state.currentBalance;
+  
+  saveState();
+  render();
+}
+
+// ====== CALCULATIONS ======
+function calculateStats() {
+  const { startBalance, trades, challengeType, phase } = state;
+  const rules = getRules(challengeType, phase);
+  const profitTarget = getProfitTarget(startBalance, challengeType, phase);
+  const maxDrawdown = getMaxDrawdown(startBalance);
+  const dailyLossLimit = getDailyLossLimit(startBalance, challengeType);
+  
+  let currentBalance = startBalance;
+  let peakBalance = startBalance;
+  let maxDrawdownHit = 0;
+  let totalProfit = 0;
+  
+  const tradeStats = trades.map((trade, i) => {
+    const prevBalance = i === 0 ? startBalance : trades[i - 1].balance;
+    const dailyPnl = trade.balance - prevBalance;
+    totalProfit = trade.balance - startBalance;
+    
+    if (trade.balance > peakBalance) peakBalance = trade.balance;
+    
+    const drawdownFromPeak = peakBalance > 0 ? ((peakBalance - trade.balance) / peakBalance) * 100 : 0;
+    if (drawdownFromPeak > maxDrawdownHit) maxDrawdownHit = drawdownFromPeak;
+    
+    const dailyLossPct = (dailyPnl / prevBalance) * 100;
+    const drawdownFromPeakDollars = peakBalance - trade.balance;
+    
+    return {
+      ...trade,
+      day: i + 1,
+      dailyPnl,
+      dailyPnlPct: dailyLossPct,
+      cumulativePnl: totalProfit,
+      drawdownPct: drawdownFromPeak,
+      drawdownDollars: drawdownFromPeakDollars,
+      balance: trade.balance,
+      dailyLossViolation: Math.abs(dailyLossPct) > (dailyLossLimit / startBalance) * 100 && dailyPnl < 0
+    };
+  });
+  
+  // Current state
+  const currentPnl = currentBalance - startBalance;
+  const currentPnlPct = (currentPnl / startBalance) * 100;
+  const currentDrawdownPct = peakBalance > 0 ? ((peakBalance - currentBalance) / peakBalance) * 100 : 0;
+  const currentDrawdownDollars = peakBalance - currentBalance;
+  const profitProgress = Math.min(100, Math.max(0, (currentPnl / profitTarget) * 100));
+  const drawdownProgress = Math.min(100, Math.max(0, (currentDrawdownDollars / maxDrawdown) * 100));
+  const daysProgress = Math.min(100, (trades.length / rules.minTradingDays) * 100);
+  
+  // Status
+  let status = 'in-progress';
+  let statusLabel = 'In Progress';
+  let statusClass = 'status-info';
+  
+  // Check best day rule (1-Step only)
+  let bestDayViolation = false;
+  if (challengeType === '1step' && currentPnl > 0) {
+    const bestDayPnl = Math.max(...tradeStats.filter(t => t.dailyPnl > 0).map(t => t.dailyPnl), 0);
+    bestDayViolation = (bestDayPnl / currentPnl) > 0.50;
+  }
+  
+  if (currentBalance <= startBalance - maxDrawdown) {
+    status = 'failed';
+    statusLabel = '❌ Failed (Max Drawdown)';
+    statusClass = 'status-fail';
+  } else if (currentPnl >= profitTarget && trades.length >= rules.minTradingDays && !bestDayViolation) {
+    status = 'passed';
+    statusLabel = '✅ Phase Passed!';
+    statusClass = 'status-pass';
+  } else if (currentPnl >= profitTarget && bestDayViolation) {
+    status = 'risk';
+    statusLabel = '⚠️ Best Day > 50% — Keep Trading';
+    statusClass = 'status-risk';
+  } else if (currentDrawdownDollars > maxDrawdown * 0.8) {
+    status = 'risk';
+    statusLabel = '⚠️ Near Drawdown Limit';
+    statusClass = 'status-risk';
+  }
+  
+  // Check daily loss violation
+  const hasDailyViolation = tradeStats.some(t => t.dailyLossViolation);
+  if (hasDailyViolation && status === 'in-progress') {
+    status = 'risk';
+    statusLabel = '⚠️ Daily Loss Limit Hit';
+    statusClass = 'status-risk';
+  }
+  
+  return {
+    profitTarget,
+    maxDrawdown,
+    dailyLossLimit,
+    currentPnl,
+    currentPnlPct,
+    profitProgress,
+    drawdownProgress,
+    daysProgress,
+    tradeStats,
+    status,
+    statusLabel,
+    statusClass,
+    peakBalance,
+    totalProfit: currentPnl,
+    daysTotal: trades.length,
+    minDaysRequired: rules.minTradingDays
+  };
+}
+
+// ====== RENDER ======
+function render() {
+  const stats = calculateStats();
+  
+  // Phase
+  const phaseSelect = document.getElementById('phase');
+  if (state.challengeType === '1step') {
+    phaseSelect.innerHTML = '<option value="1">Phase 1</option>';
+    if (state.phase === 2) state.phase = 1;
+  } else {
+    phaseSelect.innerHTML = '<option value="1">Phase 1</option><option value="2">Phase 2</option>';
+  }
+  phaseSelect.value = state.phase;
+  
+  // Status
+  document.getElementById('statusDisplay').innerHTML = `<span class="status-badge ${stats.statusClass}">${stats.statusLabel}</span>`;
+  document.getElementById('statusDetail').textContent = `${state.challengeType === '2step' ? '2-Step' : '1-Step'} · Phase ${state.phase} · $${state.accountSize.toLocaleString()} account`;
+  
+  // Profit Target
+  document.getElementById('profitTarget').textContent = `$${stats.profitTarget.toLocaleString()}`;
+  document.getElementById('profitFill').style.width = `${stats.profitProgress}%`;
+  document.getElementById('profitEarned').textContent = `$${Math.max(0, stats.currentPnl).toLocaleString()} earned`;
+  document.getElementById('profitRemaining').textContent = `$${Math.max(0, stats.profitTarget - stats.currentPnl).toLocaleString()} left`;
+  
+  if (stats.profitProgress >= 100) {
+    document.getElementById('profitTarget').style.color = 'var(--green)';
+  } else {
+    document.getElementById('profitTarget').style.color = '';
+  }
+  
+  // Drawdown — FTMO rule: 10% of initial balance (static, not trailing)
+  const staticDrawdownDollars = Math.max(0, state.startBalance - state.currentBalance);
+  const staticDrawdownPct = stats.maxDrawdown > 0 ? Math.min(100, (staticDrawdownDollars / stats.maxDrawdown) * 100) : 0;
+  const ddColor = staticDrawdownPct > 80 ? 'var(--red)' : staticDrawdownPct > 50 ? 'var(--yellow)' : '';
+  document.getElementById('drawdownValue').textContent = `$${staticDrawdownDollars.toLocaleString()} / $${stats.maxDrawdown.toLocaleString()}`;
+  document.getElementById('drawdownValue').style.color = ddColor;
+  document.getElementById('drawdownFill').style.width = `${staticDrawdownPct}%`;
+  document.getElementById('drawdownUsed').textContent = `$${staticDrawdownDollars.toLocaleString()} used`;
+  document.getElementById('drawdownLimit').textContent = `$${stats.maxDrawdown.toLocaleString()} max (10% of initial)`;
+  
+  // Trading Days
+  document.getElementById('tradingDays').textContent = `${stats.daysTotal}`;
+  document.getElementById('daysFill').style.width = `${stats.daysProgress}%`;
+  document.getElementById('daysTraded').textContent = `${stats.daysTotal} traded`;
+  document.getElementById('daysRequired').textContent = `${stats.minDaysRequired} required`;
+  
+  // Best Day Rule (1-Step) — max profitable day can't exceed 50% of total profit
+  const bestDayCard = document.getElementById('bestDayCard');
+  if (state.challengeType === '1step' && stats.totalProfit > 0) {
+    bestDayCard.style.display = 'block';
+    const bestDayPnl = Math.max(...stats.tradeStats.filter(t => t.dailyPnl > 0).map(t => t.dailyPnl), 0);
+    const bestDayPct = stats.totalProfit > 0 ? (bestDayPnl / stats.totalProfit) * 100 : 0;
+    const bestDayOk = bestDayPct <= 50;
+    document.getElementById('bestDayValue').textContent = `${bestDayPct.toFixed(1)}%`;
+    document.getElementById('bestDayValue').style.color = bestDayOk ? 'var(--green)' : 'var(--red)';
+    document.getElementById('bestDayFill').style.width = `${Math.min(100, bestDayPct)}%`;
+    document.getElementById('bestDayFill').className = `progress-fill ${bestDayOk ? 'green' : 'red'}`;
+    document.getElementById('bestDayDesc').textContent = `Best day: $${bestDayPnl.toLocaleString()}`;
+    document.getElementById('bestDayLimit').textContent = bestDayOk ? '✅ Under 50%' : '❌ Exceeds 50%';
+  } else {
+    bestDayCard.style.display = 'none';
+  }
+  
+  // Trade Table
+  const tbody = document.getElementById('tradeTableBody');
+  if (stats.tradeStats.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:30px">No trading days yet. Add your first day above!</td></tr>';
+  } else {
+    tbody.innerHTML = stats.tradeStats.map((t, i) => `
+      <tr>
+        <td>${t.day}</td>
+        <td>${t.date}</td>
+        <td><strong>$${t.balance.toLocaleString()}</strong></td>
+        <td class="${t.dailyPnl >= 0 ? 'text-green' : 'text-red'}">
+          ${t.dailyPnl >= 0 ? '+' : ''}$${t.dailyPnl.toLocaleString()} (${t.dailyPnlPct >= 0 ? '+' : ''}${t.dailyPnlPct.toFixed(2)}%)
+          ${t.dailyLossViolation ? ' ⚠️' : ''}
+        </td>
+        <td class="${t.cumulativePnl >= 0 ? 'text-green' : 'text-red'}">${t.cumulativePnl >= 0 ? '+' : ''}$${t.cumulativePnl.toLocaleString()}</td>
+        <td style="color:${t.drawdownPct > 8 ? 'var(--red)' : t.drawdownPct > 5 ? 'var(--yellow)' : 'var(--text)'}">${t.drawdownPct.toFixed(2)}%</td>
+        <td style="color:var(--text-muted);font-size:13px">${t.notes || '-'}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteTrade(${i})">✕</button></td>
+      </tr>
+    `).join('');
+  }
+  
+  // Total P&L
+  const totalPnlEl = document.getElementById('totalPnl');
+  const pnlColor = stats.totalProfit >= 0 ? 'var(--green)' : 'var(--red)';
+  totalPnlEl.innerHTML = `Total P&L: <strong style="color:${pnlColor}">${stats.totalProfit >= 0 ? '+' : ''}$${stats.totalProfit.toLocaleString()}</strong>`;
+  
+  // Chart (with fallback if Chart.js failed to load)
+  if (typeof Chart !== 'undefined') {
+    updateChart(stats);
+  }
+  
+  // Promote button — show when phase is passed
+  const promoteBtn = document.getElementById('promoteBtn');
+  if (stats.status === 'passed' && state.challengeType === '2step' && state.phase === 1) {
+    promoteBtn.style.display = 'inline-flex';
+  } else {
+    promoteBtn.style.display = 'none';
+  }
+  
+  // Reset button
+  const resetBtn = document.querySelector('.btn-danger');
+  resetBtn.textContent = state.trades.length > 0 ? '↺ Reset All' : '↺ Reset';
+}
+
+// ====== CHART ======
+function updateChart(stats) {
+  const ctx = document.getElementById('equityChart').getContext('2d');
+  
+  if (chart) chart.destroy();
+  
+  const labels = ['Start', ...stats.tradeStats.map(t => t.date)];
+  const data = [state.startBalance, ...stats.tradeStats.map(t => t.balance)];
+  const profitTargetLine = Array(labels.length).fill(state.startBalance + stats.profitTarget);
+  const drawdownLine = Array(labels.length).fill(state.startBalance - stats.maxDrawdown);
+  
+  const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+  gradient.addColorStop(0, 'rgba(124, 58, 237, 0.3)');
+  gradient.addColorStop(1, 'rgba(124, 58, 237, 0)');
+  
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Balance',
+          data,
+          borderColor: '#7c3aed',
+          backgroundColor: gradient,
+          fill: true,
+          tension: 0.3,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: '#7c3aed',
+          borderWidth: 2
+        },
+        {
+          label: 'Profit Target',
+          data: profitTargetLine,
+          borderColor: '#2ea043',
+          borderDash: [6, 4],
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: false
+        },
+        {
+          label: 'Max Drawdown',
+          data: drawdownLine,
+          borderColor: '#da3633',
+          borderDash: [6, 4],
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: { color: '#8b949e', font: { size: 12 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return `$${context.parsed.y.toLocaleString()}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#8b949e', maxRotation: 45 },
+          grid: { color: 'rgba(48, 54, 61, 0.3)' }
+        },
+        y: {
+          ticks: { 
+            color: '#8b949e',
+            callback: function(value) { return '$' + value.toLocaleString(); }
+          },
+          grid: { color: 'rgba(48, 54, 61, 0.3)' }
+        }
+      }
+    }
+  });
+}
+
+// ====== PERSISTENCE ======
+function saveState() {
+  try {
+    localStorage.setItem('ftmoTracker', JSON.stringify(state));
+  } catch(e) {}
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('ftmoTracker');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      state = { ...state, ...parsed };
+    }
+  } catch(e) {}
+}
+
+function promotePhase() {
+  if (!confirm('Move to Phase 2? Current trades will be kept for reference but Phase 2 uses same starting balance with 5% profit target.')) return;
+  state.phase = 2;
+  document.getElementById('phase').value = 2;
+  saveState();
+  render();
+  document.getElementById('promoteBtn').style.display = 'none';
+}
+
+function resetAll() {
+  if (state.trades.length > 0 && !confirm('This will delete all trading data. Are you sure?')) return;
+  
+  state.trades = [];
+  state.currentBalance = state.startBalance;
+  state.phase = 1;
+  document.getElementById('phase').value = 1;
+  document.getElementById('currentBalance').value = state.startBalance;
+  
+  localStorage.removeItem('ftmoTracker');
+  render();
+}
+
+// ====== EXPORT / IMPORT ======
+function exportData() {
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ftmo_challenge_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (imported.trades && typeof imported.startBalance === 'number') {
+        state = { ...state, ...imported };
+        loadSetup();
+        render();
+        alert('Data imported successfully!');
+      } else {
+        alert('Invalid file format.');
+      }
+    } catch(e) {
+      alert('Error reading file.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ====== EMAIL CAPTURE / WAITLIST ======
+function initWaitlist() {
+  const form = document.getElementById('waitlistForm');
+  const emailInput = document.getElementById('waitlistEmail');
+  const successDiv = document.getElementById('waitlistSuccess');
+  const countSpan = document.getElementById('waitlistCount');
+  
+  // Load waitlist from localStorage
+  let waitlist = [];
+  try {
+    const saved = localStorage.getItem('ftmoWaitlist');
+    if (saved) waitlist = JSON.parse(saved);
+  } catch(e) {}
+  
+  countSpan.textContent = waitlist.length;
+  
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+    if (!email) return;
+    
+    // Store locally
+    if (!waitlist.includes(email)) {
+      waitlist.push(email);
+      try {
+        localStorage.setItem('ftmoWaitlist', JSON.stringify(waitlist));
+      } catch(e) {}
+    }
+    
+    // Send via FormSubmit (replace your@email.com with your actual email)
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('_subject', 'New FTMO Waitlist Signup');
+    formData.append('_captcha', 'false');
+    
+    // Try to send via FormSubmit (silent fail if not configured)
+    try {
+      fetch('https://formsubmit.co/ajax/enishshah2@gmail.com', {
+        method: 'POST',
+        body: formData
+      }).catch(function(){});
+    } catch(e) {}
+    
+    // Show success
+    form.style.display = 'none';
+    successDiv.style.display = 'block';
+    countSpan.textContent = waitlist.length;
+  });
+}
+
+// ====== INIT ======
+function init() {
+  // Set today's date
+  document.getElementById('tradeDate').value = new Date().toISOString().split('T')[0];
+  
+  loadState();
+  loadSetup();
+  render();
+  initWaitlist();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

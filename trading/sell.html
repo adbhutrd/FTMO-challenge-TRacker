@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FTMO Challenge Tracker - Master Your Prop Firm Journey</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0d1117;
+  --card: #161b22;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --accent: #7c3aed;
+  --green: #2ea043;
+  --blue: #58a6ff;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 100px 20px 60px;
+  background: linear-gradient(135deg, #0d1117 0%, #1a103d 50%, #0d1117 100%);
+}
+
+.hero h1 {
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+  font-size: 20px;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto 40px;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: rgba(124, 58, 237, 0.15);
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* Features */
+.features {
+  padding: 80px 0;
+}
+
+.features h2 {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 50px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.feature-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+}
+
+.feature-card .icon { font-size: 32px; margin-bottom: 12px; }
+.feature-card h3 { font-size: 18px; margin-bottom: 8px; }
+.feature-card p { color: var(--text-muted); font-size: 14px; }
+
+/* Pricing */
+.pricing {
+  padding: 80px 0;
+  text-align: center;
+}
+
+.pricing h2 { font-size: 32px; margin-bottom: 16px; }
+.pricing .subtitle { color: var(--text-muted); margin-bottom: 40px; }
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.pricing-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  transition: transform 0.2s;
+}
+
+.pricing-card.featured {
+  border-color: var(--accent);
+  transform: scale(1.05);
+  position: relative;
+}
+
+.pricing-card.featured .badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: white;
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pricing-card .price { font-size: 42px; font-weight: 800; margin: 16px 0; }
+.pricing-card .price span { font-size: 16px; color: var(--text-muted); font-weight: 400; }
+.pricing-card .desc { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
+.pricing-card ul { list-style: none; text-align: left; margin-bottom: 24px; }
+.pricing-card ul li { padding: 8px 0; font-size: 14px; }
+.pricing-card ul li::before { content: '✅ '; }
+
+.btn {
+  display: inline-block;
+  padding: 14px 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn-outline:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Demo section */
+.demo {
+  padding: 80px 0;
+  text-align: center;
+}
+
+.demo img {
+  max-width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-top: 30px;
+}
+
+/* CTA */
+.cta {
+  text-align: center;
+  padding: 80px 0;
+  background: linear-gradient(135deg, #1a103d 0%, #0d1117 100%);
+}
+
+.cta h2 { font-size: 36px; margin-bottom: 16px; }
+.cta p { color: var(--text-muted); margin-bottom: 30px; }
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .hero h1 { font-size: 32px; }
+  .pricing-card.featured { transform: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <span class="hero-badge">🔥 Used by 264,000+ FTMO Traders</span>
+    <h1>Never Lose an FTMO<br>Challenge to a Rule You<br>Didn't Track</h1>
+    <p>Real-time profit target, drawdown, and daily loss tracking — designed specifically for FTMO's strict challenge rules. Use it free now, upgrade when you're ready.</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+      <a href="ftmo_challenge_tracker.html" class="btn btn-primary" style="font-size:18px;padding:16px 36px">🚀 Try Free Now</a>
+      <a href="#pricing" class="btn btn-outline">See Pricing</a>
+    </div>
+    <p style="margin-top:16px;font-size:14px;color:var(--text-muted)">No account needed. Works offline. Your data stays on your machine.</p>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features" id="features">
+  <div class="container">
+    <h2>Everything You Need to Pass</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="icon">🎯</div>
+        <h3>Profit Target Tracking</h3>
+        <p>Real-time progress bar showing exactly how close you are to passing Phase 1 (10%) or Phase 2 (5%). Never miss your target.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🛑</div>
+        <h3>Drawdown Guardian</h3>
+        <p>Automatic tracking of your max drawdown (10% of initial balance) with color-coded warnings when you're approaching the limit.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📅</div>
+        <h3>Day Counter</h3>
+        <p>Tracks minimum trading days (4 for 2-Step) and shows exactly how many you've completed. No more manual counting.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📈</div>
+        <h3>Equity Curve Chart</h3>
+        <p>Visual chart showing your balance over time, with profit target and max drawdown lines. See your progress at a glance.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📋</div>
+        <h3>Trade Log</h3>
+        <p>Complete log of every trading day with dates, balances, daily P&L, and drawdown. Export and import your data anytime.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🔄</div>
+        <h3>1-Step & 2-Step Support</h3>
+        <p>Full support for both FTMO challenge types including the 1-Step Best Day Rule (max 50% of profit in one day).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <h2>Simple Pricing</h2>
+    <p class="subtitle">Start free, upgrade when you're ready to scale</p>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <h3>Free</h3>
+        <div class="price">$0</div>
+        <p class="desc">Perfect for trying it out</p>
+        <ul>
+          <li>Full FTMO rule engine</li>
+          <li>All challenge types</li>
+          <li>Trade log</li>
+          <li>Equity chart</li>
+          <li>Local storage (offline)</li>
+        </ul>
+        <a href="ftmo_challenge_tracker.html" class="btn btn-outline" style="width:100%;text-align:center">Get Started Free</a>
+      </div>
+      <div class="pricing-card featured">
+        <div class="badge">BEST SELLER</div>
+        <h3>Pro</h3>
+        <div class="price">$19.99 <span>/ month</span></div>
+        <p class="desc">For serious traders</p>
+        <ul>
+          <li>Everything in Free</li>
+          <li>Cloud sync (all devices)</li>
+          <li>Unlimited accounts</li>
+          <li>Pdf report export</li>
+          <li>Email notifications</li>
+          <li>Priority support</li>
+        </ul>
+        <button class="btn btn-primary" style="width:100%;text-align:center" onclick="alert('👋 Set up your Gumroad product at gumroad.com, then paste your buy link here!')">Buy Now - $19.99</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="demo">
+  <div class="container">
+    <h2>How It Works</h2>
+    <p style="color:var(--text-muted);margin:16px 0 40px">3 simple steps to never miss a challenge rule</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px;text-align:left">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px">
+        <div style="font-size:40px;font-weight:800;color:var(--accent);margin-bottom:8px">1</div>
+        <h3>Set Up Your Challenge</h3>
+        <p style="color:var(--text-muted);font-size:14px">Choose your challenge type (1-Step or 2-Step), account size, and starting balance.</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px">
+        <div style="font-size:40px;font-weight:800;color:var(--accent);margin-bottom:8px">2</div>
+        <h3>Add Trading Days</h3>
+        <p style="color:var(--text-muted);font-size:14px">After each trading day, enter your ending balance. Everything is calculated automatically.</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px">
+        <div style="font-size:40px;font-weight:800;color:var(--accent);margin-bottom:8px">3</div>
+        <h3>Watch Your Progress</h3>
+        <p style="color:var(--text-muted);font-size:14px">Real-time status, drawdown warnings, and when to promote to Phase 2. Never fail a rule again.</p>
+      </div>
+    </div>
+  </div>
+</section>  <!-- Email Capture -->
+  <section style="padding:60px 20px;text-align:center;border-top:1px solid var(--border)">
+    <div class="container" style="max-width:500px">
+      <h2 style="font-size:24px;margin-bottom:12px">📩 Get Early Access to Pro</h2>
+      <p style="color:var(--text-muted);margin-bottom:24px">Cloud sync, unlimited accounts, PDF reports. Join 50+ traders on the waitlist.</p>
+      <form id="waitlistFormSell" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+        <input type="email" id="waitlistEmailSell" placeholder="your@email.com" required
+          style="flex:1;min-width:220px;padding:14px 20px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:15px;outline:none">
+        <button type="submit" style="padding:14px 28px;border:none;border-radius:8px;background:var(--accent);color:white;font-size:15px;font-weight:600;cursor:pointer">Join Waitlist</button>
+      </form>
+      <div id="waitlistSuccessSell" style="display:none;padding:16px;background:var(--green-bg);border-radius:8px;color:var(--green);font-size:14px;margin-top:16px">
+        ✅ You're on the list! Early bird pricing coming soon.
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container">
+      <h2>Ready to Pass Your FTMO Challenge?</h2>
+      <p>Join thousands of traders tracking their progress the smart way.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+        <a href="ftmo_challenge_tracker.html" class="btn btn-primary" style="font-size:18px;padding:16px 36px">🚀 Start Free Now</a>
+      </div>
+    </div>
+  </section>
+
+<footer class="footer">
+  <p>FTMO Challenge Tracker &mdash; Not affiliated with FTMO.com. Built for traders by traders.</p>
+  <p style="margin-top:4px">Made with ❤️ for the trading community</p>
+</footer>
+
+<script>
+// Waitlist form handler for sell page
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('waitlistFormSell');
+  const emailInput = document.getElementById('waitlistEmailSell');
+  const successDiv = document.getElementById('waitlistSuccessSell');
+  
+  if (!form) return;
+  
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+    if (!email) return;
+    
+    // Try FormSubmit
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('_subject', 'New FTMO Waitlist Signup (from sell page)');
+    formData.append('_captcha', 'false');
+    try {
+      fetch('https://formsubmit.co/ajax/enishshah2@gmail.com', {
+        method: 'POST',
+        body: formData
+      }).catch(function(){});
+    } catch(e) {}
+    
+    form.style.display = 'none';
+    successDiv.style.display = 'block';
+  });
+});
+</script>
+
+</body>
+</html>

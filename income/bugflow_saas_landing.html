@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BugFlow - Automated Bug Bounty Recon Pipeline</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0e14;
+  --card: #111820;
+  --border: #1c2833;
+  --text: #e8eef5;
+  --text-muted: #788ea0;
+  --green: #27ae60;
+  --red: #e74c3c;
+  --accent: #e74c3c;
+  --blue: #3498db;
+}
+
+body {
+  font-family: 'SF Mono', 'Fira Code', 'Monaco', monospace;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+/* Matrix-style header */
+.hero {
+  text-align: center;
+  padding: 100px 20px 60px;
+  background: linear-gradient(180deg, #0a0e14 0%, #0d1a1a 50%, #0a0e14 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(46, 204, 113, 0.03) 2px,
+    rgba(46, 204, 113, 0.03) 4px
+  );
+  pointer-events: none;
+}
+
+.hero .terminal-line {
+  font-size: 14px;
+  color: var(--green);
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+
+.hero .terminal-line .prompt { color: var(--green); }
+.hero .terminal-line .cmd { color: var(--text); }
+.hero .terminal-line .output { color: var(--text-muted); }
+
+.hero h1 {
+  font-size: 48px;
+  font-weight: 800;
+  margin: 30px 0 16px;
+  background: linear-gradient(135deg, var(--green), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+  font-size: 18px;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto 40px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 4px;
+  background: rgba(39, 174, 96, 0.15);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  border: 1px solid rgba(39, 174, 96, 0.3);
+}
+
+.btn {
+  display: inline-block;
+  padding: 14px 32px;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: var(--green);
+  color: #0a0e14;
+}
+
+.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn-outline:hover { border-color: var(--green); color: var(--green); }
+
+/* Stats */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: -40px auto 60px;
+  max-width: 900px;
+  position: relative;
+  z-index: 2;
+}
+
+.stat-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 24px;
+  text-align: center;
+}
+
+.stat-box .num { font-size: 36px; font-weight: 800; color: var(--green); }
+.stat-box .label { font-size: 12px; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Features */
+.features {
+  padding: 60px 0;
+}
+
+.features h2 {
+  font-size: 28px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.feature-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 24px;
+  transition: border-color 0.2s;
+}
+
+.feature-card:hover { border-color: var(--green); }
+
+.feature-card .code-icon {
+  font-size: 14px;
+  color: var(--green);
+  margin-bottom: 12px;
+}
+
+.feature-card h3 { font-size: 16px; margin-bottom: 8px; }
+.feature-card p { color: var(--text-muted); font-size: 13px; line-height: 1.7; }
+
+/* Pipeline */
+.pipeline {
+  padding: 60px 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: none;
+  border-right: none;
+}
+
+.pipeline h2 { text-align: center; margin-bottom: 40px; font-size: 28px; }
+
+.pipeline-step {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 24px;
+  align-items: flex-start;
+}
+
+.pipeline-step .step-num {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--green);
+  min-width: 30px;
+  background: rgba(39, 174, 96, 0.1);
+  padding: 8px;
+  text-align: center;
+  border: 1px solid rgba(39, 174, 96, 0.2);
+}
+
+.pipeline-step .step-content h3 { font-size: 15px; margin-bottom: 4px; }
+.pipeline-step .step-content p { color: var(--text-muted); font-size: 13px; }
+
+/* Pricing */
+.pricing {
+  padding: 80px 0;
+  text-align: center;
+}
+
+.pricing h2 { font-size: 28px; margin-bottom: 16px; }
+.pricing .subtitle { color: var(--text-muted); margin-bottom: 40px; }
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.pricing-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 32px;
+  transition: transform 0.2s;
+}
+
+.pricing-card.featured {
+  border-color: var(--green);
+  position: relative;
+}
+
+.pricing-card .tag {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--green);
+  color: #0a0e14;
+  padding: 4px 16px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.pricing-card .price { font-size: 38px; font-weight: 800; margin: 16px 0; }
+.pricing-card .price span { font-size: 14px; color: var(--text-muted); font-weight: 400; }
+.pricing-card .desc { color: var(--text-muted); font-size: 13px; margin-bottom: 24px; }
+.pricing-card ul { list-style: none; text-align: left; margin-bottom: 24px; }
+.pricing-card ul li { padding: 8px 0; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.pricing-card ul li::before { content: '>> '; color: var(--green); }
+
+/* CTA */
+.cta {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.cta h2 { font-size: 32px; margin-bottom: 16px; }
+.cta p { color: var(--text-muted); margin-bottom: 30px; }
+.cta .email {
+  color: var(--green);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--green);
+}
+
+.footer {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 12px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .hero h1 { font-size: 28px; }
+  .stats { margin-top: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="terminal-line">
+      <span class="prompt">$</span> <span class="cmd">./bugflow --target shopify.com</span>
+    </div>
+    <div class="terminal-line">
+      <span class="prompt">>></span> <span class="output">Starting 5-phase recon pipeline...</span>
+    </div>
+    <div class="terminal-line">
+      <span class="prompt">>></span> <span class="output">Found 1,247 subdomains | 89 live hosts | 14 vulnerabilities</span>
+    </div>
+    <div class="terminal-line" style="margin-bottom:30px">
+      <span class="prompt">>></span> <span class="output" style="color:var(--green)">Pipeline complete. Report ready.</span>
+    </div>
+
+    <span class="badge"># BugFlow v1.0 — Automated Recon Pipeline</span>
+    <h1>Turn Your Recon into<br>Findings. Automatically.</h1>
+    <p>5-phase bug bounty pipeline. From target selection to professional report. Built by a pentester, for pentesters.</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+      <a href="mailto:enishshah2@gmail.com" class="btn btn-primary">🚀 Get Access — $49/mo</a>
+      <a href="#pricing" class="btn btn-outline">View Pricing</a>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat-box">
+    <div class="num">5</div>
+    <div class="label">Pipeline Phases</div>
+  </div>
+  <div class="stat-box">
+    <div class="num">12+</div>
+    <div class="label">Recon Sources</div>
+  </div>
+  <div class="stat-box">
+    <div class="num">5K</div>
+    <div class="label">Subdomains/Hour</div>
+  </div>
+  <div class="stat-box">
+    <div class="num">1</div>
+    <div class="label">Command to Run</div>
+  </div>
+</div>
+
+<!-- Features -->
+<section class="features">
+  <div class="container">
+    <h2>Your Entire Recon Workflow in One Command</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="code-icon">// phase_1</div>
+        <h3>Target Selection</h3>
+        <p>Haddix-style program analysis. Automatically finds high-value bug bounty targets with payout history.</p>
+      </div>
+      <div class="feature-card">
+        <div class="code-icon">// phase_2</div>
+        <h3>Reconnaissance</h3>
+        <p>12+ data sources: crt.sh, Amass, GAU, AlienVault, URLScan, HackerTarget, GitHub, Chaos, SecurityTrails, and more.</p>
+      </div>
+      <div class="feature-card">
+        <div class="code-icon">// phase_3</div>
+        <h3>Vulnerability Scanning</h3>
+        <p>Nuclei + custom templates. Scans for CVEs, misconfigurations, and OWASP Top 10 issues automatically.</p>
+      </div>
+      <div class="feature-card">
+        <div class="code-icon">// phase_4</div>
+        <h3>API Testing</h3>
+        <p>InsiderPhD-style API security testing. BOLA, IDOR, broken auth, mass assignment, rate limiting checks.</p>
+      </div>
+      <div class="feature-card">
+        <div class="code-icon">// phase_5</div>
+        <h3>Report Generation</h3>
+        <p>Professional markdown reports with CVSS scoring, remediation steps, and executive summaries. Ready to submit.</p>
+      </div>
+      <div class="feature-card">
+        <div class="code-icon">// human_mode</div>
+        <h3>Stealth Mode</h3>
+        <p>Built-in human simulation: configurable delays, rotating user agents, rate limiting. Fly under the radar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pipeline -->
+<section class="pipeline">
+  <div class="container">
+    <h2>>_ Pipeline Architecture</h2>
+    <div class="pipeline-step">
+      <div class="step-num">01</div>
+      <div class="step-content">
+        <h3>Target Selection</h3>
+        <p>Analyzes program scope, payout history, and attack surface. Picks the most promising targets automatically.</p>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-num">02</div>
+      <div class="step-content">
+        <h3>Reconnaissance</h3>
+        <p>Multi-source subdomain discovery, live host filtering, URL collection, and technology fingerprinting.</p>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-num">03</div>
+      <div class="step-content">
+        <h3>Vulnerability Scan</h3>
+        <p>Nuclei-based scanning with custom templates. Filters by severity (medium+). Finds what matters.</p>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-num">04</div>
+      <div class="step-content">
+        <h3>API Testing</h3>
+        <p>Automated API endpoint discovery and security testing. Catches BOLA, IDOR, auth bypasses automatically.</p>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-num">05</div>
+      <div class="step-content">
+        <h3>Report</h3>
+        <p>Professional bug bounty report with findings, evidence, CVSS scores, and remediation. Ready to submit.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <h2>Pricing</h2>
+    <p class="subtitle">For bug bounty hunters who want to scale their recon</p>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <h3>Starter</h3>
+        <div class="price">$49 <span>/ month</span></div>
+        <p class="desc">For individual hunters</p>
+        <ul>
+          <li>Full 5-phase pipeline</li>
+          <li>10 targets/month</li>
+          <li>Email support</li>
+          <li>PDF reports</li>
+          <li>Community access</li>
+        </ul>
+        <a href="mailto:enishshah2@gmail.com?subject=BugFlow%20Starter%20Plan" class="btn btn-outline" style="width:100%;text-align:center">Get Started</a>
+      </div>
+      <div class="pricing-card featured">
+        <div class="tag">POPULAR</div>
+        <h3>Pro</h3>
+        <div class="price">$99 <span>/ month</span></div>
+        <p class="desc">Serious hunters & teams</p>
+        <ul>
+          <li>Everything in Starter</li>
+          <li>Unlimited targets</li>
+          <li>API access</li>
+          <li>Custom templates</li>
+          <li>Priority support</li>
+          <li>Slack/Discord channel</li>
+        </ul>
+        <a href="mailto:enishshah2@gmail.com?subject=BugFlow%20Pro%20Plan" class="btn btn-primary" style="width:100%;text-align:center">🚀 Start Pro</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="container">
+    <h2>Ready to 10x Your Recon?</h2>
+    <p>One command. Full pipeline. Ready-to-submit reports.</p>
+    <p style="font-size:14px;color:var(--text-muted)">Contact: <a href="mailto:enishshah2@gmail.com" class="email">enishshah2@gmail.com</a></p>
+    <p style="font-size:12px;color:var(--text-muted);margin-top:20px">MSc Cyber Security (Distinction) · 5+ years experience</p>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>BugFlow &mdash; Automated Bug Bounty Pipeline</p>
+  <p style="margin-top:4px">Built by Enish Shah · Not affiliated with any bug bounty platform</p>
+</footer>
+
+</body>
+</html>

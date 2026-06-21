@@ -1,0 +1,44 @@
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Node
+node_modules/
+.env
+.env.local
+
+# Logs
+*.log
+
+# Output directories
+output/
+
+# Config with sensitive data
+*.env
+config.local.yaml
+
+# Git
+.git/
+
+# Large data files
+*.csv
+*.json
+!waitlist_emails.json
+
+# Assets deployed
+deploy_assets/
+
+# IDE
+.vscode/
+.idea/
