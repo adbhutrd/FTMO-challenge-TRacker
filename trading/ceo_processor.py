@@ -89,9 +89,12 @@ client = OpenAI(
     },
 )
 
-# This is the model we use. DeepSeek is fast & smart. Can switch to Claude 4 if needed.
-MODEL = "openai/gpt-4o"  # Best balance of speed + reasoning
-# Also tested: deepseek/deepseek-chat (faster, cheaper), anthropic/claude-3-haiku
+# ── Hybrid Model System ────────────────────────────────────────────
+# Simple/quick queries → DeepSeek (fast, cheap, ~$0.14/M tokens)
+# Complex/deep queries → GPT-4o (powerful reasoning, ~$2.50/M tokens)
+MODEL_FAST = "deepseek/deepseek-chat"   # For greetings, status checks, help
+MODEL_SMART = "openai/gpt-4o"            # For strategy, code, analysis, generation
+MODEL = MODEL_SMART  # Default (shown in status display)
 
 # ── System Prompt ─────────────────────────────────────────────────────
 SYSTEM_PROMPT = """You are Buffy — a strategic AI assistant and the CEO of FTMO Income Corporation. You orchestrate a whole business empire through Telegram.
@@ -161,34 +164,108 @@ def save_to_history(role: str, content: str):
 
 
 # ═══════════════════════════════════════════════════════════════════════
+#  HYBRID MODEL ROUTER
+# ═══════════════════════════════════════════════════════════════════════
+
+def classify_complexity(message: str) -> str:
+    """Classify a message as 'simple' (DeepSeek) or 'complex' (GPT-4o)."""
+    msg = message.lower().strip()
+    
+    # Simple signals — use fast/cheap model
+    simple_signals = [
+        # Greetings & pleasantries
+        "hi", "hello", "hey", "thanks", "thank", "ok", "okay", "bye", "good", "great",
+        "nice", "cool", "awesome", "perfect", "sure", "yes", "no", "yep", "nope",
+        # Simple questions
+        "how are you", "what's up", "sup", "how's it going", "you there", "are you there",
+        "who are you", "what is this", "good morning", "good evening", "good night",
+        # Simple acknowledgments
+        "got it", "understood", "i see", "makes sense", "lol", "haha", "👍", "✅",
+    ]
+    
+    # Complex signals — use powerful/expensive model
+    complex_signals = [
+        "generate", "create", "build", "write", "develop", "implement", "design",
+        "strategy", "strategic", "analyze", "analysis", "plan", "planning", "optimize",
+        "optimization", "architect", "architecture", "refactor", "restructure",
+        "deploy", "pipeline", "automate", "automation", "integrate", "integration",
+        "scal", "perform", "performance", "secur", "security", "monitor",
+        "content", "article", "blog", "seo", "marketing", "campaign",
+        "revenue", "monetize", "monetization", "pricing", "growth",
+        "code", "function", "class", "api", "database", "schema",
+        "compare", "vs", "versus", "trade-off", "pros and cons",
+        "roadmap", "milestone", "sprint", "backlog", "priority",
+    ]
+    
+    # Check for simple signals first
+    clean_msg = msg.strip(".,!?/ !")
+    if clean_msg in simple_signals:
+        return MODEL_FAST
+    
+    # Short messages (1-3 words, not complex) -> fast
+    word_count = len(msg.split())
+    if word_count <= 3:
+        return MODEL_FAST
+    
+    # Check for complex signals
+    for signal in complex_signals:
+        if signal in msg:
+            return MODEL_SMART
+    
+    # Medium-length messages (4-10 words) without complex signals -> fast
+    if word_count <= 10:
+        return MODEL_FAST
+    
+    # Long messages or messages with question depth -> smart
+    return MODEL_SMART
+
+
+# ═══════════════════════════════════════════════════════════════════════
 #  AI CALL
 # ═══════════════════════════════════════════════════════════════════════
 
-def call_ai(user_message: str) -> str:
-    """Call OpenRouter AI with conversation history. Returns response text."""
+def call_ai(user_message: str, model: str = None, save_user: bool = True) -> str:
+    """Call OpenRouter AI with conversation history.
+    Uses hybrid routing: DeepSeek for simple, GPT-4o for complex.
+    
+    save_user: If True, saves user message to history.
+               Set False on fallback calls to avoid duplicates.
+    """
+    if model is None:
+        model = classify_complexity(user_message)
+    
+    model_label = "GPT-4o" if "gpt-4" in model else "DeepSeek"
+    
+    # Save user message exactly ONCE (skip on fallback calls)
+    if save_user:
+        save_to_history("user", user_message)
+    
     messages = load_conversation_history()
-    messages.append({"role": "user", "content": user_message})
 
     try:
-        logger.info(f"🧠 Calling AI ({MODEL}) with {len(messages)} message(s) in context...")
+        logger.info(f"🧠 [{model_label}] Calling {model} with {len(messages)} message(s)...")
         completion = client.chat.completions.create(
-            model=MODEL,
+            model=model,
             messages=messages,
             max_tokens=2000,
             temperature=0.7,
         )
         response = completion.choices[0].message.content
 
-        # Save to history
-        save_to_history("user", user_message)
+        # Save clean response (no model labels in history!)
         save_to_history("assistant", response)
 
-        logger.info(f"✅ AI responded ({len(response)} chars)")
+        logger.info(f"✅ [{model_label}] responded ({len(response)} chars)")
         return response
 
     except Exception as e:
-        error_msg = f"❌ AI Error: {type(e).__name__}: {e}"
+        error_msg = f"❌ AI Error ({model_label}): {type(e).__name__}: {e}"
         logger.error(error_msg)
+        
+        # If GPT-4o fails, fallback to DeepSeek (no duplicate user message!)
+        if "gpt-4" in model:
+            logger.info(f"⚠️ GPT-4o failed, falling back to DeepSeek...")
+            return call_ai(user_message, model=MODEL_FAST, save_user=False)
         return error_msg
 
 
@@ -318,7 +395,7 @@ def process_task(task: dict) -> str:
             
             status = (
                 f"🤖 <b>CEO Buffy — LIVE Status</b>\n\n"
-                f"<b>🧠 Brain:</b> {MODEL} via OpenRouter (always online)\n"
+                f"<b>🧠 Brain:</b> Hybrid — DeepSeek (fast) + GPT-4o (deep) via OpenRouter\n"
                 f"<b>📱 Interface:</b> Telegram @ArdTradingBot\n"
                 f"<b>📜 Memory:</b> {CONVERSATION_FILE.stat().st_size if CONVERSATION_FILE.exists() else 0:,} bytes — I remember everything\n\n"
                 f"<b>🟢 Services:</b>\n"
