@@ -122,7 +122,13 @@ class CEO:
             return False
 
         username = "adbhut_rd"
-        password = "H!uVpGDt8@9UcCd"
+        # Load password from env (never hardcode secrets in source!)
+        password = os.getenv("CEO_CREDENTIAL_PASSWORD")
+        if not password:
+            raise ValueError(
+                "CEO_CREDENTIAL_PASSWORD not set. Add it to ~/.hermes/.env:\n"
+                "echo 'CEO_CREDENTIAL_PASSWORD=your_password' >> ~/.hermes/.env"
+            )
 
         logger.info("🤖 Launching browser to get Reddit credentials...")
 
