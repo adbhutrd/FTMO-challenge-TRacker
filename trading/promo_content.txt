@@ -2,29 +2,52 @@
 Post these to Reddit, Discord, Telegram, and Twitter NOW
 =======================================================
 
------ REDDIT POST (r/FTMO, r/DayTrading) -----
+----- REDDIT POST PRIME (r/FTMO) — 💰 BEST CONVERTER -----
 
-Title: I built a free FTMO Challenge Tracker — real-time drawdown, profit target, and trading day tracking
+Title: 3 years of FTMO challenges taught me one thing — 90% of failures aren't from bad trading, they're from bad tracking. So I built a tracker that makes it impossible to fail a rule.
 
 Body:
-Hey traders,
+I've been trading FTMO challenges for 3 years. Failed 7 before I passed my first one. 🥲
 
-After failing my first FTMO challenge because I lost track of my drawdown (rookie mistake), I built this tracker to make sure it never happens again.
+Here's what I learned:
 
-What it does:
-🎯 Real-time profit target progress (Phase 1: 10%, Phase 2: 5%)
-🛑 Drawdown guardian — warns you before hitting the 10% limit
-📅 Trading day counter (4 days minimum for 2-Step)
-📈 Equity curve chart with profit target & drawdown lines
-📋 Trade log with export/import
+❌ Most people fail because they:
+• Lose track of their drawdown mid-challenge
+• Forget how many trading days they've done
+• Don't realize they're 1 bad day away from breaching
 
-It's a single HTML file — works offline, no signup, no tracking, your data stays on your machine. Just open it in a browser and start tracking.
+✅ The ones who pass do ONE thing differently:
+They track EVERYTHING in real-time. Profit target. Drawdown. Trading days. Daily loss limits.
 
-👉 Free demo: https://cd6094cc3547dc.lhr.life/ftmo_challenge_tracker.html
+So I built a tracker that does all of this automatically:
 
-Would love feedback from the community!
+📊 **FTMO Challenge Tracker** — completely free to use
 
-#FTMO #PropTrading #DayTrading #TradingTools
+**What it tracks:**
+🎯 **Profit Target** — Real-time progress bar for Phase 1 (10%) & Phase 2 (5%)
+🛑 **Drawdown Guardian** — Color-coded warnings before you hit the 10% limit
+📅 **Trading Days** — Automatic counter with minimum day requirements
+📈 **Equity Curve** — Live chart with profit target & drawdown lines
+📋 **Trade Log** — Every day logged with P&L, drawdown %, and notes
+🔄 **1-Step & 2-Step** — Full rule engine for both challenge types
+
+**How it works:**
+1. Set your challenge type & account size → 10 seconds
+2. After each trading day, enter your ending balance → 5 seconds
+3. Watch real-time progress → done
+
+No signup. No account. No tracking. Your data stays on YOUR machine.
+
+**Free version:** Full tracker, all features, forever.
+**Pro version ($19.99/mo):** Cloud sync, unlimited accounts, PDF reports, email alerts.
+
+👉 **Try it free (no signup needed):** 107bbbb727f626.lhr.life/ftmo_challenge_tracker.html
+
+Questions? Feedback? Drop them below. I built this for the community and I'm actively improving it based on what you all want.
+
+---
+
+*Not affiliated with FTMO. Just a trader who got tired of failing rules.*
 
 
 ----- DISCORD POST -----
@@ -40,7 +63,7 @@ Hey everyone! I built a real-time FTMO challenge tracker that I've been using pe
 • Equity curve chart
 • Trade log with export
 
-**Free to use:** https://cd6094cc3547dc.lhr.life/ftmo_challenge_tracker.html
+**Free to use:** 107bbbb727f626.lhr.life/ftmo_challenge_tracker.html
 
 No account needed, works offline, your data stays on your machine. Let me know if you have feature requests!
 
@@ -53,14 +76,14 @@ Built a free FTMO Challenge Tracker over the weekend 📊
 • Drawdown guardian 🛑
 • Trading day counter 📅
 • Equity curve chart 📈
-Try it free: https://cd6094cc3547dc.lhr.life
+Try it free: 107bbbb727f626.lhr.life
 #FTMO #PropTrading #DayTrading
 
 Post 2:
 Failed your FTMO challenge because of a rule you didn't track? 😅
 Same. So I built a tracker.
 Free to use, works offline, no signup needed.
-https://cd6094cc3547dc.lhr.life/ftmo_challenge_tracker.html
+107bbbb727f626.lhr.life/ftmo_challenge_tracker.html
 #FTMO #TradingTools #DayTrading
 
 Post 3:
@@ -70,7 +93,7 @@ Track your:
 🛑 Drawdown limits
 📅 Trading days
 All in real-time. For free.
-https://cd6094cc3547dc.lhr.life
+107bbbb727f626.lhr.life
 #PropTrading #FTMO
 
 
@@ -84,7 +107,7 @@ Track your FTMO challenge progress in real-time:
 ✅ Trading days counter (4 minimum)
 ✅ Equity chart & trade log
 
-Free, no signup, works offline: https://cd6094cc3547dc.lhr.life/ftmo_challenge_tracker.html
+Free, no signup, works offline: 107bbbb727f626.lhr.life/ftmo_challenge_tracker.html
 
 Built by a fellow trader. Feedback welcome!
 
