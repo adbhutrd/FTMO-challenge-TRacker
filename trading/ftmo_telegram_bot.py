@@ -934,6 +934,239 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 # ═══════════════════════════════════════════════════════════════════════
+#  🤖 CEO CHAT BRIDGE — Talk to the AI CEO via Telegram
+# ═══════════════════════════════════════════════════════════════════════
+
+CEO_TASKS_DIR = BOT_DIR / "ceo_tasks"
+CEO_TASKS_DIR.mkdir(parents=True, exist_ok=True)
+CEO_PENDING_FILE = CEO_TASKS_DIR / "pending.json"
+CEO_RESULTS_DIR = CEO_TASKS_DIR / "results"
+CEO_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+
+def save_ceo_task(user_id: int, username: str, message: str) -> str:
+    """Save a message for the CEO to process. Returns task_id."""
+    import uuid
+    task_id = str(uuid.uuid4())[:8]
+    task = {
+        "task_id": task_id,
+        "user_id": user_id,
+        "username": username,
+        "message": message,
+        "timestamp": datetime.now().isoformat(),
+        "status": "pending",
+    }
+    # Load pending queue
+    pending = []
+    if CEO_PENDING_FILE.exists():
+        try:
+            pending = json.loads(CEO_PENDING_FILE.read_text())
+        except:
+            pass
+    pending.append(task)
+    CEO_PENDING_FILE.write_text(json.dumps(pending, indent=2))
+    logger.info(f"🤖 CEO task {task_id} from @{username}: {message[:60]}...")
+    return task_id
+
+def check_ceo_results(user_id: int) -> list:
+    """Check for CEO results for a specific user."""
+    results = []
+    if not CEO_RESULTS_DIR.exists():
+        return results
+    for f in sorted(CEO_RESULTS_DIR.glob("*.json"), key=lambda x: x.stat().st_mtime, reverse=True):
+        try:
+            data = json.loads(f.read_text())
+            if data.get("user_id") == user_id and not data.get("sent_to_user", False):
+                results.append(data)
+                data["sent_to_user"] = True
+                f.write_text(json.dumps(data, indent=2))
+        except:
+            pass
+    return results
+
+def get_pending_tasks() -> list:
+    """Get all pending tasks for the CEO to process."""
+    if not CEO_PENDING_FILE.exists():
+        return []
+    try:
+        pending = json.loads(CEO_PENDING_FILE.read_text())
+        return [t for t in pending if t.get("status") == "pending"]
+    except:
+        return []
+
+def complete_ceo_task(task_id: str, response: str):
+    """Mark a CEO task as completed and save the response."""
+    if not CEO_PENDING_FILE.exists():
+        return
+    try:
+        pending = json.loads(CEO_PENDING_FILE.read_text())
+        for task in pending:
+            if task["task_id"] == task_id:
+                task["status"] = "completed"
+                task["completed_at"] = datetime.now().isoformat()
+                # Save result
+                result = {
+                    "task_id": task_id,
+                    "user_id": task["user_id"],
+                    "username": task["username"],
+                    "original_message": task["message"],
+                    "response": response,
+                    "timestamp": datetime.now().isoformat(),
+                    "sent_to_user": False,
+                }
+                result_file = CEO_RESULTS_DIR / f"{task_id}.json"
+                result_file.write_text(json.dumps(result, indent=2))
+                break
+        CEO_PENDING_FILE.write_text(json.dumps(pending, indent=2))
+    except:
+        pass
+
+async def cmd_ceo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Send a message to the CEO (AI agent).
+    
+    Usage: /ceo <your message>
+    The CEO will process your request and reply.
+    """
+    if not is_boss(update.effective_user.id):
+        await update.message.reply_text("⛔ Only the company owner can talk to the CEO.")
+        return
+    
+    if not context.args:
+        await update.message.reply_text(
+            "🤖 <b>CEO Chat Bridge</b>\n\n"
+            "Send me a message and I'll forward it to the CEO (AI agent) for processing.\n\n"
+            "Usage: <code>/ceo &lt;your request&gt;</code>\n\n"
+            "Examples:\n"
+            "<code>/ceo generate more SEO pages</code>\n"
+            "<code>/ceo check the system status</code>\n"
+            "<code>/ceo post a new article about FTMO rules</code>\n"
+            "<code>/ceo what is the company doing right now?</code>\n\n"
+            "You can also just send any message directly — non-command messages are also forwarded to the CEO.\n\n"
+            "<i>The CEO will process your request when they are next active and reply here.</i>",
+            parse_mode="HTML",
+        )
+        return
+    
+    message = " ".join(context.args)
+    task_id = save_ceo_task(update.effective_user.id, update.effective_user.username or "Unknown", message)
+    
+    await update.message.reply_text(
+        f"🤖 <b>Message sent to CEO!</b>\n\n"
+        f"Task ID: <code>{task_id}</code>\n"
+        f"Message: <i>{message[:100]}</i>\n\n"
+        f"The CEO will process your request. Check back with <code>/ceocheck</code> for responses, "
+        f"or I'll notify you when done.",
+        parse_mode="HTML",
+    )
+
+
+async def cmd_ceocheck(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Check for CEO responses."""
+    if not is_boss(update.effective_user.id):
+        return
+    
+    results = check_ceo_results(update.effective_user.id)
+    
+    if not results:
+        await update.message.reply_text(
+            "📭 No new CEO responses. Try <code>/ceo &lt;message&gt;</code> to send a request.",
+            parse_mode="HTML",
+        )
+        return
+    
+    for result in results:
+        msg = (
+            f"🤖 <b>CEO Response</b>\n\n"
+            f"<b>You said:</b> <i>{result.get('original_message', '')[:200]}</i>\n\n"
+            f"{result.get('response', '')[:3500]}"
+        )
+        try:
+            await update.message.reply_text(msg, parse_mode="HTML")
+        except:
+            # If parse_mode fails, send without HTML
+            await update.message.reply_text(msg)
+
+
+async def cmd_ceostatus(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Show CEO task queue status."""
+    if not is_boss(update.effective_user.id):
+        return
+    
+    pending = get_pending_tasks()
+    completed = len(list(CEO_RESULTS_DIR.glob("*.json"))) if CEO_RESULTS_DIR.exists() else 0
+    
+    msg = (
+        f"🤖 <b>CEO Status</b>\n\n"
+        f"📥 Pending tasks: {len(pending)}\n"
+        f"✅ Completed tasks: {completed}\n"
+        f"\n"
+        f"<b>Pending:</b>\n"
+    )
+    
+    if pending:
+        for task in pending[-5:]:  # Last 5
+            msg += f"• <code>{task['task_id']}</code>: {task['message'][:50]}...\n"
+    else:
+        msg += "No pending tasks.\n"
+    
+    msg += (
+        f"\n<b>Talk to CEO:</b> <code>/ceo &lt;message&gt;</code>\n"
+        f"<b>Check replies:</b> <code>/ceocheck</code>"
+    )
+    
+    await update.message.reply_text(msg, parse_mode="HTML")
+
+
+async def cmd_ceohistory(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Show CEO chat history."""
+    if not is_boss(update.effective_user.id):
+        return
+    
+    results = []
+    if CEO_RESULTS_DIR.exists():
+        for f in sorted(CEO_RESULTS_DIR.glob("*.json"), key=lambda x: x.stat().st_mtime, reverse=True)[:10]:
+            try:
+                data = json.loads(f.read_text())
+                results.append(data)
+            except:
+                pass
+    
+    if not results:
+        await update.message.reply_text("📭 No CEO chat history yet.")
+        return
+    
+    msg = "🤖 <b>CEO Chat History (Last 10)</b>\n\n"
+    for r in results:
+        user_msg = r.get('original_message', '')[:60]
+        ceo_resp = r.get('response', '')[:80]
+        msg += f"🧑 <b>You:</b> {user_msg}...\n"
+        msg += f"🤖 <b>CEO:</b> {ceo_resp}...\n\n"
+    
+    await update.message.reply_text(msg, parse_mode="HTML")
+
+
+async def non_command_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handle non-command messages — forward to CEO."""
+    if not update.message or not update.message.text:
+        return
+    
+    # Only forward from boss
+    if not is_boss(update.effective_user.id):
+        return
+    
+    message = update.message.text.strip()
+    if not message:
+        return
+    
+    task_id = save_ceo_task(update.effective_user.id, update.effective_user.username or "Boss", message)
+    
+    await update.message.reply_text(
+        f"🤖 Message forwarded to CEO. Task: <code>{task_id}</code>\n"
+        f"Check response: <code>/ceocheck</code>",
+        parse_mode="HTML",
+    )
+
+
+# ═══════════════════════════════════════════════════════════════════════
 #  🏢 COMPANY HQ — ADMIN COMMANDS (Boss only: 7837847803)
 # ═══════════════════════════════════════════════════════════════════════
 
@@ -1121,7 +1354,7 @@ def main():
     # Create application
     app = Application.builder().token(token).build()
     
-    # Debug: log every incoming update
+    # Debug: log every incoming update (silent, no replies)
     async def debug_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = update.effective_user
         msg = update.effective_message
@@ -1130,6 +1363,7 @@ def main():
         else:
             logger.info(f"📩 Received update: {update.update_id}")
     
+    # Register debug handler in group=-1 (runs first, doesn't block others)
     app.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, debug_all), group=-1)
 
     # Register command handlers
@@ -1158,6 +1392,13 @@ def main():
     app.add_handler(CommandHandler("runreddit", cmd_run_reddit))
     app.add_handler(CommandHandler("traffic", cmd_traffic))
     app.add_handler(CommandHandler("content", cmd_content))
+
+    # 🤖 CEO Chat Bridge — Talk to the AI CEO
+    app.add_handler(CommandHandler("ceo", cmd_ceo))
+    app.add_handler(CommandHandler("ceocheck", cmd_ceocheck))
+    app.add_handler(CommandHandler("ceostatus", cmd_ceostatus))
+    app.add_handler(CommandHandler("ceohistory", cmd_ceohistory))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, non_command_handler))
 
     # Callback handler for inline buttons
     from telegram.ext import CallbackQueryHandler
