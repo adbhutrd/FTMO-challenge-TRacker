@@ -735,13 +735,14 @@ def generate_page(page_data: dict) -> str:
     <title>{page_data['title']}</title>
     <meta name="description" content="{page_data['description']}">
     <meta name="keywords" content="{page_data['keywords']}">
-    <link rel="canonical" href="https://ftmo-tracker.loca.lt/seo/{page_data['slug']}.html">
+    <link rel="canonical" href="{BASE_URL}/seo/{page_data['slug']}.html">
     {STYLES}
 </head>
 <body>
     {NAV}
     {content}
     {FOOTER}
+    <img src="{TRACKER_URL}?ref=organic&src=seo&page={page_data['slug']}" width="1" height="1" alt="" style="display:none">
 </body>
 </html>"""
     return html
@@ -809,10 +810,10 @@ def generate_sitemap(pages: list) -> str:
         ("/seo/index.html", "weekly", "0.9"),
     ]
     for path, freq, priority in main_pages:
-        lines.append(f"  <url><loc>https://ftmo-tracker.loca.lt{path}</loc><changefreq>{freq}</changefreq><priority>{priority}</priority></url>")
+        lines.append(f"  <url><loc>{BASE_URL}{path}</loc><changefreq>{freq}</changefreq><priority>{priority}</priority></url>")
     
     for p in pages:
-        lines.append(f"  <url><loc>https://ftmo-tracker.loca.lt/seo/{p['slug']}.html</loc><lastmod>{datetime.now().strftime('%Y-%m-%d')}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>")
+        lines.append(f"  <url><loc>{BASE_URL}/seo/{p['slug']}.html</loc><lastmod>{datetime.now().strftime('%Y-%m-%d')}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>")
     
     lines.append("</urlset>")
     return "\n".join(lines)
@@ -820,9 +821,9 @@ def generate_sitemap(pages: list) -> str:
 
 def generate_robots() -> str:
     """Generate robots.txt."""
-    return """User-agent: *
+    return f"""User-agent: *
 Allow: /
-Sitemap: https://ftmo-tracker.loca.lt/seo/sitemap.xml
+Sitemap: {BASE_URL}/seo/sitemap.xml
 """
 
 
