@@ -34,6 +34,7 @@ echo "  ✅ Website files synced"
 echo "[1/3] Starting FTMO Telegram Bot..."
 # Read token from .env file (no hardcoded secrets!)
 source ~/.hermes/.env 2>/dev/null
+export TELEGRAM_BOT_TOKEN
 screen -dmS ftmo-bot bash -c 'cd ~/trading && python3 ftmo_telegram_bot.py'
 sleep 2
 echo "  ✅ FTMO Bot running (screen: ftmo-bot)"
