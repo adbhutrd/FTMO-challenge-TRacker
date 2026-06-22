@@ -14,15 +14,14 @@ Usage:
 """
 
 import json
-import os
 import sys
 import hashlib
 import random
 import string
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Optional, List, Dict
+from typing import List
 
 BASE_DIR = Path.home()
 TRADING_DIR = BASE_DIR / "trading"

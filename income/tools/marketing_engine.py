@@ -18,7 +18,6 @@ import os
 import sys
 import random
 import logging
-import time
 import re
 from datetime import datetime, timedelta
 from pathlib import Path
