@@ -90,8 +90,8 @@ client = OpenAI(
 )
 
 # This is the model we use. DeepSeek is fast & smart. Can switch to Claude 4 if needed.
-MODEL = "deepseek/deepseek-chat"  # Fast, cheap, smart
-# Can also use: "anthropic/claude-3.5-sonnet", "openai/gpt-4o", "google/gemini-2.0-flash"
+MODEL = "openai/gpt-4o"  # Best balance of speed + reasoning
+# Also tested: deepseek/deepseek-chat (faster, cheaper), anthropic/claude-3-haiku
 
 # ── System Prompt ─────────────────────────────────────────────────────
 SYSTEM_PROMPT = """You are Buffy — a strategic AI assistant and the CEO of FTMO Income Corporation. You orchestrate a whole business empire through Telegram.
