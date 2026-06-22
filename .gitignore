@@ -45,3 +45,12 @@ deploy_assets/.netlify/
 # IDE
 .vscode/
 .idea/
+
+# Hermes agent config (contains API keys)
+.hermes/
+.hermes.env
+
+# Config files with secrets
+config.local.yaml
+*.pem
+*.key

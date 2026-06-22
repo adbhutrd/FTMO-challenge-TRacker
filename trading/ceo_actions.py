@@ -52,8 +52,11 @@ except ImportError:
 def notify_boss(message: str):
     """Send a notification to the boss on Telegram."""
     import subprocess
-    token = "8340892430:AAHLG7DuM7W5EEcpuXeILtKXiZcY9lrh4zw"
-    chat_id = "7837847803"
+    token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    if not token:
+        logger.warning("⚠️ TELEGRAM_BOT_TOKEN not set. Cannot notify boss.")
+        return False
+    chat_id = os.environ.get("CEO_CHAT_ID", "7837847803")
     import urllib.parse
     text = urllib.parse.quote(message[:4000])
     try:
