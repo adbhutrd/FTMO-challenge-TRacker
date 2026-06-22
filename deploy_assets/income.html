@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Security Services — Enish Shah | MSc Cyber Security</title>
+<meta name="description" content="Professional penetration testing and security audit services. Web app, API, and infrastructure security assessments.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0b0b12;
+  --card: #12121c;
+  --card-hover: #1a1a28;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --text: #eeeef5;
+  --text-muted: #8888a8;
+  --accent: #06b6d4;
+  --accent-dim: rgba(6,182,212,0.1);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.1);
+  --purple: #a78bfa;
+  --purple-dim: rgba(167,139,250,0.1);
+  --gold: #f59e0b;
+  --red: #ef4444;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse at 0% 0%, rgba(6,182,212,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, rgba(167,139,250,0.04) 0%, transparent 50%);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+/* Nav */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  background: rgba(11,11,18,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 16px 0;
+}
+
+nav .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.logo span { color: var(--accent); }
+
+.nav-links {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.nav-links a {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: #fff; }
+
+/* Hero */
+.hero {
+  padding: 140px 0 80px;
+  text-align: center;
+  position: relative;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px;
+  border-radius: 100px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(6,182,212,0.2);
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.hero .gradient-text {
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  font-size: 1.125rem;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto 36px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #0891b2);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(6,182,212,0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(6,182,212,0.4);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn-outline:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+
+/* Services */
+.section { padding: 80px 0; }
+
+.section-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.section-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.section-header p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.service-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.service-card:hover {
+  border-color: var(--border-hover);
+  background: var(--card-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.service-card .icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+}
+
+.service-card .icon.cyan { background: var(--accent-dim); }
+.service-card .icon.purple { background: var(--purple-dim); }
+.service-card .icon.green { background: var(--green-dim); }
+
+.service-card h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.service-card .price {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Inter', monospace;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 4px 12px;
+  background: var(--accent-dim);
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.service-card p {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+
+.service-card ul {
+  list-style: none;
+}
+
+.service-card ul li {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  padding: 5px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.service-card ul li::before {
+  content: '→';
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Stats */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 60px 0;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 24px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: all 0.3s;
+}
+
+.stat-item:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+}
+
+.stat-item .num {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-item .label {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* Contact section */
+.contact-section {
+  text-align: center;
+  padding: 80px 0;
+}
+
+.contact-card {
+  max-width: 500px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, rgba(6,182,212,0.05), rgba(167,139,250,0.03));
+  border: 1px solid rgba(6,182,212,0.1);
+  border-radius: 20px;
+  padding: 48px 36px;
+}
+
+.contact-card h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.contact-card p {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  margin-bottom: 28px;
+}
+
+.contact-card .email-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(6,182,212,0.15);
+  transition: all 0.3s;
+}
+
+.contact-card .email-link:hover {
+  background: rgba(6,182,212,0.15);
+  transform: translateY(-2px);
+}
+
+.contact-card .response-time {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 40px 20px;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* Newsletter signup */
+.newsletter-mini {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.newsletter-mini p {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.newsletter-mini form {
+  display: flex;
+  gap: 8px;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.newsletter-mini input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(0,0,0,0.3);
+  color: var(--text);
+  font-size: 0.8125rem;
+  outline: none;
+  font-family: inherit;
+}
+
+.newsletter-mini input:focus {
+  border-color: var(--accent);
+}
+
+.newsletter-mini .btn-sm {
+  padding: 10px 16px;
+  font-size: 0.8125rem;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in { animation: fadeInUp 0.5s ease forwards; }
+.delay-1 { animation-delay: 0.1s; opacity: 0; }
+.delay-2 { animation-delay: 0.2s; opacity: 0; }
+.delay-3 { animation-delay: 0.3s; opacity: 0; }
+.delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hero { padding: 100px 0 40px; }
+  .services-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="logo">Enish<span>.</span>Shah</div>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#contact">Contact</a>
+      <a href="index.html">FTMO Tracker</a>
+      <a href="portfolio.html">Portfolio</a>
+      <a href="mailto:enishshah2@gmail.com" class="btn btn-primary" style="padding:8px 20px;font-size:0.8125rem">✉️ Hire Me</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge animate-in">🛡️ MSc Cyber Security (Distinction)</div>
+    <h1 class="animate-in delay-1">
+      Professional<br>
+      <span class="gradient-text">Security Testing</span>
+    </h1>
+    <p class="animate-in delay-2">
+      Web application penetration testing, API security audits, and vulnerability research. 
+      I find what others miss and deliver clear, actionable reports.
+    </p>
+    <div class="hero-actions animate-in delay-3">
+      <a href="mailto:enishshah2@gmail.com" class="btn btn-primary">✉️ Book a Security Audit</a>
+      <a href="#services" class="btn btn-outline">View Services ↓</a>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<div class="container">
+  <div class="stats-row">
+    <div class="stat-item animate-in delay-1">
+      <div class="num">100+</div>
+      <div class="label">Subdomains Mapped</div>
+    </div>
+    <div class="stat-item animate-in delay-2">
+      <div class="num">5+</div>
+      <div class="label">Bug Bounty Platforms</div>
+    </div>
+    <div class="stat-item animate-in delay-3">
+      <div class="num">3</div>
+      <div class="label">Day Report Turnaround</div>
+    </div>
+    <div class="stat-item animate-in delay-4">
+      <div class="num">MSc</div>
+      <div class="label">Cyber Security (Distinction)</div>
+    </div>
+  </div>
+</div>
+
+<!-- Services -->
+<section class="section" id="services">
+  <div class="container">
+    <div class="section-header animate-in">
+      <h2>Services & Pricing</h2>
+      <p>Fixed-price security assessments. Clear scope. Actionable reports.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card animate-in delay-1">
+        <div class="icon cyan">🔍</div>
+        <h3>Web App Pentest</h3>
+        <div class="price">from $500</div>
+        <p>Comprehensive OWASP Top 10 assessment — XSS, SQLi, CSRF, SSRF, auth bypasses, and business logic flaws.</p>
+        <ul>
+          <li>Full OWASP Top 10 coverage</li>
+          <li>Manual + automated testing</li>
+          <li>Executive & technical report</li>
+          <li>Remediation retest included</li>
+        </ul>
+      </div>
+      <div class="service-card animate-in delay-2">
+        <div class="icon purple">🔌</div>
+        <h3>API Security Audit</h3>
+        <div class="price">from $750</div>
+        <p>Deep security assessment of REST, GraphQL, and WebSocket APIs — auth, injection, rate limiting, data exposure.</p>
+        <ul>
+          <li>REST / GraphQL / WebSocket</li>
+          <li>Authorization & IDOR testing</li>
+          <li>Rate limiting analysis</li>
+          <li>Mass assignment checks</li>
+        </ul>
+      </div>
+      <div class="service-card animate-in delay-3">
+        <div class="icon green">🌐</div>
+        <h3>Recon & Attack Surface</h3>
+        <div class="price">from $400</div>
+        <p>Map your entire internet-facing footprint: subdomains, exposed services, cloud assets, and takeover risks.</p>
+        <ul>
+          <li>Subdomain enumeration (12+ sources)</li>
+          <li>Port & service discovery</li>
+          <li>Cloud asset mapping</li>
+          <li>Takeover vulnerability check</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section class="contact-section" id="contact">
+  <div class="container">
+    <div class="contact-card animate-in">
+      <h2>Ready to Secure Your App?</h2>
+      <p>Send me your scope and I'll respond with a fixed-price quote within 2 hours. Most reports delivered in 3 days.</p>
+      <a href="mailto:enishshah2@gmail.com" class="email-link">
+        ✉️ enishshah2@gmail.com
+      </a>
+      <div class="response-time">
+        Available for immediate start · Based in Reading, UK
+      </div>
+
+      <!-- Newsletter signup -->
+      <div class="newsletter-mini">
+        <p>📬 Get weekly security tips & FTMO trading strategies</p>
+        <form id="footerNewsletter">
+          <input type="email" placeholder="your@email.com" required>
+          <button type="submit" class="btn btn-primary btn-sm">Subscribe</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Enish Shah · MSc Cyber Security (Distinction) · Reading, UK</p>
+  <p style="margin-top:4px">
+    <a href="mailto:enishshah2@gmail.com">✉️ Email</a> · 
+    <a href="https://github.com/enishshah2" target="_blank">🐙 GitHub</a> · 
+    <a href="portfolio.html">🛡️ Portfolio</a> · 
+    <a href="index.html">📊 FTMO Tracker</a>
+  </p>
+  <p style="margin-top:4px;color:rgba(136,136,168,0.5);font-size:0.75rem">
+    Professional web application security testing
+  </p>
+</footer>
+
+<script>
+// Newsletter form
+document.getElementById('footerNewsletter').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const input = this.querySelector('input');
+  const email = input.value.trim();
+  if (!email) return;
+
+  // Store locally
+  let subs = [];
+  try { const saved = localStorage.getItem('ftmoNewsletter'); if (saved) subs = JSON.parse(saved); } catch(e){}
+  if (!subs.find(s => s.email === email)) {
+    subs.push({email, date: new Date().toISOString()});
+    try { localStorage.setItem('ftmoNewsletter', JSON.stringify(subs)); } catch(e){}
+  }
+
+  // Send via FormSubmit
+  const fd = new FormData();
+  fd.append('email', email);
+  fd.append('_subject', '📬 Security Services Newsletter');
+  fd.append('_captcha', 'false');
+  fetch('https://formsubmit.co/ajax/enishshah2@gmail.com', { method: 'POST', body: fd }).catch(function(){});
+
+  input.value = '';
+  this.innerHTML = '<p style="color:#22c55e;font-size:14px">✅ Subscribed! Check your inbox.</p>';
+});
+
+// Intersection Observer for scroll animations
+const observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      entry.target.style.animationPlayState = 'running';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.animate-in, .delay-1, .delay-2, .delay-3, .delay-4').forEach(function(el) {
+  el.style.animationPlayState = 'paused';
+  observer.observe(el);
+});
+</script>
+</body>
+</html>

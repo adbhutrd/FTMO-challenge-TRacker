@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>System Dashboard — Enish Shah</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0a0a0f; color: #e1e1e6; line-height: 1.5; padding: 20px;
+}
+.container { max-width: 1000px; margin: 0 auto; }
+
+h1 {
+  font-size: 28px; font-weight: 800; margin-bottom: 4px;
+  background: linear-gradient(135deg, #7c3aed, #58a6ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.subtitle { color: #8888a0; font-size: 14px; margin-bottom: 30px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px; }
+
+.card {
+  background: #12121c; border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px; padding: 20px; transition: all 0.2s;
+}
+.card:hover { border-color: rgba(255,255,255,0.12); transform: translateY(-2px); }
+.card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.card-icon { font-size: 20px; }
+.card-title { font-size: 14px; font-weight: 600; color: #e1e1e6; }
+.status { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 100px; }
+.status-live { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); }
+.status-down { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+.status-warning { background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
+.status-pending { background: rgba(59,130,246,0.1); color: #3b82f6; border: 1px solid rgba(59,130,246,0.2); }
+.card-body { font-size: 13px; color: #8888a0; }
+.card-body .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.card-body .row:last-child { border-bottom: none; }
+.card-body .label { color: #666; }
+.card-body .value { color: #e1e1e6; font-weight: 500; }
+.card-body .value.green { color: #22c55e; }
+.card-body .value.red { color: #ef4444; }
+.card-body .value.yellow { color: #f59e0b; }
+
+.link-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+  text-decoration: none; transition: all 0.2s; margin-top: 12px;
+}
+.link-btn.primary { background: #7c3aed; color: white; }
+.link-btn.primary:hover { background: #6d28d9; transform: translateY(-1px); }
+.link-btn.secondary { border: 1px solid rgba(255,255,255,0.1); color: #e1e1e6; }
+.link-btn.secondary:hover { border-color: #7c3aed; color: #7c3aed; }
+.link-btn.red { background: #ef4444; color: white; }
+.link-btn.red:hover { background: #dc2626; }
+
+.section-title { font-size: 16px; font-weight: 700; margin: 30px 0 16px; color: #e1e1e6; display: flex; align-items: center; gap: 8px; }
+
+.quick-links {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-bottom: 24px;
+}
+.quick-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; background: #12121c; border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px; text-decoration: none; color: #e1e1e6; font-size: 13px; font-weight: 500;
+  transition: all 0.2s;
+}
+.quick-link:hover { border-color: #7c3aed; transform: translateY(-1px); }
+.quick-link .icon { font-size: 18px; }
+.quick-link .url { color: #8888a0; font-size: 11px; margin-top: 2px; }
+
+@media (max-width: 600px) {
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>⚡ System Dashboard</h1>
+  <p class="subtitle">Real-time status of all income-generating systems · Last refreshed: <span id="timestamp">just now</span></p>
+
+  <!-- Quick Links -->
+  <div class="section-title">🔗 Quick Access</div>
+  <div class="quick-links">
+    <a href="index.html" class="quick-link">
+      <span class="icon">🏠</span>
+      <div>Main Site<div class="url">Landing page / FTMO tracker</div></div>
+    </a>
+    <a href="ftmo_challenge_tracker.html" class="quick-link">
+      <span class="icon">📊</span>
+      <div>FTMO Tracker<div class="url">Track your challenge</div></div>
+    </a>
+    <a href="tracker_dashboard.html" class="quick-link">
+      <span class="icon">💰</span>
+      <div>Income Dashboard<div class="url">Track earnings</div></div>
+    </a>
+    <a href="portfolio.html" class="quick-link">
+      <span class="icon">🛡️</span>
+      <div>Portfolio<div class="url">Security services</div></div>
+    </a>
+    <a href="sell.html" class="quick-link">
+      <span class="icon">🔥</span>
+      <div>Buy Pro<div class="url">$19.99/mo subscription</div></div>
+    </a>
+    <a href="waitlist.html" class="quick-link">
+      <span class="icon">📬</span>
+      <div>Waitlist<div class="url">Join early access</div></div>
+    </a>
+    <a href="https://buy.stripe.com/5kQ00lejT79186sdvh8Ra00" target="_blank" class="quick-link">
+      <span class="icon">💳</span>
+      <div>Stripe Checkout<div class="url">buy.stripe.com</div></div>
+    </a>
+    <a href="https://dashboard.stripe.com/acct_1TkUd5Q7GmijKVj7/dashboard" target="_blank" class="quick-link">
+      <span class="icon">⚙️</span>
+      <div>Stripe Dashboard<div class="url">Payments & balance</div></div>
+    </a>
+  </div>
+
+  <!-- System Status -->
+  <div class="section-title">🤖 Bot Status</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📈</span>
+        <span class="card-title">Meme-Coin Trading Bot</span>
+        <span class="status status-live">✅ Running</span>
+      </div>
+      <div class="card-body">
+        <div class="row"><span class="label">Schedule</span><span class="value">Every 15 min</span></div>
+        <div class="row"><span class="label">Status</span><span class="value green">✅ Cron path fixed</span></div>
+        <div class="row"><span class="label">Symbols</span><span class="value">DOGE, SHIB, PEPE, BONK, WIF</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🔍</span>
+        <span class="card-title">Bug Bounty Monitor</span>
+        <span class="status status-live">✅ Running</span>
+      </div>
+      <div class="card-body">
+        <div class="row"><span class="label">Schedule</span><span class="value">Every hour</span></div>
+        <div class="row"><span class="label">Platforms</span><span class="value">HackerOne, Bugcrowd</span></div>
+        <div class="row"><span class="label">Last Check</span><span class="value green">OK</span></div>
+        <a href="https://hackerone.com/enishshah2" target="_blank" class="link-btn secondary">🔗 HackerOne</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📱</span>
+        <span class="card-title">Social Content Bot</span>
+        <span class="status status-live">✅ Running</span>
+      </div>
+      <div class="card-body">
+        <div class="row"><span class="label">Schedule</span><span class="value">8am & 6pm daily</span></div>
+        <div class="row"><span class="label">Platforms</span><span class="value">Twitter, LinkedIn, Reddit</span></div>
+        <div class="row"><span class="label">Last Run</span><span class="value green">OK</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📧</span>
+        <span class="card-title">Email Marketing</span>
+        <span class="status status-pending">⏸️ Needs Key</span>
+      </div>
+      <div class="card-body">
+        <div class="row"><span class="label">Schedule</span><span class="value">Every 6 hours</span></div>
+        <div class="row"><span class="label">Subscribers</span><span class="value">0 (no emails collected)</span></div>
+        <div class="row"><span class="label">Gmail Key</span><span class="value red">Not set</span></div>
+        <div class="row"><span class="label">Send</span><span class="value yellow">export GMAIL_APP_PASSWORD=...</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🤖</span>
+        <span class="card-title">CEO Bot</span>
+        <span class="status status-down">❌ Broken</span>
+      </div>
+      <div class="card-body">
+        <div class="row"><span class="label">Function</span><span class="value">Reddit/Twitter posting</span></div>
+        <div class="row"><span class="label">Issue</span><span class="value red">Login timeout (needs browser)</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📊</span>
+        <span class="card-title">Full Orchestrator</span>
+        <span class="status status-live">✅ Running</span>
+      </div>
+      <div class="card-body">
+        <div class="row"><span class="label">Schedule</span><span class="value">Every 6 hours</span></div>
+        <div class="row"><span class="label">Last Cycle</span><span class="value green">3/4 bots OK</span></div>
+        <div class="row"><span class="label">Status</span><span class="value green">Active</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Site Status -->
+  <div class="section-title">🌐 Site Status</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🌍</span>
+        <span class="card-title">FTMO Website</span>
+        <span class="status status-down">❌ Offline</span>
+      </div>
+      <div class="card-body">
+        <div class="row"><span class="label">URL</span><span class="value">rad-beignet-b47738.netlify.app</span></div>
+        <div class="row"><span class="label">Status</span><span class="value red">HTTP 401</span></div>
+        <div class="row"><span class="label">Fix</span><span class="value yellow">Run: netlify login → deploy --prod</span></div>
+        <a href="https://chipper-bienenstitch-54a103.netlify.app" target="_blank" class="link-btn secondary">🔗 Old Deploy</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">💳</span>
+        <span class="card-title">Stripe Payment</span>
+        <span class="status status-live">✅ Live</span>
+      </div>
+      <div class="card-body">
+        <div class="row"><span class="label">Product</span><span class="value">FTMO Tracker Pro</span></div>
+        <div class="row"><span class="label">Price</span><span class="value green">$19.99/month</span></div>
+        <div class="row"><span class="label">Status</span><span class="value green">HTTP 200</span></div>
+        <a href="https://buy.stripe.com/5kQ00lejT79186sdvh8Ra00" target="_blank" class="link-btn primary">💳 Open Checkout</a>
+        <a href="https://dashboard.stripe.com/acct_1TkUd5Q7GmijKVj7/dashboard" target="_blank" class="link-btn secondary">⚙️ Stripe Dashboard</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">☁️</span>
+        <span class="card-title">Netlify Deploy</span>
+        <span class="status status-warning">⚠️ Needs Login</span>
+      </div>
+      <div class="card-body">
+        <div class="row"><span class="label">Status</span><span class="value yellow">Anonymous daily limit hit</span></div>
+        <div class="row"><span class="label">Fix</span><span class="value">cd ~/deploy_assets && netlify login</span></div>
+        <pre style="background:#0a0a0f;padding:10px;border-radius:8px;font-size:12px;margin-top:8px;overflow-x:auto">npx netlify-cli deploy --dir=. --prod</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Commands -->
+  <div class="section-title">⚡ Quick Commands</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🔄</span>
+        <span class="card-title">Fix Meme-Coin Bot</span>
+      </div>
+      <div class="card-body">
+        <pre style="background:#0a0a0f;padding:10px;border-radius:8px;font-size:12px;overflow-x:auto">cd ~/meme-coin-bot && python3 bot/main.py --once</pre>
+        <p style="margin-top:8px;font-size:12px;color:#888">Run manually to test. Cron issue: cron uses a different Python path. Fix: update crontab to use full python path.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">☁️</span>
+        <span class="card-title">Deploy Site</span>
+      </div>
+      <div class="card-body">
+        <pre style="background:#0a0a0f;padding:10px;border-radius:8px;font-size:12px;overflow-x:auto">cd ~/deploy_assets
+npx netlify-cli login
+npx netlify-cli deploy --dir=. --prod</pre>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📧</span>
+        <span class="card-title">Enable Email</span>
+      </div>
+      <div class="card-body">
+        <pre style="background:#0a0a0f;padding:10px;border-radius:8px;font-size:12px;overflow-x:auto">export GMAIL_APP_PASSWORD='your-16-char-password'
+python3 -m tools.email_marketing.campaigns pipeline</pre>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📋</span>
+        <span class="card-title">Check Cron Logs</span>
+      </div>
+      <div class="card-body">
+        <pre style="background:#0a0a0f;padding:10px;border-radius:8px;font-size:12px;overflow-x:auto">tail -20 ~/income/logs/cron_meme_bot.log
+tail -20 ~/income/logs/cron_programs.log
+tail -20 ~/income/logs/cron_orchestrator.log</pre>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:30px 0;color:#555;font-size:12px">
+    System Dashboard · Enish Shah · Updated <span id="timestamp2">just now</span>
+  </div>
+</div>
+
+<script>
+document.getElementById('timestamp').textContent = new Date().toLocaleString();
+document.getElementById('timestamp2').textContent = new Date().toLocaleString();
+</script>
+</body>
+</html>

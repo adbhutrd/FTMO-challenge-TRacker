@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Income Tracker - Enish Shah</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #0d1117;
+  --card: #161b22;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --green: #2ea043;
+  --green-bg: rgba(46,160,67,0.15);
+  --red: #da3633;
+  --yellow: #d29922;
+  --blue: #58a6ff;
+  --blue-bg: rgba(88,166,255,0.12);
+  --accent: #7c3aed;
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 20px;
+}
+.container { max-width: 1200px; margin: 0 auto; }
+
+/* Header */
+.header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 32px; flex-wrap: wrap; gap: 12px;
+}
+.header h1 {
+  font-size: 28px; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px; margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+  box-shadow: var(--shadow); transition: transform 0.2s;
+}
+.stat-card:hover { transform: translateY(-2px); }
+.stat-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
+.stat-value { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+.stat-sub { font-size: 13px; color: var(--text-muted); }
+
+/* Sections */
+.section {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  margin-bottom: 24px; box-shadow: var(--shadow);
+}
+.section h2 {
+  font-size: 16px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px;
+}
+
+/* Chart */
+.chart-container { position: relative; height: 300px; margin-top: 16px; }
+
+/* Table */
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+thead th {
+  text-align: left; padding: 10px 12px; color: var(--text-muted);
+  font-weight: 600; font-size: 12px; text-transform: uppercase;
+  letter-spacing: 0.5px; border-bottom: 1px solid var(--border);
+}
+tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+/* Source badges */
+.source-badge {
+  display: inline-block; padding: 2px 10px; border-radius: 10px;
+  font-size: 11px; font-weight: 600;
+}
+.source-trading { background: rgba(124,58,237,0.15); color: #7c3aed; }
+.source-bugbounty { background: rgba(88,166,255,0.15); color: #58a6ff; }
+.source-freelance { background: rgba(46,160,67,0.15); color: #2ea043; }
+.source-bot { background: rgba(210,153,34,0.15); color: #d29922; }
+
+.text-green { color: var(--green); }
+.text-red { color: var(--red); }
+
+/* Quick actions */
+.actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 20px; border: 1px solid var(--border);
+  border-radius: 8px; background: var(--card); color: var(--text);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s; text-decoration: none;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+.btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
+.btn-primary:hover { opacity: 0.9; }
+
+/* Form for manual entry */
+.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 12px; }
+input, select {
+  padding: 10px 14px; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-size: 14px; outline: none;
+  width: 100%;
+}
+input:focus, select:focus { border-color: var(--accent); }
+
+@media (max-width: 768px) {
+  .header h1 { font-size: 22px; }
+  .stat-value { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>💰 Income Dashboard</h1>
+    <div id="currentTime" style="color:var(--text-muted);font-size:14px"></div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="actions">
+    <button class="btn" onclick="showAddEarning()">+ Add Earnings</button>
+    <button class="btn" onclick="exportData()">📥 Export</button>
+    <button class="btn" onclick="importData()">📤 Import</button>
+    <button class="btn btn-primary" onclick="window.open('ftmo_challenge_tracker.html','_blank')">📊 FTMO Tracker</button>
+    <a href="../index.html" class="btn">🛡️ Portfolio</a>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card">
+      <div class="stat-label">Total Earned</div>
+      <div class="stat-value" id="totalEarned" style="color:var(--green)">$0.00</div>
+      <div class="stat-sub">All time earnings</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">This Month</div>
+      <div class="stat-value" id="monthEarned" style="color:var(--blue)">$0.00</div>
+      <div class="stat-sub">Current month</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">This Week</div>
+      <div class="stat-value" id="weekEarned" style="color:var(--accent)">$0.00</div>
+      <div class="stat-sub">Last 7 days</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Active Sources</div>
+      <div class="stat-value" id="activeSources">0</div>
+      <div class="stat-sub">Income streams</div>
+    </div>
+  </div>
+
+  <!-- Add Earnings Form (hidden by default) -->
+  <div class="section" id="addEarningForm" style="display:none">
+    <h2>+ Add Earnings</h2>
+    <div class="form-row">
+      <input type="number" id="earnAmount" placeholder="Amount ($)" step="0.01">
+      <select id="earnSource">
+        <option value="trading">Trading (Crypto/FTMO)</option>
+        <option value="bugbounty">Bug Bounty</option>
+        <option value="freelance">Freelance Pentest</option>
+        <option value="bot">Bot Automation</option>
+        <option value="other">Other</option>
+      </select>
+      <input type="text" id="earnDescription" placeholder="Description (e.g. XSS in target.com)">
+      <button class="btn btn-primary" onclick="addEarning()">Add Entry</button>
+      <button class="btn" onclick="document.getElementById('addEarningForm').style.display='none'">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Earnings Over Time Chart -->
+  <div class="section">
+    <h2>📈 Earnings Over Time</h2>
+    <div class="chart-container">
+      <canvas id="earningsChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Income by Source -->
+  <div class="section">
+    <h2>📊 Income by Source</h2>
+    <div class="chart-container" style="height:200px">
+      <canvas id="sourceChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Transaction Log -->
+  <div class="section">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+      <h2 style="margin-bottom:0">📋 Transaction Log</h2>
+      <span id="txCount" style="font-size:13px;color:var(--text-muted)">0 entries</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Source</th>
+            <th>Amount</th>
+            <th>Description</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="txTableBody">
+          <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:30px">No earnings recorded yet. Add your first entry above!</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- Newsletter Signup -->
+  <div class="section" style="background:linear-gradient(135deg, var(--card), rgba(124,58,237,0.05));border-color:var(--accent)">
+    <div style="text-align:center;max-width:480px;margin:0 auto">
+      <h2 style="color:var(--accent);text-transform:none;font-size:17px;margin-bottom:8px">📬 Get Weekly Income Tips & Strategies</h2>
+      <p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">FTMO challenge strategies, bug bounty tips, and early access to new tools — delivered weekly.</p>
+      <form id="dashNewsletter" style="display:flex;gap:10px;max-width:380px;margin:0 auto">
+        <input type="email" id="dashEmail" placeholder="your@email.com" required
+          style="flex:1;padding:12px 16px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:14px;outline:none">
+        <button type="submit" class="btn btn-primary" style="padding:12px 20px;font-size:13px;white-space:nowrap">📬 Subscribe</button>
+      </form>
+      <div id="dashNewsletterSuccess" style="display:none;padding:16px;background:var(--green-bg);border-radius:8px;color:var(--green);font-size:14px">✅ Subscribed! Check your inbox for the welcome email.</div>
+      <p style="font-size:11px;color:var(--text-muted);margin-top:10px">🔒 No spam. Unsubscribe anytime.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ====== STATE ======
+let earnings = [];
+let chart = null;
+let sourceChart = null;
+
+// ====== LOAD / SAVE ======
+function loadEarnings() {
+  try {
+    const saved = localStorage.getItem('incomeTracker');
+    if (saved) earnings = JSON.parse(saved);
+  } catch(e) {}
+}
+
+function saveEarnings() {
+  try {
+    localStorage.setItem('incomeTracker', JSON.stringify(earnings));
+  } catch(e) {}
+}
+
+// ====== EARNINGS CRUD ======
+function addEarning() {
+  const amount = parseFloat(document.getElementById('earnAmount').value);
+  const source = document.getElementById('earnSource').value;
+  const description = document.getElementById('earnDescription').value.trim();
+
+  if (isNaN(amount) || amount <= 0) { alert('Enter a valid amount'); return; }
+
+  earnings.push({
+    id: Date.now(),
+    amount,
+    source,
+    description: description || `${source} earnings`,
+    timestamp: new Date().toISOString()
+  });
+
+  // Clear form
+  document.getElementById('earnAmount').value = '';
+  document.getElementById('earnDescription').value = '';
+  document.getElementById('addEarningForm').style.display = 'none';
+
+  saveEarnings();
+  render();
+}
+
+function deleteEarning(id) {
+  if (!confirm('Delete this entry?')) return;
+  earnings = earnings.filter(e => e.id !== id);
+  saveEarnings();
+  render();
+}
+
+// ====== CALCULATIONS ======
+function calculateStats() {
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const weekStart = new Date(now);
+  weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+
+  let total = 0, monthTotal = 0, weekTotal = 0;
+  const sources = {};
+
+  earnings.forEach(e => {
+    const d = new Date(e.timestamp);
+    total += e.amount;
+    if (d >= monthStart) monthTotal += e.amount;
+    if (d >= weekStart) weekTotal += e.amount;
+
+    if (!sources[e.source]) sources[e.source] = 0;
+    sources[e.source] += e.amount;
+  });
+
+  return { total, monthTotal, weekTotal, sources, count: earnings.length };
+}
+
+// ====== RENDER ======
+function render() {
+  const stats = calculateStats();
+
+  // Stats
+  document.getElementById('totalEarned').textContent = `$${stats.total.toFixed(2)}`;
+  document.getElementById('monthEarned').textContent = `$${stats.monthTotal.toFixed(2)}`;
+  document.getElementById('weekEarned').textContent = `$${stats.weekTotal.toFixed(2)}`;
+  document.getElementById('activeSources').textContent = Object.keys(stats.sources).length;
+  document.getElementById('txCount').textContent = `${stats.count} entries`;
+
+  // Transaction Table
+  const tbody = document.getElementById('txTableBody');
+  if (earnings.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:30px">No earnings recorded yet. Add your first entry above!</td></tr>';
+  } else {
+    const sorted = [...earnings].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    tbody.innerHTML = sorted.slice(0, 50).map(e => `
+      <tr>
+        <td style="font-size:13px;color:var(--text-muted)">${new Date(e.timestamp).toLocaleDateString()}</td>
+        <td><span class="source-badge source-${e.source}">${e.source}</span></td>
+        <td class="text-green" style="font-weight:600">+$${e.amount.toFixed(2)}</td>
+        <td style="color:var(--text-muted);font-size:13px">${e.description}</td>
+        <td><button class="btn" style="padding:2px 8px;font-size:11px" onclick="deleteEarning(${e.id})">✕</button></td>
+      </tr>
+    `).join('');
+  }
+
+  // Charts
+  updateEarningsChart(stats);
+  updateSourceChart(stats);
+}
+
+// ====== CHARTS ======
+function updateEarningsChart(stats) {
+  if (typeof Chart === 'undefined') return;
+  const ctx = document.getElementById('earningsChart').getContext('2d');
+  if (chart) chart.destroy();
+
+  // Aggregate by month
+  const monthly = {};
+  earnings.forEach(e => {
+    const d = new Date(e.timestamp);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    monthly[key] = (monthly[key] || 0) + e.amount;
+  });
+
+  const labels = Object.keys(monthly).sort();
+  const data = labels.map(l => monthly[l]);
+  const cumulative = [];
+  let sum = 0;
+  data.forEach(v => { sum += v; cumulative.push(sum); });
+
+  const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+  gradient.addColorStop(0, 'rgba(46, 160, 67, 0.3)');
+  gradient.addColorStop(1, 'rgba(46, 160, 67, 0)');
+
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Cumulative',
+          data: cumulative,
+          borderColor: '#2ea043',
+          backgroundColor: gradient,
+          fill: true,
+          tension: 0.3,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          borderWidth: 2
+        },
+        {
+          label: 'Monthly',
+          data: data,
+          borderColor: '#7c3aed',
+          backgroundColor: 'rgba(124,58,237,0.1)',
+          borderDash: [4, 3],
+          borderWidth: 1.5,
+          pointRadius: 3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#8b949e', font: { size: 12 } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => `$${ctx.parsed.y.toFixed(2)}`
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#8b949e' }, grid: { color: 'rgba(48,54,61,0.3)' } },
+        y: {
+          ticks: { color: '#8b949e', callback: v => '$' + v.toFixed(0) },
+          grid: { color: 'rgba(48,54,61,0.3)' }
+        }
+      }
+    }
+  });
+}
+
+function updateSourceChart(stats) {
+  if (typeof Chart === 'undefined') return;
+  const ctx = document.getElementById('sourceChart').getContext('2d');
+  if (sourceChart) sourceChart.destroy();
+
+  const labels = Object.keys(stats.sources);
+  const data = Object.values(stats.sources);
+  const colors = ['#7c3aed', '#58a6ff', '#2ea043', '#d29922', '#da3633'];
+
+  sourceChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: colors.slice(0, labels.length),
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: { color: '#8b949e', font: { size: 12 }, padding: 16 }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.label}: $${ctx.parsed.toFixed(2)}`
+          }
+        }
+      }
+    }
+  });
+}
+
+// ====== EXPORT / IMPORT ======
+function exportData() {
+  const data = JSON.stringify(earnings, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `income_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = function(e) {
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        const imported = JSON.parse(ev.target.result);
+        if (Array.isArray(imported)) {
+          earnings = imported;
+          saveEarnings();
+          render();
+          alert(`Imported ${earnings.length} entries!`);
+        } else {
+          alert('Invalid format.');
+        }
+      } catch(e) { alert('Error reading file.'); }
+    };
+    reader.readAsText(e.target.files[0]);
+  };
+  input.click();
+}
+
+function showAddEarning() {
+  document.getElementById('addEarningForm').style.display = 'block';
+  document.getElementById('earnAmount').focus();
+}
+
+// ====== CLOCK ======
+function updateClock() {
+  document.getElementById('currentTime').textContent = 
+    new Date().toLocaleString('en-US', { 
+      weekday: 'short', year: 'numeric', month: 'short', 
+      day: 'numeric', hour: '2-digit', minute: '2-digit' 
+    });
+}
+
+// ====== NEWSLETTER ======
+function initNewsletter() {
+  const form = document.getElementById('dashNewsletter');
+  if (!form) return;
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('dashEmail').value.trim();
+    if (!email) return;
+    let subs = [];
+    try { const saved = localStorage.getItem('ftmoNewsletter'); if (saved) subs = JSON.parse(saved); } catch(e){}
+    if (!subs.find(s => s.email === email)) {
+      subs.push({email, date: new Date().toISOString()});
+      try { localStorage.setItem('ftmoNewsletter', JSON.stringify(subs)); } catch(e){}
+    }
+    const fd = new FormData();
+    fd.append('email', email);
+    fd.append('_subject', '📬 Income Dashboard Newsletter');
+    fd.append('_captcha', 'false');
+    fetch('https://formsubmit.co/ajax/enishshah2@gmail.com', { method: 'POST', body: fd }).catch(function(){});
+    form.style.display = 'none';
+    document.getElementById('dashNewsletterSuccess').style.display = 'block';
+  });
+}
+
+// ====== INIT ======
+function init() {
+  loadEarnings();
+  render();
+  updateClock();
+  setInterval(updateClock, 10000);
+  initNewsletter();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

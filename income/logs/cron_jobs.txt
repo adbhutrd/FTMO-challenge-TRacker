@@ -1,0 +1,21 @@
+# Income Bot System - Managed by orchestrator
+# Last updated: 2026-06-22
+# Fixed: Use venv python path so pandas and other modules are found in cron
+
+# Run meme-coin bot every 15 minutes
+*/15 * * * * cd /home/enishshah2/meme-coin-bot && /home/enishshah2/agentic-aama/.venv/bin/python3 bot/main.py --once >> /home/enishshah2/income/logs/cron_meme_bot.log 2>&1
+
+# Check bug bounty programs every hour
+0 * * * * cd /home/enishshah2/income && /home/enishshah2/agentic-aama/.venv/bin/python3 tools/enhanced_program_bot.py --once >> /home/enishshah2/income/logs/cron_programs.log 2>&1
+
+# Generate social content twice daily
+0 8,18 * * * cd /home/enishshah2/income && /home/enishshah2/agentic-aama/.venv/bin/python3 tools/enhanced_social_bot.py --batch 3 >> /home/enishshah2/income/logs/cron_social.log 2>&1
+
+# Generate daily summary at 9 PM
+0 21 * * * cd /home/enishshah2/income && /home/enishshah2/agentic-aama/.venv/bin/python3 tools/enhanced_email_bot.py --test >> /home/enishshah2/income/logs/cron_daily.log 2>&1
+
+# Full orchestrator cycle every 6 hours
+0 */6 * * * cd /home/enishshah2/income && /home/enishshah2/agentic-aama/.venv/bin/python3 tools/income_orchestrator.py start >> /home/enishshah2/income/logs/cron_orchestrator.log 2>&1
+
+# Email marketing pipeline every 6 hours
+0 */6 * * * cd /home/enishshah2/income && /home/enishshah2/agentic-aama/.venv/bin/python3 -m tools.email_marketing.campaigns pipeline >> /home/enishshah2/income/logs/cron_email_marketing.log 2>&1
