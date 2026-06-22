@@ -28,6 +28,7 @@ import sys
 import io
 import re
 import tempfile
+import subprocess
 import logging
 from datetime import datetime, date
 from pathlib import Path
@@ -933,6 +934,173 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 # ═══════════════════════════════════════════════════════════════════════
+#  🏢 COMPANY HQ — ADMIN COMMANDS (Boss only: 7837847803)
+# ═══════════════════════════════════════════════════════════════════════
+
+BOSS_USER_ID = 7837847803
+
+def is_boss(user_id: int) -> bool:
+    return user_id == BOSS_USER_ID
+
+async def cmd_hq(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Company dashboard."""
+    if not is_boss(update.effective_user.id):
+        await update.message.reply_text("⛔ This command is for the company owner only.")
+        return
+    try:
+        from company_hq import format_dashboard
+        msg = format_dashboard()
+        await update.message.reply_text(msg, parse_mode="HTML")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Error: {e}")
+
+async def cmd_revenue(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Revenue report."""
+    if not is_boss(update.effective_user.id):
+        await update.message.reply_text("⛔ Owner only.")
+        return
+    try:
+        from company_hq import format_revenue
+        msg = format_revenue()
+        await update.message.reply_text(msg, parse_mode="HTML")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Error: {e}")
+
+async def cmd_sysstatus(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """System status."""
+    if not is_boss(update.effective_user.id):
+        await update.message.reply_text("⛔ Owner only.")
+        return
+    try:
+        from company_hq import format_status
+        msg = format_status()
+        await update.message.reply_text(msg, parse_mode="HTML")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Error: {e}")
+
+async def cmd_boss_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """View logs. Usage: /logs <lines>"""
+    if not is_boss(update.effective_user.id):
+        await update.message.reply_text("⛔ Owner only.")
+        return
+    try:
+        from company_hq import get_logs
+        n = int(context.args[0]) if context.args else 30
+        msg = get_logs(n)
+        if len(msg) > 4000:
+            # Send as file if too long
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".log", delete=False) as f:
+                f.write(msg)
+                f.flush()
+                with open(f.name, "rb") as fh:
+                    await update.message.reply_document(document=fh, filename="system_logs.log")
+                os.unlink(f.name)
+        else:
+            await update.message.reply_text(f"<code>{msg[:3500]}</code>", parse_mode="HTML")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Error: {e}")
+
+async def cmd_restart(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Restart all services."""
+    if not is_boss(update.effective_user.id):
+        await update.message.reply_text("⛔ Owner only.")
+        return
+    await update.message.reply_text("🔄 Restarting all services...")
+    try:
+        from company_hq import restart_services
+        result = restart_services()
+        await update.message.reply_text(f"✅ Restart complete:\n<code>{result[:500]}</code>", parse_mode="HTML")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Restart error: {e}")
+
+async def cmd_deploy(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Deploy latest updates."""
+    if not is_boss(update.effective_user.id):
+        await update.message.reply_text("⛔ Owner only.")
+        return
+    await update.message.reply_text("🚀 Deploying updates...")
+    try:
+        result = subprocess.run(["git", "pull"], capture_output=True, text=True, timeout=30, cwd=str(HOME))
+        output = result.stdout + result.stderr
+        subprocess.run(["bash", str(BOT_DIR / "restart_all.sh")], capture_output=True, timeout=30)
+        await update.message.reply_text(f"✅ Deploy complete:\n<code>{output[:500]}</code>", parse_mode="HTML")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Deploy error: {e}")
+
+async def cmd_broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Broadcast message to all bot users."""
+    if not is_boss(update.effective_user.id):
+        await update.message.reply_text("⛔ Owner only.")
+        return
+    if not context.args:
+        await update.message.reply_text("Usage: /broadcast <message>")
+        return
+    message = " ".join(context.args)
+    await update.message.reply_text(f"📢 Broadcasting to all users...")
+    
+    sent = 0
+    errors = 0
+    for user_file in (DATA_DIR).glob("*.json"):
+        try:
+            uid = int(user_file.stem)
+            if uid == update.effective_user.id:
+                continue
+            await context.bot.send_message(chat_id=uid, text=f"📢 <b>Broadcast:</b>\n{message}", parse_mode="HTML")
+            sent += 1
+        except:
+            errors += 1
+    await update.message.reply_text(f"✅ Broadcast sent to {sent} users. Errors: {errors}")
+
+async def cmd_campaigns(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Campaign management."""
+    if not is_boss(update.effective_user.id):
+        await update.message.reply_text("⛔ Owner only.")
+        return
+    msg = (
+        "📢 <b>CAMPAIGNS</b>\n\n"
+        "<b>Active Cron Jobs:</b>\n"
+        "• Marketing engine: every hour\n"
+        "• Reddit posts: Mon/Wed/Fri 9AM, 3PM, 8PM\n"
+        "• Discord posts: Weekdays 10AM, 4PM, 9PM\n"
+        "• Auto-healing: every minute\n\n"
+        "<b>Commands:</b>\n"
+        "<code>/run-reddit</code> — Post to Reddit now\n"
+        "<code>/run-discord</code> — Post to Discord now\n"
+        "<code>/traffic</code> — Traffic engine stats\n"
+        "<code>/logs 50</code> — View logs"
+    )
+    await update.message.reply_text(msg, parse_mode="HTML")
+
+async def cmd_run_reddit(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not is_boss(update.effective_user.id):
+        return
+    await update.message.reply_text("📢 Attempting Reddit post...")
+    try:
+        result = subprocess.run(["python3", "income/tools/marketing_engine.py", "--reddit"], capture_output=True, text=True, timeout=30, cwd=HOME)
+        await update.message.reply_text(f"<code>{result.stdout[-500:]}</code>", parse_mode="HTML")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Error: {e}")
+
+async def cmd_traffic(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not is_boss(update.effective_user.id):
+        return
+    try:
+        result = subprocess.run(["python3", "trading/traffic_engine.py", "--stats"], capture_output=True, text=True, timeout=15, cwd=HOME)
+        await update.message.reply_text(f"<code>{result.stdout[-1000:]}</code>", parse_mode="HTML")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Error: {e}")
+
+async def cmd_content(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not is_boss(update.effective_user.id):
+        return
+    try:
+        result = subprocess.run(["python3", "trading/content_generator.py", "--article"], capture_output=True, text=True, timeout=15, cwd=HOME)
+        await update.message.reply_text(f"<code>{result.stdout[-1000:]}</code>", parse_mode="HTML")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Error: {e}")
+
+
+# ═══════════════════════════════════════════════════════════════════════
 #  MAIN
 # ═══════════════════════════════════════════════════════════════════════
 
@@ -977,6 +1145,19 @@ def main():
     app.add_handler(CommandHandler("reset", cmd_reset))
     app.add_handler(CommandHandler("promote", cmd_promote))
     app.add_handler(CommandHandler("about", cmd_about))
+    
+    # 🏢 Company HQ — Admin commands (boss only)
+    app.add_handler(CommandHandler("hq", cmd_hq))
+    app.add_handler(CommandHandler("revenue", cmd_revenue))
+    app.add_handler(CommandHandler("sysstatus", cmd_sysstatus))
+    app.add_handler(CommandHandler("logs", cmd_boss_logs))
+    app.add_handler(CommandHandler("restart", cmd_restart))
+    app.add_handler(CommandHandler("deploy", cmd_deploy))
+    app.add_handler(CommandHandler("broadcast", cmd_broadcast))
+    app.add_handler(CommandHandler("campaigns", cmd_campaigns))
+    app.add_handler(CommandHandler("runreddit", cmd_run_reddit))
+    app.add_handler(CommandHandler("traffic", cmd_traffic))
+    app.add_handler(CommandHandler("content", cmd_content))
 
     # Callback handler for inline buttons
     from telegram.ext import CallbackQueryHandler
