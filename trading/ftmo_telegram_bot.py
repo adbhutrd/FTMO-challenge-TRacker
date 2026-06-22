@@ -1050,11 +1050,9 @@ async def cmd_ceo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     task_id = save_ceo_task(update.effective_user.id, update.effective_user.username or "Unknown", message)
     
     await update.message.reply_text(
-        f"🤖 <b>Message sent to CEO!</b>\n\n"
-        f"Task ID: <code>{task_id}</code>\n"
-        f"Message: <i>{message[:100]}</i>\n\n"
-        f"The CEO will process your request. Check back with <code>/ceocheck</code> for responses, "
-        f"or I'll notify you when done.",
+        f"🤖 <b>Message sent to Buffy!</b>\n\n"
+        f"<i>{message[:200]}</i>\n\n"
+        f"Give me a moment to think — I'll reply here in a few seconds.",
         parse_mode="HTML",
     )
 
@@ -1160,8 +1158,7 @@ async def non_command_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
     task_id = save_ceo_task(update.effective_user.id, update.effective_user.username or "Boss", message)
     
     await update.message.reply_text(
-        f"🤖 Message forwarded to CEO. Task: <code>{task_id}</code>\n"
-        f"Check response: <code>/ceocheck</code>",
+        f"🤖 Message sent to Buffy! I'll respond in a moment.",
         parse_mode="HTML",
     )
 
@@ -1342,6 +1339,17 @@ def main():
         print("❌ python-telegram-bot not installed.")
         print("   Install: pip3 install python-telegram-bot")
         sys.exit(1)
+
+    # Try loading from .env files if token not in environment
+    if not os.getenv("TELEGRAM_BOT_TOKEN"):
+        for env_path in [HOME / ".hermes" / ".env", HOME / ".env"]:
+            if env_path.exists():
+                for line in env_path.read_text().splitlines():
+                    line = line.strip()
+                    if line.startswith("TELEGRAM_BOT_TOKEN=") and "=" in line:
+                        _, val = line.split("=", 1)
+                        os.environ["TELEGRAM_BOT_TOKEN"] = val
+                        break
 
     token = os.getenv("TELEGRAM_BOT_TOKEN")
     if not token:

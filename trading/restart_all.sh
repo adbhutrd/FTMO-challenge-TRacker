@@ -32,7 +32,9 @@ echo "  ✅ Website files synced"
 
 # ── 1. FTMO Telegram Bot ──
 echo "[1/3] Starting FTMO Telegram Bot..."
-screen -dmS ftmo-bot bash -c 'export TELEGRAM_BOT_TOKEN="8340892430:AAHLG7DuM7W5EEcpuXeILtKXiZcY9lrh4zw" && cd ~/trading && python3 ftmo_telegram_bot.py'
+# Read token from .env file (no hardcoded secrets!)
+source ~/.hermes/.env 2>/dev/null
+screen -dmS ftmo-bot bash -c 'cd ~/trading && python3 ftmo_telegram_bot.py'
 sleep 2
 echo "  ✅ FTMO Bot running (screen: ftmo-bot)"
 
