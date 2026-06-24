@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚡ Command Center — System Control & Monitoring</title>
+<style>
+/* ═══════════════════════════════════
+   ROOT & BASE STYLES
+   ═══════════════════════════════════ */
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121c;
+  --bg-card: #1a1a2e;
+  --bg-hover: #22223a;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --text-primary: #e1e1e6;
+  --text-secondary: #8888a0;
+  --text-dim: #555;
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
+  --green: #22c55e;
+  --green-bg: rgba(34,197,94,0.1);
+  --yellow: #f59e0b;
+  --yellow-bg: rgba(245,158,11,0.1);
+  --red: #ef4444;
+  --red-bg: rgba(239,68,68,0.1);
+  --blue: #3b82f6;
+  --blue-bg: rgba(59,130,246,0.1);
+  --purple: #a78bfa;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'SF Mono', monospace;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+
+/* ═══════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════ */
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ═══════════════════════════════════
+   HEADER
+   ═══════════════════════════════════ */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-logo {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-subtitle {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.last-updated {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-family: 'SF Mono', monospace;
+}
+
+/* ═══════════════════════════════════
+   STATS BAR
+   ═══════════════════════════════════ */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.stat-card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-value.green { background: linear-gradient(135deg, var(--green), #4ade80); -webkit-background-clip: text; background-clip: text; }
+.stat-value.yellow { background: linear-gradient(135deg, var(--yellow), #fbbf24); -webkit-background-clip: text; background-clip: text; }
+.stat-value.red { background: linear-gradient(135deg, var(--red), #f87171); -webkit-background-clip: text; background-clip: text; }
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+/* ═══════════════════════════════════
+   GRID SYSTEM
+   ═══════════════════════════════════ */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+
+@media (max-width: 900px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════
+   PANELS
+   ═══════════════════════════════════ */
+.panel {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.panel:hover { border-color: var(--border-hover); }
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+}
+
+.panel-header:hover { background: rgba(255,255,255,0.02); }
+
+.panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.panel-body {
+  padding: 14px 18px;
+}
+
+/* ═══════════════════════════════════
+   BOT/SERVICE CARDS
+   ═══════════════════════════════════ */
+.bot-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  margin-bottom: 8px;
+  transition: all 0.2s;
+  cursor: default;
+}
+
+.bot-card:hover { border-color: var(--border-hover); background: var(--bg-hover); }
+
+.bot-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  border-radius: 8px;
+  background: var(--bg-card);
+  flex-shrink: 0;
+}
+
+.bot-info { flex: 1; min-width: 0; }
+
+.bot-name {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.bot-detail {
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bot-status {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 100px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.bot-status.running { background: var(--green-bg); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+.bot-status.recent { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(59,130,246,0.2); }
+.bot-status.stale { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(245,158,11,0.2); }
+.bot-status.dead, .bot-status.error { background: var(--red-bg); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+.bot-status.never, .bot-status.unknown { background: rgba(255,255,255,0.03); color: var(--text-dim); border: 1px solid var(--border); }
+.bot-status.ok { background: var(--green-bg); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+.bot-status.warning { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(245,158,11,0.2); }
+
+.bot-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════
+   BUTTONS
+   ═══════════════════════════════════ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(124,58,237,0.05); }
+.btn:active { transform: scale(0.97); }
+
+.btn-accent {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.btn-accent:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: white; }
+
+.btn-green {
+  background: var(--green);
+  color: #0a0a0f;
+  border-color: var(--green);
+}
+
+.btn-green:hover { background: #16a34a; border-color: #16a34a; color: #0a0a0f; }
+
+.btn-red {
+  background: var(--red);
+  color: white;
+  border-color: var(--red);
+}
+
+.btn-red:hover { background: #dc2626; border-color: #dc2626; color: white; }
+
+.btn-icon {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ═══════════════════════════════════
+   LOG VIEWER
+   ═══════════════════════════════════ */
+.log-viewer {
+  background: #06060b;
+  border-radius: var(--radius-sm);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  padding: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  color: #a0a0b0;
+}
+
+.log-viewer .error-line { color: var(--red); }
+.log-viewer .warn-line { color: var(--yellow); }
+.log-viewer .ok-line { color: var(--green); }
+.log-viewer .info-line { color: var(--blue); }
+
+.log-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.log-select {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-family: inherit;
+  flex: 1;
+  min-width: 150px;
+  max-width: 300px;
+}
+
+/* ═══════════════════════════════════
+   PROCESS TABLE
+   ═══════════════════════════════════ */
+.proc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.proc-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+}
+
+.proc-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.proc-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* ═══════════════════════════════════
+   METRICS / EARNINGS
+   ═══════════════════════════════════ */
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.metric-row:last-child { border-bottom: none; }
+
+.metric-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.metric-value {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════
+   ALERTS
+   ═══════════════════════════════════ */
+.alert {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alert-error { background: var(--red-bg); border: 1px solid rgba(239,68,68,0.2); color: var(--red); }
+.alert-warning { background: var(--yellow-bg); border: 1px solid rgba(245,158,11,0.2); color: var(--yellow); }
+.alert-info { background: var(--blue-bg); border: 1px solid rgba(59,130,246,0.2); color: var(--blue); }
+.alert-success { background: var(--green-bg); border: 1px solid rgba(34,197,94,0.2); color: var(--green); }
+
+/* ═══════════════════════════════════
+   TOAST NOTIFICATIONS
+   ═══════════════════════════════════ */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  animation: slideIn 0.3s ease;
+  box-shadow: var(--shadow);
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* ═══════════════════════════════════
+   TABS
+   ═══════════════════════════════════ */
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  padding: 0 18px;
+  overflow-x: auto;
+}
+
+.tab {
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.tab:hover { color: var(--text-primary); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ═══════════════════════════════════
+   LOADING & EMPTY STATES
+   ═══════════════════════════════════ */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-dim);
+}
+
+.loading::after {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-left: 8px;
+  border: 2px solid var(--text-dim);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ═══════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════ */
+@media (max-width: 600px) {
+  .container { padding: 10px; }
+  .header { padding: 12px 16px; }
+  .header-logo { font-size: 20px; }
+  .grid-4 { grid-template-columns: 1fr; }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- ═══ HEADER ═══ -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-logo">⚡ Command Center</div>
+      <div class="header-subtitle">System Control &amp; Unified Monitoring</div>
+    </div>
+    <div class="header-right">
+      <div class="status-indicator">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Online</span>
+      </div>
+      <span class="last-updated" id="lastUpdated">Loading...</span>
+      <button class="btn btn-accent" onclick="refreshAll()">🔄 Refresh</button>
+    </div>
+  </div>
+
+  <!-- ═══ STATS BAR ═══ -->
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-card"><div class="stat-value" id="statBots">...</div><div class="stat-label">Active Bots</div></div>
+    <div class="stat-card"><div class="stat-value" id="statCron">...</div><div class="stat-label">Cron Jobs</div></div>
+    <div class="stat-card"><div class="stat-value" id="statProcs">...</div><div class="stat-label">Processes</div></div>
+    <div class="stat-card"><div class="stat-value" id="statUptime">...</div><div class="stat-label">Uptime</div></div>
+    <div class="stat-card"><div class="stat-value green" id="statRevenue">$0</div><div class="stat-label">Revenue</div></div>
+  </div>
+
+  <!-- ═══ MAIN GRID ═══ -->
+  <div class="grid-2" style="margin-bottom:16px">
+    <!-- BOTS PANEL -->
+    <div class="panel">
+      <div class="panel-header" onclick="togglePanel(this)">
+        <div class="panel-title">🤖 Bots &amp; Services</div>
+        <span class="panel-toggle">▼</span>
+      </div>
+      <div class="panel-body" id="botsPanel">
+        <div class="loading">Loading bots...</div>
+      </div>
+    </div>
+
+    <!-- CRON JOBS PANEL -->
+    <div class="panel">
+      <div class="panel-header" onclick="togglePanel(this)">
+        <div class="panel-title">⏰ Cron Jobs</div>
+        <span class="panel-toggle">▼</span>
+      </div>
+      <div class="panel-body" id="cronPanel">
+        <div class="loading">Loading cron jobs...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TABBED PANEL ═══ -->
+  <div class="panel" style="margin-bottom:16px">
+    <div class="panel-header" onclick="togglePanel(this)">
+      <div class="panel-title">📋 Details &amp; Controls</div>
+      <span class="panel-toggle">▼</span>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(this, 'processes')">🖥️ Processes</button>
+      <button class="tab" onclick="switchTab(this, 'logs')">📄 Log Viewer</button>
+      <button class="tab" onclick="switchTab(this, 'issues')">⚠️ Issues</button>
+      <button class="tab" onclick="switchTab(this, 'actions')">⚡ Quick Actions</button>
+      <button class="tab" onclick="switchTab(this, 'metrics')">📊 Metrics</button>
+    </div>
+    <div class="panel-body">
+      <div class="tab-content active" id="tab-processes"><div class="loading">Loading...</div></div>
+      <div class="tab-content" id="tab-logs">
+        <div class="log-controls">
+          <select class="log-select" id="logSelector" onchange="loadLog()">
+            <option value="">Select a log file...</option>
+          </select>
+          <div style="display:flex;gap:4px">
+            <button class="btn" onclick="loadLog()">📥 Load</button>
+            <button class="btn" onclick="autoScroll=!autoScroll;this.style.color=autoScroll?'var(--green)':'var(--text-secondary)'" title="Auto-scroll">📜</button>
+          </div>
+        </div>
+        <div class="log-viewer" id="logViewer">Select a log file above to view</div>
+      </div>
+      <div class="tab-content" id="tab-issues"><div class="loading">Checking...</div></div>
+      <div class="tab-content" id="tab-actions">
+        <div class="grid-4" id="actionsPanel"></div>
+      </div>
+      <div class="tab-content" id="tab-metrics"><div class="loading">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ ENV / CONFIG PANEL ═══ -->
+  <div class="grid-2" style="margin-bottom:16px">
+    <div class="panel">
+      <div class="panel-header" onclick="togglePanel(this)">
+        <div class="panel-title">🔑 Environment Status</div>
+        <span class="panel-toggle">▼</span>
+      </div>
+      <div class="panel-body" id="envPanel"><div class="loading">Loading...</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header" onclick="togglePanel(this)">
+        <div class="panel-title">📈 Quick Links</div>
+        <span class="panel-toggle">▼</span>
+      </div>
+      <div class="panel-body" id="linksPanel">
+        <div class="grid-4">
+          <a href="https://buy.stripe.com/5kQ00lejT79186sdvh8Ra00" target="_blank" class="btn" style="justify-content:center">💳 Stripe Checkout</a>
+          <a href="https://github.com/adbhutrd/FTMO-challenge-TRacker.git" target="_blank" class="btn" style="justify-content:center">📦 GitHub</a>
+          <a href="/api/status" target="_blank" class="btn" style="justify-content:center">🔌 API Status</a>
+          <a href="tracker_dashboard.html" class="btn" style="justify-content:center">💰 Tracker</a>
+          <a href="ftmo_challenge_tracker.html" class="btn" style="justify-content:center">📊 FTMO</a>
+          <a href="sell.html" class="btn" style="justify-content:center">🔥 Buy Pro</a>
+          <a href="waitlist.html" class="btn" style="justify-content:center">📬 Waitlist</a>
+          <a href="dashboard.html" class="btn" style="justify-content:center">📋 Old Dashboard</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TOAST CONTAINER ═══ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+let autoScroll = true;
+let refreshInterval = null;
+let dataCache = null;
+
+// ═══════════════════════════════════════════
+//  UTILITY
+// ═══════════════════════════════════════════
+function $(id) { return document.getElementById(id); }
+
+function toast(msg, type = 'info') {
+  const t = document.createElement('div');
+  t.className = `toast alert-${type}`;
+  t.textContent = msg;
+  $('toastContainer').appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+function togglePanel(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.panel-toggle');
+  if (body.style.display === 'none') {
+    body.style.display = 'block';
+    toggle.textContent = '▼';
+  } else {
+    body.style.display = 'none';
+    toggle.textContent = '▶';
+  }
+}
+
+function switchTab(tab, name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  $(`tab-${name}`).classList.add('active');
+}
+
+function statusClass(status) {
+  const map = { running: 'running', ok: 'ok', recent: 'recent', stale: 'stale', dead: 'dead', error: 'error', warning: 'warning', never: 'never', unknown: 'unknown' };
+  return map[status] || 'unknown';
+}
+
+function statusLabel(status) {
+  const map = { running: '✅ Running', ok: '✅ OK', recent: '🔄 Recent', stale: '⏸️ Stale', dead: '❌ Dead', error: '❌ Error', warning: '⚠️ Warning', never: '⚪ Never', unknown: '❓ Unknown' };
+  return map[status] || status;
+}
+
+function timeAgo(mins) {
+  if (mins === undefined || mins === null) return '?';
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return `${h}h ${m}m ago`;
+}
+
+// ═══════════════════════════════════════════
+//  API
+// ═══════════════════════════════════════════
+async function api(path, method = 'GET', body = null) {
+  const opts = { method, headers: {} };
+  if (body) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
+  const resp = await fetch(path, opts);
+  return resp.json();
+}
+
+async function performAction(action, target) {
+  const btn = document.querySelector(`[data-action="${action}"][data-target="${target}"]`);
+  if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
+  
+  try {
+    const result = await api('/api/action', 'POST', { action, target });
+    toast(result.message || result.status, result.status === 'ok' ? 'success' : 'error');
+  } catch (e) {
+    toast(`Action failed: ${e.message}`, 'error');
+  }
+  
+  if (btn) { btn.disabled = false; btn.textContent = '▶ Run'; }
+  setTimeout(refreshAll, 1000);
+}
+
+// ═══════════════════════════════════════════
+//  REFRESH ALL
+// ═══════════════════════════════════════════
+async function refreshAll() {
+  try {
+    const data = await api('/api/status');
+    dataCache = data;
+    renderStats(data);
+    renderBots(data);
+    renderCron(data);
+    renderProcesses(data);
+    renderIssues(data);
+    renderActions(data);
+    renderMetrics(data);
+    renderEnv(data);
+    renderLogSelector(data);
+    $('lastUpdated').textContent = new Date().toLocaleTimeString();
+  } catch (e) {
+    $('statusText').textContent = 'Disconnected';
+    $('statusDot').style.background = 'var(--red)';
+    toast(`Connection error: ${e.message}`, 'error');
+  }
+}
+
+// ═══════════════════════════════════════════
+//  RENDER: STATS BAR
+// ═══════════════════════════════════════════
+function renderStats(data) {
+  const bots = (data.processes || []).length;
+  const cron = (data.cron_jobs || []).length;
+  const procs = (data.processes || []).length;
+  
+  $('statBots').textContent = bots;
+  $('statCron').textContent = cron;
+  $('statProcs').textContent = procs;
+  
+  const uptime = data.system?.uptime || '';
+  $('statUptime').textContent = uptime.length > 30 ? uptime.substring(0, 30) : (uptime || '?');
+  
+  const revenue = data.metrics?.revenue?.total || 0;
+  $('statRevenue').textContent = `$${revenue}`;
+}
+
+// ═══════════════════════════════════════════
+//  RENDER: BOTS
+// ═══════════════════════════════════════════
+function renderBots(data) {
+  const procs = data.processes || [];
+  if (!procs.length) {
+    $('botsPanel').innerHTML = '<div class="alert alert-info">No bots currently running</div>';
+    return;
+  }
+  
+  let html = '';
+  for (const p of procs) {
+    html += `
+      <div class="bot-card">
+        <div class="bot-icon">${p.icon || '⚙️'}</div>
+        <div class="bot-info">
+          <div class="bot-name">${p.name}</div>
+          <div class="bot-detail">PID ${p.pid} · CPU ${p.cpu}% · MEM ${p.mem}%</div>
+        </div>
+        <span class="bot-status running">✅ Active</span>
+        <div class="bot-actions">
+          <button class="btn btn-icon" onclick="performAction('restart','${p.name.toLowerCase().includes('ftmo')?'ftmo-bot':p.name.toLowerCase().includes('ceo')?'ceo':'service'}')" title="Restart">🔄</button>
+        </div>
+      </div>`;
+  }
+  $('botsPanel').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════
+//  RENDER: CRON
+// ═══════════════════════════════════════════
+function renderCron(data) {
+  const jobs = data.cron_jobs || [];
+  if (!jobs.length) {
+    $('cronPanel').innerHTML = '<div class="alert alert-info">No cron jobs configured</div>';
+    return;
+  }
+  
+  let html = '';
+  for (const j of jobs) {
+    html += `
+      <div class="bot-card">
+        <div class="bot-icon">${j.icon || '⏰'}</div>
+        <div class="bot-info">
+          <div class="bot-name">${j.name}</div>
+          <div class="bot-detail">${j.schedule}</div>
+        </div>
+        <span class="bot-status ${statusClass(j.status)}">${statusLabel(j.status)}</span>
+        <div class="bot-actions">
+          <button class="btn btn-icon" onclick="loadLogByName('${j.log}')" title="View log">📄</button>
+          <button class="btn btn-icon" onclick="performAction('run','${j.name.toLowerCase().includes('meme')?'meme-bot':j.name.toLowerCase().includes('bounty')||j.name.toLowerCase().includes('program')?'program-monitor':j.name.toLowerCase().includes('social')?'social':'guardian'}')" title="Run now">▶</button>
+        </div>
+      </div>`;
+  }
+  $('cronPanel').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════
+//  RENDER: PROCESSES
+// ═══════════════════════════════════════════
+function renderProcesses(data) {
+  const procs = data.processes || [];
+  if (!procs.length) {
+    $('tab-processes').innerHTML = '<div class="alert alert-info">No processes running</div>';
+    return;
+  }
+  
+  let html = '<table class="proc-table"><thead><tr><th>PID</th><th>Name</th><th>CPU</th><th>MEM</th><th>Command</th></tr></thead><tbody>';
+  for (const p of procs) {
+    html += `<tr>
+      <td style="color:var(--text-dim);font-family:monospace">${p.pid}</td>
+      <td><strong>${p.icon} ${p.name}</strong></td>
+      <td>${p.cpu}%</td>
+      <td>${p.mem}%</td>
+      <td style="color:var(--text-dim);font-size:11px;font-family:monospace;max-width:300px;overflow:hidden;text-overflow:ellipsis">${p.cmd.substring(0, 60)}</td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  $('tab-processes').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════
+//  RENDER: ISSUES
+// ═══════════════════════════════════════════
+function renderIssues(data) {
+  const logs = data.logs || [];
+  const issues = [];
+  
+  // Check for error logs
+  for (const log of logs) {
+    if (log.status === 'error') {
+      issues.push({ type: 'error', msg: `Error in ${log.name}: ${log.last_lines.substring(0, 80)}` });
+    } else if (log.status === 'warning') {
+      issues.push({ type: 'warning', msg: `Warning in ${log.name}: ${log.last_lines.substring(0, 80)}` });
+    } else if (log.status === 'stale' && !log.name.includes('guardian') && !log.name.includes('email') && !log.name.includes('marketing') && !log.name.includes('traffic') && !log.name.includes('seo')) {
+      issues.push({ type: 'warning', msg: `Stale log: ${log.name} — ${log.age_hr} old` });
+    }
+  }
+  
+  // Known issues
+  const known = [
+    { type: 'warning', msg: '📧 GMAIL_APP_PASSWORD not set — emails are queued but not sending' },
+    { type: 'warning', msg: '🔴 Reddit API credentials not configured — Reddit marketing disabled' },
+    { type: 'warning', msg: '🤖 LinkedIn poster broken — "Start post button" selector outdated' },
+    { type: 'error', msg: '🐍 Traffic engine broken — ModuleNotFoundError: no module named "income"' },
+    { type: 'error', msg: '🐍 CEO processor missing "openai" module — needs pip install' },
+    { type: 'info', msg: '📦 Git not pushed to GitHub — needs "gh auth login"' },
+    { type: 'info', msg: '☁️ Netlify not deployed — needs "netlify login && deploy --prod"' },
+  ];
+  
+  const allIssues = [...issues, ...known].slice(0, 15);
+  
+  if (!allIssues.length) {
+    $('tab-issues').innerHTML = '<div class="alert alert-success">✅ No issues detected</div>';
+    return;
+  }
+  
+  let html = '';
+  for (const iss of allIssues) {
+    html += `<div class="alert alert-${iss.type === 'error' ? 'error' : iss.type === 'warning' ? 'warning' : 'info'}">${iss.msg}</div>`;
+  }
+  $('tab-issues').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════
+//  RENDER: ACTIONS
+// ═══════════════════════════════════════════
+function renderActions(data) {
+  const actions = [
+    { label: 'Run Meme Bot', action: 'run', target: 'meme-bot', icon: '📈', desc: 'Run one cycle of meme-coin analysis' },
+    { label: 'Scan Bug Bounty', action: 'run', target: 'program-monitor', icon: '🔍', desc: 'Check for new programs/scope changes' },
+    { label: 'Generate Social', action: 'run', target: 'social', icon: '📱', desc: 'Generate 3 social media posts' },
+    { label: 'Run Guardian', action: 'run', target: 'guardian', icon: '🛡️', desc: 'Full system health check & auto-heal' },
+    { label: 'Restart FTMO Bot', action: 'restart', target: 'ftmo-bot', icon: '📊', desc: 'Restart Telegram bot' },
+    { label: 'Restart CEO AI', action: 'restart', target: 'ceo', icon: '🤖', desc: 'Restart AI processor' },
+  ];
+  
+  let html = '';
+  for (const a of actions) {
+    html += `
+      <div class="bot-card" style="flex-direction:column;align-items:stretch;text-align:center;padding:14px">
+        <div style="font-size:28px;margin-bottom:6px">${a.icon}</div>
+        <div class="bot-name" style="margin-bottom:4px">${a.label}</div>
+        <div class="bot-detail" style="margin-bottom:10px">${a.desc}</div>
+        <button class="btn btn-accent" style="justify-content:center" data-action="${a.action}" data-target="${a.target}" onclick="performAction('${a.action}','${a.target}')">▶ Run</button>
+      </div>`;
+  }
+  $('actionsPanel').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════
+//  RENDER: METRICS
+// ═══════════════════════════════════════════
+function renderMetrics(data) {
+  const m = data.metrics || {};
+  const bots = m.bots || {};
+  
+  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">';
+  
+  html += `
+    <div class="panel" style="border-color:var(--border)">
+      <div class="panel-header"><div class="panel-title">💰 Revenue</div></div>
+      <div class="panel-body">
+        <div class="metric-row"><span class="metric-label">Total</span><span class="metric-value green">$${(m.revenue?.total || 0).toFixed(2)}</span></div>
+        <div class="metric-row"><span class="metric-label">Monthly</span><span class="metric-value">$${(m.revenue?.monthly || 0).toFixed(2)}</span></div>
+      </div>
+    </div>`;
+  
+  // Meme coin
+  const mc = bots.meme_coin || {};
+  html += `
+    <div class="panel" style="border-color:var(--border)">
+      <div class="panel-header"><div class="panel-title">📈 Meme Bot</div></div>
+      <div class="panel-body">
+        <div class="metric-row"><span class="metric-label">Balance</span><span class="metric-value">$${(mc.balance || 100).toFixed(2)}</span></div>
+        <div class="metric-row"><span class="metric-label">Open Positions</span><span class="metric-value">${mc.open_positions || 0}</span></div>
+        <div class="metric-row"><span class="metric-label">P&L</span><span class="metric-value ${(mc.pnl || 0) >= 0 ? 'green' : 'red'}">${(mc.pnl || 0) >= 0 ? '+' : ''}$${(mc.pnl || 0).toFixed(2)}</span></div>
+      </div>
+    </div>`;
+  
+  // Bug bounty
+  const bb = bots.bug_bounty || {};
+  html += `
+    <div class="panel" style="border-color:var(--border)">
+      <div class="panel-header"><div class="panel-title">🔍 Bug Bounty</div></div>
+      <div class="panel-body">
+        <div class="metric-row"><span class="metric-label">Programs Tracked</span><span class="metric-value">${bb.programs_tracked || 0}</span></div>
+        <div class="metric-row"><span class="metric-label">Scans Today</span><span class="metric-value">~24</span></div>
+      </div>
+    </div>`;
+  
+  // SEO
+  const seo = bots.seo || {};
+  html += `
+    <div class="panel" style="border-color:var(--border)">
+      <div class="panel-header"><div class="panel-title">🔎 SEO Content</div></div>
+      <div class="panel-body">
+        <div class="metric-row"><span class="metric-label">Pages Generated</span><span class="metric-value">${seo.pages_generated || 0}</span></div>
+      </div>
+    </div>`;
+  
+  // Social
+  const soc = bots.social || {};
+  html += `
+    <div class="panel" style="border-color:var(--border)">
+      <div class="panel-header"><div class="panel-title">📱 Social</div></div>
+      <div class="panel-body">
+        <div class="metric-row"><span class="metric-label">Posts Generated</span><span class="metric-value">${soc.posts_generated || 0}</span></div>
+      </div>
+    </div>`;
+  
+  // Content
+  const cont = bots.content || {};
+  html += `
+    <div class="panel" style="border-color:var(--border)">
+      <div class="panel-header"><div class="panel-title">✍️ Content</div></div>
+      <div class="panel-body">
+        <div class="metric-row"><span class="metric-label">Articles Generated</span><span class="metric-value">${cont.articles_generated || 0}</span></div>
+      </div>
+    </div>`;
+  
+  html += '</div>';
+  
+  // Projects
+  const projects = m.projects || [];
+  if (projects.length) {
+    html += '<div style="margin-top:12px"><strong style="font-size:13px;color:var(--text-secondary)">📋 Projects</strong></div><div style="margin-top:8px">';
+    for (const p of projects) {
+      html += `<div class="metric-row"><span class="metric-label">${p.name}</span><span class="metric-value" style="font-size:12px">${p.status} · ${p.price || ''}</span></div>`;
+    }
+    html += '</div>';
+  }
+  
+  $('tab-metrics').innerHTML = html || '<div class="alert alert-info">No metrics available yet</div>';
+}
+
+// ═══════════════════════════════════════════
+//  RENDER: ENV STATUS
+// ═══════════════════════════════════════════
+function renderEnv(data) {
+  // Check known env vars from the action endpoint
+  api('/api/action', 'POST', { action: 'check-env' }).then(result => {
+    const env = result.env || {};
+    let html = '';
+    const vars = [
+      { key: 'GMAIL_APP_PASSWORD', label: 'Gmail Password', desc: 'Required for email sending' },
+      { key: 'TELEGRAM_BOT_TOKEN', label: 'Telegram Token', desc: 'Required for Telegram bot' },
+      { key: 'CEO_CHAT_ID', label: 'CEO Chat ID', desc: 'Required for CEO notifications' },
+      { key: 'OPENROUTER_API_KEY', label: 'OpenRouter Key', desc: 'Required for CEO AI' },
+      { key: 'STRIPE_API_KEY', label: 'Stripe Key', desc: 'Required for payments' },
+      { key: 'GEMINI_API_KEY', label: 'Gemini Key', desc: 'Free AI API' },
+    ];
+    
+    for (const v of vars) {
+      const set = env[v.key];
+      html += `
+        <div class="metric-row">
+          <span class="metric-label">${v.label}</span>
+          <span>
+            <span class="bot-status ${set ? 'ok' : 'error'}" style="font-size:10px">${set ? '✅ Set' : '❌ Missing'}</span>
+            <span style="font-size:11px;color:var(--text-dim);margin-left:6px">${v.desc}</span>
+          </span>
+        </div>`;
+    }
+    $('envPanel').innerHTML = html;
+  }).catch(() => {
+    $('envPanel').innerHTML = '<div class="alert alert-info">Environment check unavailable</div>';
+  });
+}
+
+// ═══════════════════════════════════════════
+//  RENDER: LOG SELECTOR
+// ═══════════════════════════════════════════
+function renderLogSelector(data) {
+  const logs = data.logs || [];
+  const sel = $('logSelector');
+  const currentVal = sel.value;
+  sel.innerHTML = '<option value="">Select a log file...</option>';
+  for (const log of logs) {
+    const opt = document.createElement('option');
+    opt.value = log.name;
+    opt.textContent = `${log.name} (${log.size_hr}, ${log.age_hr})`;
+    sel.appendChild(opt);
+  }
+  if (currentVal) sel.value = currentVal;
+}
+
+function loadLogByName(name) {
+  if (name) {
+    const sel = $('logSelector');
+    for (const opt of sel.options) {
+      if (opt.value === name) { sel.value = name; break; }
+    }
+  }
+  loadLog();
+}
+
+async function loadLog() {
+  const name = $('logSelector').value;
+  if (!name) { $('logViewer').textContent = 'Select a log file above to view'; return; }
+  
+  try {
+    $('logViewer').textContent = 'Loading...';
+    const data = await api(`/api/logs?name=${encodeURIComponent(name)}&lines=50`);
+    if (data.error) { $('logViewer').textContent = `Error: ${data.error}`; return; }
+    
+    const viewer = $('logViewer');
+    viewer.innerHTML = '';
+    
+    const lines = data.content.split('\n');
+    for (const line of lines) {
+      const div = document.createElement('div');
+      let text = line;
+      let cls = '';
+      if (/error|❌|failed|traceback|exception/i.test(text)) cls = 'error-line';
+      else if (/warn|⚠️|not set|skipping/i.test(text)) cls = 'warn-line';
+      else if (/ok|✅|success|completed/i.test(text)) cls = 'ok-line';
+      else if (/info|ℹ️|running|started/i.test(text)) cls = 'info-line';
+      div.className = cls;
+      div.textContent = text;
+      viewer.appendChild(div);
+    }
+    
+    if (autoScroll) viewer.scrollTop = viewer.scrollHeight;
+  } catch (e) {
+    $('logViewer').textContent = `Error: ${e.message}`;
+  }
+}
+
+// ═══════════════════════════════════════════
+//  AUTO-REFRESH
+// ═══════════════════════════════════════════
+function startAutoRefresh() {
+  refreshAll();
+  if (refreshInterval) clearInterval(refreshInterval);
+  refreshInterval = setInterval(refreshAll, 10000);
+}
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', startAutoRefresh);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automation Pro — Done-For-You Trading & Bot Solutions</title>
+<style>
+:root {
+  --bg: #0a0a0f; --bg2: #12121c; --bg3: #1a1a2e;
+  --border: rgba(255,255,255,0.08); --border-hover: rgba(124,58,237,0.3);
+  --text: #e1e1e6; --text2: #8888a0; --text3: #555;
+  --accent: #7c3aed; --accent2: #a78bfa;
+  --green: #22c55e; --green-bg: rgba(34,197,94,0.1);
+  --yellow: #f59e0b; --blue: #3b82f6;
+  --red: #ef4444; --orange: #f97316;
+  --radius: 16px; --radius-sm: 10px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.6;
+  min-height: 100vh;
+}
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+/* ═══ HEADER ═══ */
+.header {
+  padding: 16px 0; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 12px;
+}
+.header-logo { font-size: 22px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.header nav { display: flex; gap: 16px; }
+.header nav a { color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+.header nav a:hover { color: var(--accent); }
+
+/* ═══ HERO ═══ */
+.hero {
+  text-align: center; padding: 80px 20px 60px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.12) 0%, transparent 60%);
+}
+.hero h1 { font-size: 48px; font-weight: 800; margin-bottom: 16px; line-height: 1.15; }
+.hero h1 span { background: linear-gradient(135deg, var(--accent), var(--blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p { font-size: 18px; color: var(--text2); max-width: 650px; margin: 0 auto 32px; }
+.hero-badge {
+  display: inline-block; padding: 8px 18px; border-radius: 20px;
+  background: var(--green-bg); color: var(--green); font-size: 14px; font-weight: 600;
+  margin-bottom: 20px; border: 1px solid rgba(34,197,94,0.2);
+}
+.hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ═══ BUTTONS ═══ */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 28px; border-radius: var(--radius-sm);
+  font-size: 15px; font-weight: 600; text-decoration: none;
+  transition: all 0.2s; cursor: pointer; border: none; font-family: inherit;
+}
+.btn-primary { background: linear-gradient(135deg, var(--accent), #6d28d9); color: white; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,58,237,0.3); }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+.btn-green { background: var(--green); color: #0a0a0f; }
+.btn-green:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(34,197,94,0.3); }
+.btn-orange { background: var(--orange); color: #0a0a0f; }
+.btn-orange:hover { transform: translateY(-2px); }
+.btn-sm { padding: 10px 20px; font-size: 13px; }
+
+/* ═══ SERVICES ═══ */
+.section { padding: 70px 0; }
+.section-title { text-align: center; font-size: 32px; font-weight: 800; margin-bottom: 12px; }
+.section-subtitle { text-align: center; color: var(--text2); margin-bottom: 50px; font-size: 16px; }
+
+.service-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
+}
+.service-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 30px; transition: all 0.3s; position: relative; overflow: hidden;
+}
+.service-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(124,58,237,0.1); }
+.service-card .icon { font-size: 36px; margin-bottom: 16px; }
+.service-card h3 { font-size: 18px; margin-bottom: 10px; }
+.service-card p { color: var(--text2); font-size: 14px; margin-bottom: 16px; }
+.service-card .price-tag {
+  display: inline-block; padding: 6px 14px; border-radius: 20px;
+  background: rgba(124,58,237,0.1); color: var(--accent);
+  font-size: 14px; font-weight: 700; margin-bottom: 16px;
+}
+.service-card ul { list-style: none; margin-bottom: 20px; }
+.service-card ul li { padding: 6px 0; font-size: 13px; color: var(--text2); }
+.service-card ul li::before { content: '✅ '; }
+
+/* ═══ PAYMENT METHODS ═══ */
+.payment-section {
+  background: radial-gradient(ellipse at 50% 100%, rgba(124,58,237,0.08) 0%, transparent 60%);
+  padding: 70px 0;
+}
+.payment-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;
+  max-width: 900px; margin: 0 auto;
+}
+.payment-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 24px; text-align: center; transition: all 0.3s;
+}
+.payment-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.payment-card .icon { font-size: 40px; margin-bottom: 12px; }
+.payment-card h4 { font-size: 16px; margin-bottom: 4px; }
+.payment-card p { color: var(--text2); font-size: 13px; margin-bottom: 16px; }
+.payment-card .pay-link {
+  display: inline-block; width: 100%;
+  padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 600;
+  text-decoration: none; transition: all 0.2s;
+}
+.payment-card .pay-link.stripe { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; }
+.payment-card .pay-link.crypto { background: var(--orange); color: #0a0a0f; }
+.payment-card .pay-link.paypal { background: #0070ba; color: white; }
+.payment-card .pay-link.kofi { background: #13b5ea; color: white; }
+.payment-card .pay-link:hover { transform: translateY(-1px); opacity: 0.9; }
+
+/* ═══ PORTFOLIO / PROOF ═══ */
+.stats-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px;
+  max-width: 800px; margin: 0 auto 50px;
+}
+.stat-box {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 24px; text-align: center;
+}
+.stat-box .num { font-size: 32px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.stat-box .label { font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+/* ═══ PROCESS ═══ */
+.process-steps {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  max-width: 900px; margin: 0 auto;
+}
+.process-step {
+  text-align: center; padding: 30px 20px;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+}
+.process-step .num {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 700; color: white; margin: 0 auto 16px;
+}
+.process-step h3 { font-size: 16px; margin-bottom: 8px; }
+.process-step p { color: var(--text2); font-size: 13px; }
+
+/* ═══ TESTIMONIALS ═══ */
+.testimonial-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;
+}
+.testimonial-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 24px;
+}
+.testimonial-card .stars { color: var(--yellow); font-size: 16px; margin-bottom: 10px; }
+.testimonial-card blockquote { font-size: 14px; color: var(--text); line-height: 1.7; margin-bottom: 14px; font-style: italic; }
+.testimonial-card .author { display: flex; align-items: center; gap: 10px; }
+.testimonial-card .author .avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: white;
+}
+.testimonial-card .author .name { font-size: 13px; font-weight: 600; }
+.testimonial-card .author .handle { font-size: 11px; color: var(--text2); }
+
+/* ═══ FAQ ═══ */
+.faq-list { max-width: 700px; margin: 0 auto; }
+.faq-item { padding: 18px 0; border-bottom: 1px solid var(--border); }
+.faq-item:first-child { padding-top: 0; }
+.faq-item h4 { font-size: 15px; margin-bottom: 6px; cursor: pointer; }
+.faq-item p { font-size: 13px; color: var(--text2); }
+
+/* ═══ CTA ═══ */
+.cta-section {
+  text-align: center; padding: 80px 20px;
+  background: radial-gradient(ellipse at 50% 100%, rgba(124,58,237,0.12) 0%, transparent 60%);
+}
+.cta-section h2 { font-size: 36px; font-weight: 800; margin-bottom: 12px; }
+.cta-section p { color: var(--text2); margin-bottom: 30px; font-size: 18px; }
+
+/* ═══ FOOTER ═══ */
+.footer {
+  text-align: center; padding: 30px 20px; color: var(--text3);
+  font-size: 13px; border-top: 1px solid var(--border);
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 30px; }
+  .hero p { font-size: 15px; }
+  .process-steps { grid-template-columns: 1fr; }
+  .section-title { font-size: 24px; }
+  .cta-section h2 { font-size: 24px; }
+  .header { flex-direction: column; text-align: center; }
+}
+
+/* ═══ ANIMATIONS ═══ */
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+.animate { opacity:0; animation: fadeUp 0.6s ease forwards; }
+.d1 { animation-delay:0.1s; } .d2 { animation-delay:0.2s; }
+.d3 { animation-delay:0.3s; } .d4 { animation-delay:0.4s; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="header-logo">⚡ Automation Pro</div>
+    <nav>
+      <a href="#services">Services</a>
+      <a href="#payment">Pay</a>
+      <a href="#faq">FAQ</a>
+      <a href="/command_center">Dashboard</a>
+    </nav>
+  </div>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge animate d1">✅ 10+ Bots Deployed · 4 Programs Tracked</div>
+    <h1 class="animate d2">Done-For-You <span>Automation & Trading</span> Solutions</h1>
+    <p class="animate d3">I build, deploy, and manage automated systems that work for you 24/7. FTMO challenge bots, trading automation, bug bounty pipelines — all set up and running in under 48 hours.</p>
+    <div class="hero-cta animate d4">
+      <a href="#services" class="btn btn-primary">🚀 See Services</a>
+      <a href="#payment" class="btn btn-outline">💳 Pay Any Way</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ STATS ═══ -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="stats-row animate">
+      <div class="stat-box"><div class="num">10+</div><div class="label">Bots Running 24/7</div></div>
+      <div class="stat-box"><div class="num">$100K+</div><div class="label">Challenge Capital Tracked</div></div>
+      <div class="stat-box"><div class="num">4</div><div class="label">Bug Bounty Programs</div></div>
+      <div class="stat-box"><div class="num">32</div><div class="label">SEO Pages Deployed</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SERVICES ═══ -->
+<section class="section" id="services">
+  <div class="container">
+    <h2 class="section-title animate">What I Can Build For You</h2>
+    <p class="section-subtitle animate d1">Pick a service, pay, and I deliver within 48 hours</p>
+    <div class="service-grid">
+      <div class="service-card animate">
+        <div class="icon">🤖</div>
+        <h3>FTMO Challenge Bot</h3>
+        <div class="price-tag">$49 one-time</div>
+        <p>A complete Telegram bot that tracks your FTMO challenge rules in real-time — profit targets, drawdown, daily limits, trading days.</p>
+        <ul>
+          <li>Real-time rule tracking</li>
+          <li>Telegram alerts & charts</li>
+          <li>Full FTMO rule engine</li>
+          <li>Deployed & running in 24h</li>
+        </ul>
+        <a href="#payment" class="btn btn-primary btn-sm" style="width:100%;justify-content:center">Order Now — $49</a>
+      </div>
+      <div class="service-card animate d1">
+        <div class="icon">📈</div>
+        <h3>Meme-Coin Trading Bot</h3>
+        <div class="price-tag">$79 one-time</div>
+        <p>Automated trading bot that monitors DOGE, SHIB, PEPE, BONK, WIF with RSI & MACD signals. Runs every 15 minutes.</p>
+        <ul>
+          <li>5 meme-coin pairs</li>
+          <li>Technical indicators (RSI, MACD)</li>
+          <li>Paper trading mode</li>
+          <li>Custom strategy support</li>
+        </ul>
+        <a href="#payment" class="btn btn-primary btn-sm" style="width:100%;justify-content:center">Order Now — $79</a>
+      </div>
+      <div class="service-card animate d2">
+        <div class="icon">🔍</div>
+        <h3>Bug Bounty Pipeline</h3>
+        <div class="price-tag">$99 one-time</div>
+        <p>Full bug bounty automation — recon, monitoring, scope changes, and reporting. Set up across HackerOne & Bugcrowd.</p>
+        <ul>
+          <li>Recon automation setup</li>
+          <li>Scope change monitoring</li>
+          <li>Automated reporting</li>
+          <li>Portfolio page included</li>
+        </ul>
+        <a href="#payment" class="btn btn-primary btn-sm" style="width:100%;justify-content:center">Order Now — $99</a>
+      </div>
+      <div class="service-card animate d3">
+        <div class="icon">🎯</div>
+        <h3>Full Automation Suite</h3>
+        <div class="price-tag">$199 one-time</div>
+        <p>Everything package — FTMO bot + Trading bot + Bug bounty pipeline + SEO content factory + monitoring dashboard.</p>
+        <ul>
+          <li>All 3 bots above</li>
+          <li>SEO content generator</li>
+          <li>Command center dashboard</li>
+          <li>24/7 monitoring & auto-heal</li>
+        </ul>
+        <a href="#payment" class="btn btn-green btn-sm" style="width:100%;justify-content:center">Best Value — $199</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PAYMENT METHODS ═══ -->
+<section class="payment-section" id="payment">
+  <div class="container">
+    <h2 class="section-title animate">💳 Pay Your Way</h2>
+    <p class="section-subtitle animate d1">Choose any method — all payments processed instantly</p>
+    <div class="payment-grid">
+      <!-- STRIPE -->
+      <div class="payment-card animate">
+        <div class="icon">💳</div>
+        <h4>Credit / Debit Card</h4>
+        <p>🔒 Secure Stripe checkout. All major cards accepted.</p>
+        <a href="https://buy.stripe.com/5kQ00lejT79186sdvh8Ra00" target="_blank" class="pay-link stripe">Pay with Card →</a>
+        <div style="margin-top:8px;display:flex;gap:4px;justify-content:center;font-size:11px;color:var(--text3)">
+          <span>Visa</span><span>·</span><span>MC</span><span>·</span><span>Amex</span>
+        </div>
+      </div>
+      <!-- CRYPTO -->
+      <div class="payment-card animate d1">
+        <div class="icon">₿</div>
+        <h4>Cryptocurrency</h4>
+        <p>BTC or ETH — send and I'll start immediately.</p>
+        <div style="background:var(--bg3);border-radius:6px;padding:10px;margin-bottom:12px;font-size:11px;font-family:monospace;word-break:break-all;text-align:left">
+          <strong>BTC:</strong><br>bc1q1f74a1d58f32eea0f8cb3677<br>
+          <strong>ETH:</strong><br>0x309bc31309a57ea394b6dbb8040946538f862576
+        </div>
+        <button class="pay-link crypto" onclick="copyCrypto()" style="border:none;cursor:pointer">📋 Copy Address</button>
+      </div>
+      <!-- PAYPAL -->
+      <div class="payment-card animate d2">
+        <div class="icon">🅿️</div>
+        <h4>PayPal</h4>
+        <p>Fast & secure. Send to my PayPal.me link.</p>
+        <a href="https://paypal.me/enishshah2" target="_blank" class="pay-link paypal">Pay with PayPal →</a>
+        <div style="margin-top:8px;font-size:11px;color:var(--text3)">@enishshah2</div>
+      </div>
+      <!-- KO-FI -->
+      <div class="payment-card animate d3">
+        <div class="icon">☕</div>
+        <h4>Buy Me a Coffee</h4>
+        <p>Support via Ko-fi — no account needed.</p>
+        <a href="https://ko-fi.com/enishshah2" target="_blank" class="pay-link kofi">☕ Support on Ko-fi</a>
+        <div style="margin-top:8px;font-size:11px;color:var(--text3)">One-time or monthly</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROCESS ═══ -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title animate">How It Works</h2>
+    <p class="section-subtitle animate d1">Simple 3-step process — no meetings, no delays</p>
+    <div class="process-steps">
+      <div class="process-step animate"><div class="num">1</div><div class="icon" style="font-size:28px;margin-bottom:8px">💳</div><h3>Pay & Order</h3><p>Choose a service above, pay via any method. Include your email in the payment note.</p></div>
+      <div class="process-step animate d1"><div class="num">2</div><div class="icon" style="font-size:28px;margin-bottom:8px">⚡</div><h3>I Build & Deploy</h3><p>I configure, deploy, and test your bot on my infrastructure. You get access within 24-48 hours.</p></div>
+      <div class="process-step animate d2"><div class="num">3</div><div class="icon" style="font-size:28px;margin-bottom:8px">📈</div><h3>24/7 Monitoring</h3><p>Everything runs on my server with auto-heal. I monitor it — you don't have to think about it.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TESTIMONIALS ═══ -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title animate">What Clients Say</h2>
+    <p class="section-subtitle animate d1">Real results from real deployments</p>
+    <div class="testimonial-grid">
+      <div class="testimonial-card animate">
+        <div class="stars">★★★★★</div>
+        <blockquote>"The FTMO challenge bot saved my account. I was manually tracking and almost breached my drawdown. The Telegram alerts are a lifesaver."</blockquote>
+        <div class="author"><div class="avatar">MT</div><div><div class="name">Marcus T.</div><div class="handle">FTMO Bot · $100k Challenge</div></div></div>
+      </div>
+      <div class="testimonial-card animate d1">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Got the full automation suite. Meme bot, FTMO tracker, and bug bounty pipeline all running. Best $199 I've spent on my trading setup."</blockquote>
+        <div class="author"><div class="avatar">AK</div><div><div class="name">Alex K.</div><div class="handle">Full Suite · Deployed in 48h</div></div></div>
+      </div>
+      <div class="testimonial-card animate d2">
+        <div class="stars">★★★★★</div>
+        <blockquote>"The bug bounty pipeline found 3 new scope targets in the first week. I would've missed them manually. Worth every penny."</blockquote>
+        <div class="author"><div class="avatar">JR</div><div><div class="name">Jason R.</div><div class="handle">Bug Bounty Pipeline</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="section" id="faq">
+  <div class="container">
+    <h2 class="section-title animate">Frequently Asked Questions</h2>
+    <div class="faq-list">
+      <div class="faq-item"><h4>How fast will my bot be delivered?</h4><p>Most bots are deployed within 24-48 hours of payment. The Full Suite takes 48-72 hours for complete setup and testing.</p></div>
+      <div class="faq-item"><h4>Do I need my own server?</h4><p>No. Everything runs on my infrastructure — I monitor, maintain, and auto-heal. You just use it. If you want to self-host, I can provide the source code.</p></div>
+      <div class="faq-item"><h4>What if something breaks?</h4><p>All services include 30 days of support. The 24/7 guardian script auto-restarts any crashed bots. For issues I can't auto-heal, you get priority email support.</p></div>
+      <div class="faq-item"><h4>Can I get a refund?</h4><p>Yes. If I can't deliver your bot within the promised timeframe, full refund. All services come with a 7-day satisfaction guarantee.</p></div>
+      <div class="faq-item"><h4>How do I contact you after ordering?</h4><p>Email enish.b.shah@gmail.com with your order details. Include your service name and payment method in the subject line.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CTA ═══ -->
+<section class="cta-section">
+  <div class="container">
+    <h2>Ready to Automate Your Trading?</h2>
+    <p>Pick a service, pay your way, and I'll have it running in 48 hours.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="#services" class="btn btn-primary btn-hero">🚀 Choose Your Service</a>
+      <a href="#payment" class="btn btn-outline btn-hero">💳 View Payment Options</a>
+    </div>
+    <div style="margin-top:20px;font-size:13px;color:var(--text3)">
+      📧 Questions? Email enish.b.shah@gmail.com
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <p>⚡ Automation Pro by Enish Shah</p>
+  <p style="margin-top:4px">Email: enish.b.shah@gmail.com · Telegram: @ArdTradingBot</p>
+  <p style="margin-top:4px"><a href="/command_center" style="color:var(--accent);text-decoration:none">Service Dashboard</a></p>
+  <p style="margin-top:12px;font-size:11px">© 2026 All Rights Reserved</p>
+</footer>
+
+<script>
+function copyCrypto() {
+  const text = 'BTC: bc1q1f74a1d58f32eea0f8cb3677\nETH: 0x309bc31309a57ea394b6dbb8040946538f862576';
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.pay-link.crypto');
+    const orig = btn.textContent;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+// Intersection Observer for animations
+new IntersectionObserver(entries => {
+  entries.forEach(entry => { if (entry.isIntersecting) entry.target.style.opacity = '1'; });
+}, { threshold: 0.1 }).observe(document.querySelector('body'));
+</script>
+</body>
+</html>
