@@ -1,0 +1,37 @@
+[build]
+publish = "deploy_assets"
+
+# SPA redirect: serve index.html for all routes
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Auth callback redirects
+[[redirects]]
+  from = "/auth/callback"
+  to = "/auth.html"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "/auth.html"
+  status = 200
+
+[[redirects]]
+  from = "/signup"
+  to = "/auth.html"
+  status = 200
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), accelerometer=()"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://formsubmit.co; form-action 'self' https://formsubmit.co; frame-ancestors 'none'"

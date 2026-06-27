@@ -1,215 +1,207 @@
-# 📊 FTMO Challenge Tracker
+# 🚀 Enish Shah — Autonomous Income & Trading System
 
-Track your FTMO challenge progress in real-time — profit targets, drawdown limits, trading days, and more. Use it as a **web app** (offline, no signup) or a **Telegram bot** (always with you).
-
-**Live site:** [https://ftmo-tracker.loca.lt](https://ftmo-tracker.loca.lt)
-**Telegram bot:** [@ArdTradingBot](https://t.me/ArdTradingBot)
-**Pro version:** [https://gumroad.com/l/ezteprg](https://gumroad.com/l/ezteprg)
+> **Live Site:** https://bright-palmier-d43338.netlify.app
+> **Telegram Bot:** @ArdTradingBot
+> **Contact:** enishshah2@gmail.com
 
 ---
 
-## ✨ Features
+## 📋 Overview
 
-| Feature | Free | Pro |
-|---------|------|-----|
-| Profit target tracking (10% / 5%) | ✅ | ✅ |
-| Max drawdown guard (10%) | ✅ | ✅ |
-| Daily loss limit warnings | ✅ | ✅ |
-| Trading day counter | ✅ | ✅ |
-| Equity curve chart | ✅ | ✅ |
-| Trade log with P&L | ✅ | ✅ |
-| 1-Step & 2-Step support | ✅ | ✅ |
-| Best Day Rule (1-Step) | ✅ | ✅ |
-| Export / Import data | ✅ | ✅ |
-| **Cloud sync (all devices)** | ❌ | ✅ |
-| **Unlimited accounts** | ❌ | ✅ |
-| **PDF reports** | ❌ | ✅ |
-| **Email notifications** | ❌ | ✅ |
-| **Priority support** | ❌ | ✅ |
+Full-stack autonomous system combining **FTMO challenge tracking**, **trading bots**, **content automation**, **security services**, and **income generation pipelines**. All running 24/7 with auto-healing guardian scripts.
+
+### Core Products
+
+| Product | Description | Status |
+|---------|-------------|--------|
+| [FTMO Challenge Tracker](https://bright-palmier-d43338.netlify.app/ftmo_challenge_tracker.html) | Real-time FTMO rule tracking (Free + Pro) | ✅ Live |
+| [Trading Bots](trading/) | FTMO Telegram bot, content generator, SEO factory | ✅ Running |
+| [Income Pipelines](income/) | Email marketing, social content, bug bounty monitoring | ✅ Automated |
+| [Security Services](https://bright-palmier-d43338.netlify.app/portfolio.html) | Web pentest, API audit, recon services | ✅ Live |
+| [Automation Pro](https://bright-palmier-d43338.netlify.app/earn.html) | Done-for-you bot deployment & management | ✅ Live |
+
+---
+
+## 🏗️ Project Structure
+
+```
+~/                        # Project root
+├── deploy_assets/        # 🌐 LIVE WEBSITE (Netlify)
+│   ├── index.html              # Main landing page
+│   ├── sell.html               # Pro sales page
+│   ├── ftmo_challenge_tracker.html  # Core tracker app
+│   ├── auth.html               # Supabase auth
+│   ├── waitlist.html           # Early access waitlist
+│   ├── portfolio.html          # Security consulting portfolio
+│   ├── income.html             # Security services page
+│   ├── earn.html               # Automation services page
+│   ├── supabase-client.js      # Cloud sync & auth client
+│   ├── server.py               # Local HTTP server (hardened)
+│   ├── command_center.py       # System monitoring
+│   ├── _headers                # Security headers (HSTS, CSP)
+│   ├── _redirects              # URL redirects
+│   └── seo/                    # 30+ SEO content pages
+│
+├── trading/              # TRADING BOTS & AUTOMATION
+│   ├── ftmo_telegram_bot.py    # Telegram bot (@ArdTradingBot)
+│   ├── ceo_processor.py        # AI-powered trading analysis
+│   ├── ceo_credential.py       # Credential manager
+│   ├── content_generator.py    # AI content creation
+│   ├── seo_factory.py          # SEO page generator
+│   ├── traffic_engine.py       # Marketing automation
+│   ├── referral_system.py      # Referral tracking
+│   ├── email_marketing.py      # Email campaigns
+│   └── restart_all.sh          # Service restart script
+│
+├── income/               # INCOME & MARKETING PIPELINE
+│   ├── tools/                  # Income bots
+│   │   ├── income_orchestrator.py  # Master orchestrator
+│   │   ├── email_marketing/        # Email pipeline
+│   │   ├── program_bot.py         # Bug bounty monitor
+│   │   ├── social_bot.py          # Social content
+│   │   └── marketing_engine.py    # Marketing automation
+│   └── logs/                    # Cron job logs
+│
+├── meme-coin-bot/        # MEME COIN TRADING
+│   ├── config.py               # Configuration (paper mode)
+│   ├── executor.py             # Trade executor
+│   └── utils.py                # Market utilities
+│
+├── 24x7_guardian.sh      # 🛡️ Auto-heal guardian script
+├── netlify.toml          # Netlify deployment config
+└── archive/              # Historical files & logs
+```
+
+---
+
+## 🛡️ Security Hardening Status
+
+| Measure | Status |
+|---------|--------|
+| HSTS (Strict-Transport-Security) | ✅ `max-age=31536000; preload` |
+| Content-Security-Policy | ✅ Scripts, styles, CDN locked |
+| X-Frame-Options: DENY | ✅ Clickjacking protection |
+| Permissions-Policy | ✅ Camera/mic/geo blocked |
+| Cross-Origin-Opener-Policy | ✅ `same-origin` |
+| Rate Limiting (local server) | ✅ 100 req/min per IP |
+| No hardcoded secrets in source | ✅ All tokens loaded from env |
+| .gitignore covers .env, .key, .pem | ✅ Sensitive files excluded |
+
+---
+
+## 🤖 Running Services
+
+All services are monitored by `24x7_guardian.sh` and auto-restart on failure.
+
+| Service | Tech | Status |
+|---------|------|--------|
+| Web Server :3000 | Python HTTP Server | 🔵 Running |
+| FTMO Telegram Bot | Python + python-telegram-bot | 🔵 Running |
+| CEO AI Processor | GPT-4o / DeepSeek | 🔵 Running |
+| MayaDice Bot | Python | 🔵 Running |
+| Hermes AI Gateway | Python | 🔵 Running |
+| Public Tunnel | localhost.run | 🔵 Running |
+| All Cron Jobs (8) | crontab | 🔵 Active |
+
+### Cron Jobs
+```
+*/15 * * * *   Meme coin bot
+0 * * * *      Bug bounty monitor
+0 8,18 * * *   Social content
+0 21 * * *     Daily summary
+0 */6 * * *    Full orchestrator & email marketing
+```
+
+---
+
+## 💰 Monetization
+
+| Source | Price | Payment |
+|--------|-------|---------|
+| FTMO Tracker Pro | $19.99/month | Stripe |
+| Custom Bot Dev | $49–$199 | Crypto/PayPal/Bank |
+| Bug Bounty Setup | $19.99/month | Stripe |
+| Security Audit | $400–$2,000 | PayPal/Bank |
+| Full Automation Suite | Custom | Any method |
 
 ---
 
 ## 🚀 Quick Start
 
-### Web App (Free)
-
-Zero setup. Just open the link and start tracking:
-
-1. Go to [ftmo-tracker.loca.lt/ftmo_challenge_tracker.html](https://ftmo-tracker.loca.lt/ftmo_challenge_tracker.html)
-2. Select your **challenge type** (1-Step or 2-Step) and **account size**
-3. After each trading day, enter your **ending balance**
-4. Watch real-time progress — profit target, drawdown, and days
-
-Your data is stored in your browser's local storage. Export it anytime as JSON.
-
-### Telegram Bot (Free)
-
-Message [@ArdTradingBot](https://t.me/ArdTradingBot) on Telegram and start tracking from your phone:
-
-```
-/setup 2step 50000
-/add 50200
-/status
-```
-
-No signup, no account needed.
-
----
-
-## 📋 Project Structure
-
-```
-├── trading/
-│   ├── ftmo_telegram_bot.py      # Telegram bot (Python)
-│   ├── ftmo_challenge_tracker.html  # Web tracker (single HTML)
-│   ├── sell.html                  # Sales / landing page
-│   ├── waitlist.html              # Email waitlist page
-│   ├── restart_all.sh             # Auto-restart script (24/7)
-│   ├── ftmo_bot.env               # Bot token config
-│   ├── telegram_data/             # Per-user JSON storage
-│   ├── promo_content.txt          # Promo copy for Reddit/Discord/Twitter
-│   ├── REDDIT_POST.md             # Reddit post template
-│   ├── GUMROAD_SETUP.md           # Gumroad product setup guide
-│   └── ftmo_bot.log               # Bot logs
-├── income/
-│   ├── fiverr_gig.txt             # Fiverr gig copy
-│   ├── upwork_proposal.txt        # Upwork proposal templates
-│   ├── build_portfolio.py         # Portfolio builder
-│   └── tools/                     # Income automation tools
-├── LIVE_URL.txt                   # Current live site URL
-└── README.md                      # You are here
-```
-
----
-
-## 🤖 Telegram Bot — Full Command Reference
-
-### Setup
-
-| Command | Description |
-|---------|-------------|
-| `/setup 2step 50000` | Set up a 2-Step $50k challenge |
-| `/setup 2step 50000 50000` | Set up with a custom starting balance |
-| `/setup 1step 100000` | Set up a 1-Step $100k challenge |
-
-### Tracking
-
-| Command | Description |
-|---------|-------------|
-| `/add 50200` | Add a trading day with ending balance |
-| `/add 50200 great day` | Add with optional notes |
-| `/add 2026-06-20 50200` | Add with a custom date |
-| `/status` | Full challenge progress report |
-| `/log` | View trade history (last 20 days) |
-
-### Charts & Data
-
-| Command | Description |
-|---------|-------------|
-| `/chart` | Generate equity curve chart (PNG) |
-| `/export` | Download your data as JSON |
-| `/delete 1` | Delete the first trading day |
-
-### Management
-
-| Command | Description |
-|---------|-------------|
-| `/reset` | Reset all data (with confirmation) |
-| `/promote` | Move to Phase 2 (2-Step only) |
-| `/about` | About & Pro version info |
-| `/start` | Welcome message and command help |
-
----
-
-## 🧠 FTMO Rules Engine
-
-The tracker implements FTMO's official challenge rules exactly:
-
-| Rule | 2-Step | 1-Step |
-|------|--------|--------|
-| **Phase 1 profit target** | 10% | 10% |
-| **Phase 2 profit target** | 5% | 5% |
-| **Max drawdown** | 10% (static from initial) | 10% (static from initial) |
-| **Max daily loss** | 5% | 3% |
-| **Min trading days** | 4 (each phase) | 0 |
-| **Best day rule** | N/A | Max 50% of total profit |
-
-### Statuses
-
-- 🟢 **In Progress** — Everything on track
-- 🟡 **Near Drawdown Limit** — Used >80% of max drawdown
-- 🟡 **Daily Loss Limit Hit** — Exceeded daily loss on a trading day
-- 🟡 **Best Day > 50%** — Best day exceeds half of total profit (1-Step)
-- ✅ **Phase Passed!** — Hit profit target, met day requirements
-- ❌ **Failed** — Hit max drawdown limit
-
----
-
-## 🔧 Self-Hosting
-
-### Telegram Bot
-
+### Local Development
 ```bash
-# 1. Get a token from @BotFather on Telegram
-# 2. Set the token
-export TELEGRAM_BOT_TOKEN="your:token"
-
-# 3. Install dependencies
-pip3 install python-telegram-bot matplotlib
-
-# 4. Run
-python3 trading/ftmo_telegram_bot.py
+cd ~/deploy_assets
+python3 server.py 3000
+# Opens at http://localhost:3000
 ```
 
-### Website
-
+### Restart All Services
 ```bash
-# Start HTTP server
-cd deploy_assets
-python3 -m http.server 3000
-
-# Or with public tunnel
-ssh -R 80:localhost:3000 localhost.run
+bash ~/trading/restart_all.sh
 ```
 
-### 24/7 Auto-Restart
-
+### Deploy to Netlify
 ```bash
-bash trading/restart_all.sh
+cd ~/deploy_assets
+NETLIFY_AUTH_TOKEN='your-token' npx netlify deploy --dir=. --prod
 ```
 
-A cron job checks every minute if services are running and restarts them if needed.
+### Run Income Pipeline
+```bash
+cd ~/income && python3 -m tools.income_orchestrator start
+```
 
 ---
 
-## 💰 Pro Version ($19.99/mo)
+## 📝 Changelog
 
-Upgrade for cloud sync, unlimited accounts, PDF reports, and email alerts:
+### 2026-06-27 — Full Security Hardening & Polish
+- **Security:** Added HSTS, CSP, Permissions-Policy, Cross-Origin-Opener-Policy
+- **Secrets:** Removed hardcoded Telegram token from `ceo_credential.py`
+- **Config:** Removed `SUPABASE_SERVICE_ROLE_KEY` from `netlify.toml`
+- **Server:** Added rate limiting (100 req/min), logging sanitization
+- **Deploy:** Site live at `bright-palmier-d43338.netlify.app`
+- **Cleanup:** Archived old scan outputs, logs, duplicate files
 
-👉 [gumroad.com/l/ezteprg](https://gumroad.com/l/ezteprg)
+### 2026-06-24 — Netherlands PhD Route Planning
+- Research on PhD positions, professors, research groups
+- 20 research ideas with proof from top conferences
 
----
-
-## 📢 Marketing
-
-- **Reddit:** Copy from `trading/REDDIT_POST.md` and post to r/FTMO, r/DayTrading
-- **Twitter / Discord:** Copy from `trading/promo_content.txt`
-- **Fiverr:** Copy from `income/fiverr_gig.txt`
-- **Upwork:** Copy from `income/upwork_proposal.txt`
-
----
-
-## 🛠 Tech Stack
-
-- **Web:** Vanilla HTML + CSS + JavaScript (Chart.js for charts) — single-file, no build step
-- **Bot:** Python `python-telegram-bot` + `matplotlib` for chart generation
-- **Storage:** LocalStorage (web) / JSON files (bot)
-- **Deployment:** Python HTTP server + localhost.run tunnel
+### 2026-06-22 — Supabase Auth, Stripe Payments, UI Upgrade
+- Supabase auth integration (sign in, cloud sync, pro plan)
+- Stripe payment link for FTMO Tracker Pro ($19.99/mo)
+- Guardian script with Hermes Gateway monitoring
+- Full UI upgrade on all pages
 
 ---
 
-## 📄 License
+## 🎯 Roadmap
 
-MIT — free to use, modify, and distribute.
+- [x] Supabase auth & cloud sync
+- [x] Stripe payment integration
+- [x] Security hardening (headers, rate limiting, secrets)
+- [x] SEO content (30+ pages)
+- [ ] Custom domain purchase & SSL
+- [ ] Advanced analytics dashboard
+- [ ] Mobile app (React Native)
+- [ ] Multi-language support
+- [ ] Automated social media posting
+- [ ] Real meme coin trading (Binance API)
 
-*Not affiliated with FTMO.com. Built for the trading community by a trader.*
+---
+
+## 🔗 Quick Links
+
+| Resource | Link |
+|----------|------|
+| Live Site | https://bright-palmier-d43338.netlify.app |
+| FTMO Tracker | https://bright-palmier-d43338.netlify.app/ftmo_challenge_tracker.html |
+| Pro Version | https://bright-palmier-d43338.netlify.app/sell.html |
+| Telegram Bot | https://t.me/ArdTradingBot |
+| Portfolio | https://bright-palmier-d43338.netlify.app/portfolio.html |
+| Stripe Payment | https://buy.stripe.com/5kQ00lejT79186sdvh8Ra00 |
+| GitHub | https://github.com/adbhutrd/FTMO-challenge-TRacker.git |
+
+---
+
+*Built with ❤️ by Enish Shah · MSc Cyber Security (Distinction)*

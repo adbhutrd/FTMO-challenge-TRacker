@@ -75,7 +75,7 @@ class CEO:
                 "smtp": {"status": "missing", "data": {}},
                 "medium": {"status": "missing", "data": {}},
                 "gumroad": {"status": "partial", "data": {"slug": "ezteprg"}},
-                "telegram": {"status": "configured", "data": {"token": "8340892430:AAHLG7DuM7W5EEcpuXeILtKXiZcY9lrh4zw"}},
+                "telegram": {"status": "configured", "data": {"token": os.environ.get("TELEGRAM_BOT_TOKEN", "")}},
                 "last_updated": None,
             }
 
