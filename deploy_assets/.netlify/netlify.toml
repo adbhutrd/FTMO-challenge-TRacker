@@ -1,6 +1,6 @@
+headersOrigin = "config"
 redirectsOrigin = "config"
 plugins = []
-headers = []
 
 [functions]
 
@@ -25,9 +25,58 @@ base = "/home/enishshah2/deploy_assets"
 
 [build.services]
 
+[[headers]]
+for = "/*"
+
+[headers.values]
+X-Content-Type-Options = "nosniff"
+X-Frame-Options = "DENY"
+X-XSS-Protection = "1; mode=block"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), accelerometer=()"
+Cross-Origin-Opener-Policy = "same-origin"
+Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://formsubmit.co; form-action 'self' https://formsubmit.co; frame-ancestors 'none'"
+
 [[redirects]]
 from = "/*"
 to = "/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/auth/callback"
+to = "/auth.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/login"
+to = "/auth.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/signup"
+to = "/auth.html"
 status = 200.0
 force = false
 
