@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FTMO Challenge Tracker</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="supabase-client.js"></script>
 <style>
 :root {
   --bg: #0d1117;
@@ -356,6 +357,8 @@ tbody tr:hover { background: rgba(255,255,255,0.02); }
       <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importInput').click()">📤 Import</button>
       <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
       <button class="btn btn-primary btn-sm" onclick="promotePhase()" id="promoteBtn" style="display:none">📈 Promote to Phase 2</button>
+      <button id="cloudSyncBtn" class="btn btn-sm" style="background:var(--blue-bg);border:1px solid rgba(88,166,255,0.3);color:var(--blue)" onclick="cloudSync()">☁️ Sync</button>
+      <button id="authBtn" class="btn btn-sm btn-primary" onclick="handleAuth()" style="background:var(--gradient);border:none">🔑 Sign In</button>
       <button class="btn btn-danger btn-sm" onclick="resetAll()">↺ Reset</button>
     </div>
   </div>
@@ -520,6 +523,23 @@ tbody tr:hover { background: rgba(255,255,255,0.02); }
     <h2>📈 Equity Curve</h2>
     <div class="chart-container">
       <canvas id="equityChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Auth Status Bar -->
+  <div id="authStatusBar" class="section animate-in" style="display:none;padding:16px;background:linear-gradient(135deg,rgba(88,166,255,0.05),rgba(124,58,237,0.05));border-color:var(--blue)">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span id="authAvatar" style="width:36px;height:36px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white">👤</span>
+        <div>
+          <div id="authEmail" style="font-size:14px;font-weight:600">user@email.com</div>
+          <div id="authPlan" style="font-size:12px;color:var(--text-muted)"><span class="status-badge status-info">Free Plan</span></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <span id="syncStatus" style="font-size:12px;color:var(--text-muted);padding:6px 12px;background:var(--bg);border-radius:6px;border:1px solid var(--border)">☁️ Not synced</span>
+        <button class="btn btn-sm btn-secondary" onclick="signOut()">Sign Out</button>
+      </div>
     </div>
   </div>
 
@@ -1135,6 +1155,117 @@ function initWaitlist() {
   });
 }
 
+// ====== SUPABASE AUTH & SYNC ======
+let isAuthenticated = false;
+let userEmail = '';
+let isPro = false;
+
+async function handleAuth() {
+  if (isAuthenticated) {
+    await signOut();
+    return;
+  }
+  window.location.href = 'auth.html';
+}
+
+async function signOut() {
+  try {
+    await window.supabaseClient.signOut();
+    isAuthenticated = false;
+    userEmail = '';
+    isPro = false;
+    updateAuthUI();
+    document.getElementById('authStatusBar').style.display = 'none';
+  } catch(e) {
+    console.error('Sign out error:', e);
+  }
+}
+
+function updateAuthUI() {
+  const btn = document.getElementById('authBtn');
+  const syncBtn = document.getElementById('cloudSyncBtn');
+  if (isAuthenticated) {
+    btn.textContent = '🚪 Sign Out';
+    btn.style.background = 'var(--border)';
+    syncBtn.style.display = 'inline-flex';
+  } else {
+    btn.textContent = '🔑 Sign In';
+    btn.style.background = 'var(--gradient)';
+    syncBtn.style.display = 'none';
+  }
+}
+
+async function cloudSync() {
+  if (!isAuthenticated) {
+    window.location.href = 'auth.html';
+    return;
+  }
+  
+  const syncBtn = document.getElementById('cloudSyncBtn');
+  const syncStatus = document.getElementById('syncStatus');
+  syncBtn.textContent = '⏳ Syncing...';
+  syncBtn.disabled = true;
+  
+  try {
+    const result = await window.supabaseClient.syncWithCloud();
+    if (result.success) {
+      syncStatus.textContent = '☁️ Synced ✓';
+      syncStatus.style.color = 'var(--green)';
+      
+      // If we got data from cloud, reload state
+      if (result.syncedFromCloud) {
+        loadState();
+        loadSetup();
+        render();
+      }
+    } else if (result.reason === 'not_authenticated') {
+      syncStatus.textContent = '☁️ Sign in to sync';
+      syncStatus.style.color = 'var(--text-muted)';
+    }
+  } catch(e) {
+    console.error('Sync error:', e);
+    syncStatus.textContent = '☁️ Sync failed';
+    syncStatus.style.color = 'var(--red)';
+  }
+  
+  syncBtn.textContent = '☁️ Sync';
+  syncBtn.disabled = false;
+}
+
+async function checkAuth() {
+  if (!window.supabaseClient || !window.supabaseClient.isConfigured()) {
+    // Supabase not configured yet — hide auth features
+    document.getElementById('authBtn').style.display = 'none';
+    return;
+  }
+  
+  try {
+    const user = await window.supabaseClient.getUser();
+    if (user) {
+      isAuthenticated = true;
+      userEmail = user.email || '';
+      isPro = await window.supabaseClient.checkProStatus();
+      
+      // Show auth bar
+      const bar = document.getElementById('authStatusBar');
+      bar.style.display = 'block';
+      document.getElementById('authEmail').textContent = userEmail;
+      document.getElementById('authPlan').innerHTML = isPro 
+        ? '<span class="status-badge status-pass" style="background:rgba(46,160,67,0.15);color:var(--green)">🔥 Pro Plan</span>'
+        : '<span class="status-badge status-info">Free Plan</span>';
+      
+      updateAuthUI();
+      
+      // Auto-sync if ?sync=cloud in URL
+      if (window.location.search.includes('sync=cloud')) {
+        setTimeout(() => cloudSync(), 500);
+      }
+    }
+  } catch(e) {
+    console.error('Auth check error:', e);
+  }
+}
+
 // ====== INIT ======
 function init() {
   // Set today's date
@@ -1144,6 +1275,20 @@ function init() {
   loadSetup();
   render();
   initWaitlist();
+  
+  // Initialize Supabase auth — use ready flag to prevent race conditions
+  if (window.__supabaseReady) {
+    if (window.supabaseClient && window.supabaseClient.isConfigured()) {
+      checkAuth();
+    }
+  } else {
+    window.addEventListener('supabase-loaded', function initAuth() {
+      if (window.supabaseClient && window.supabaseClient.isConfigured()) {
+        checkAuth();
+      }
+      window.removeEventListener('supabase-loaded', initAuth);
+    });
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);

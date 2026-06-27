@@ -70,7 +70,10 @@ _load_env_if_missing()
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-NOTIFY_CHAT_ID = os.getenv("CEO_CHAT_ID", "7837847803")
+NOTIFY_CHAT_ID = os.getenv("CEO_CHAT_ID", "")
+if not NOTIFY_CHAT_ID:
+    print("⚠️  CEO_CHAT_ID not set. Set it in ~/.hermes/.env")
+    NOTIFY_CHAT_ID = "0"  # Will prevent sending to wrong chat
 
 if not OPENROUTER_API_KEY:
     print("❌ OPENROUTER_API_KEY not set. Export it or add to ~/.hermes/.env")

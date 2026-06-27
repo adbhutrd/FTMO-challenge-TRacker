@@ -1164,10 +1164,12 @@ async def non_command_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
 
 
 # ═══════════════════════════════════════════════════════════════════════
-#  🏢 COMPANY HQ — ADMIN COMMANDS (Boss only: 7837847803)
+#  🏢 COMPANY HQ — ADMIN COMMANDS (Boss only)
 # ═══════════════════════════════════════════════════════════════════════
+# 🔒 BOSS_USER_ID is loaded from env (never hardcoded!) — set CEO_CHAT_ID in ~/.hermes/.env
 
-BOSS_USER_ID = 7837847803
+_boss_id_raw = os.getenv("CEO_CHAT_ID", "0")
+BOSS_USER_ID = int(_boss_id_raw) if _boss_id_raw.strip() else 0
 
 def is_boss(user_id: int) -> bool:
     return user_id == BOSS_USER_ID

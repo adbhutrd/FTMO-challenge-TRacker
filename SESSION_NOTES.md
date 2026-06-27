@@ -9,6 +9,14 @@ Start a new chat with Codebuff and reference this file:
 
 ## Step-by-Step Continuation
 
+### If you want to PUSH to GitHub (commit is local):
+```bash
+cd ~
+gh auth login
+# Then:
+git push origin main
+```
+
 ### If you want to DEPLOY the site:
 ```bash
 cd ~/deploy_assets

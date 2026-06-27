@@ -157,6 +157,9 @@ class TrafficEngine:
 
     def post_twitter(self) -> bool:
         """Post to Twitter/X (requires API keys)."""
+        # Add HOME to path so income package is importable
+        if str(HOME) not in sys.path:
+            sys.path.insert(0, str(HOME))
         from income.tools.marketing_engine import post_twitter
         posts = [
             "📊 FTMO Challenge Tracker — track profit targets, drawdown & trading days in real-time. Free to use, no signup. → https://ftmo-tracker.loca.lt/ftmo_challenge_tracker.html #FTMO #PropTrading",

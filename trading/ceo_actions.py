@@ -56,7 +56,10 @@ def notify_boss(message: str):
     if not token:
         logger.warning("⚠️ TELEGRAM_BOT_TOKEN not set. Cannot notify boss.")
         return False
-    chat_id = os.environ.get("CEO_CHAT_ID", "7837847803")
+    chat_id = os.environ.get("CEO_CHAT_ID", "")
+    if not chat_id:
+        logger.warning("⚠️ CEO_CHAT_ID not set. Cannot notify boss.")
+        return False
     import urllib.parse
     text = urllib.parse.quote(message[:4000])
     try:

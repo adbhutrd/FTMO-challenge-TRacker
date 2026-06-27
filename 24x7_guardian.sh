@@ -20,7 +20,7 @@ log "=== GUARDIAN CHECK ==="
 # 0️⃣ Command Center (port 8080)
 if ! pgrep -f 'command_center.py' > /dev/null; then
   log "⚠️  Command Center DOWN — restarting..."
-  cd /home/enishshah2/deploy_assets && nohup python3 command_center.py 8080 > /tmp/command_center.log 2>&1 &
+  cd /home/enishshah2/deploy_assets && nohup /home/enishshah2/agentic-aama/.venv/bin/python3 command_center.py 8080 > /tmp/command_center.log 2>&1 &
   sleep 2
   pgrep -f 'command_center.py' > /dev/null && log "✅ Command Center restarted" || log "❌ Command Center restart FAILED"
 else
@@ -32,7 +32,7 @@ if ! curl -sf http://localhost:3000/ > /dev/null 2>&1; then
   log "⚠️  Server DOWN — restarting..."
   fuser -k 3000/tcp 2>/dev/null
   sleep 1
-  cd /home/enishshah2/deploy_assets && nohup python3 server.py 3000 > /tmp/server.log 2>&1 &
+  cd /home/enishshah2/deploy_assets && nohup /home/enishshah2/agentic-aama/.venv/bin/python3 server.py 3000 > /tmp/server.log 2>&1 &
   sleep 2
   if curl -sf http://localhost:3000/ > /dev/null 2>&1; then
     log "✅ Server restarted OK"
@@ -70,7 +70,7 @@ fi
 # 3️⃣ FTMO Telegram Bot
 if ! pgrep -f "ftmo_telegram_bot.py" > /dev/null; then
   log "⚠️  FTMO Bot DOWN — restarting..."
-  screen -dmS ftmo-bot bash -c "cd /home/enishshah2/trading && python3 ftmo_telegram_bot.py"
+  screen -dmS ftmo-bot bash -c "cd /home/enishshah2/trading && /home/enishshah2/agentic-aama/.venv/bin/python3 ftmo_telegram_bot.py"
   sleep 2
   pgrep -f "ftmo_telegram_bot.py" > /dev/null && log "✅ FTMO Bot restarted" || log "❌ FTMO Bot restart FAILED"
 else
@@ -80,7 +80,7 @@ fi
 # 4️⃣ CEO AI Processor
 if ! pgrep -f "ceo_processor.py" > /dev/null; then
   log "⚠️  CEO Processor DOWN — restarting..."
-  screen -dmS ceo-ai bash -c "cd /home/enishshah2/trading && python3 ceo_processor.py --watch"
+  screen -dmS ceo-ai bash -c "cd /home/enishshah2/trading && /home/enishshah2/agentic-aama/.venv/bin/python3 ceo_processor.py --watch"
   sleep 2
   pgrep -f "ceo_processor.py" > /dev/null && log "✅ CEO Processor restarted" || log "❌ CEO Processor restart FAILED"
 else
@@ -90,14 +90,31 @@ fi
 # 5️⃣ MayaDice bot
 if ! pgrep -f "mayadice.py" > /dev/null; then
   log "⚠️  MayaDice DOWN — restarting..."
-  cd /home/enishshah2/MayaDice && nohup python3 mayadice.py watch > /dev/null 2>&1 &
+  cd /home/enishshah2/MayaDice && nohup /home/enishshah2/agentic-aama/.venv/bin/python3 mayadice.py watch > /dev/null 2>&1 &
   sleep 2
   pgrep -f "mayadice.py" > /dev/null && log "✅ MayaDice restarted" || log "❌ MayaDice restart FAILED"
 else
   log "✅ MayaDice OK"
 fi
 
-# 6️⃣ Run meme-coin bot every cycle
+# 6️⃣ Hermes AI Gateway (Telegram bot)
+HERMES_PID=$(pgrep -f 'hermes_cli.main gateway' 2>/dev/null | head -1)
+if [ -z "$HERMES_PID" ]; then
+  log "⚠️  Hermes Gateway DOWN — restarting..."
+  cd /home/enishshah2/hermes-agent && \
+    export HERMES_HOME=/home/enishshah2/.hermes && \
+    setsid /home/enishshah2/hermes-agent/venv/bin/python -m hermes_cli.main gateway run --replace > /dev/null 2>&1 &
+  sleep 5
+  if pgrep -f 'hermes_cli.main gateway' > /dev/null; then
+    log "✅ Hermes Gateway restarted"
+  else
+    log "❌ Hermes Gateway restart FAILED"
+  fi
+else
+  log "✅ Hermes Gateway OK (PID $HERMES_PID)"
+fi
+
+# 7️⃣ Run meme-coin bot every cycle
 LAST_MEME=$(stat -c %Y /home/enishshah2/income/logs/cron_meme_bot.log 2>/dev/null || echo 0)
 NOW=$(date +%s)
 MEME_AGE=$(( (NOW - LAST_MEME) / 60 ))
@@ -109,7 +126,7 @@ if [ "$MEME_AGE" -gt 18 ]; then
   log "✅ Meme bot cycle done"
 fi
 
-# 7️⃣ Social content if stale (>6 hours)
+# 8️⃣ Social content if stale (>6 hours)
 LAST_SOCIAL=$(stat -c %Y /home/enishshah2/income/logs/cron_social.log 2>/dev/null || echo 0)
 SOCIAL_AGE=$(( (NOW - LAST_SOCIAL) / 3600 ))
 if [ "$SOCIAL_AGE" -gt 6 ]; then
@@ -120,7 +137,7 @@ if [ "$SOCIAL_AGE" -gt 6 ]; then
   log "✅ Social content generated"
 fi
 
-# 8️⃣ Bug bounty monitor if stale (>4 hours)
+# 9️⃣ Bug bounty monitor if stale (>4 hours)
 LAST_PROG=$(stat -c %Y /home/enishshah2/income/logs/cron_programs.log 2>/dev/null || echo 0)
 PROG_AGE=$(( (NOW - LAST_PROG) / 3600 ))
 if [ "$PROG_AGE" -gt 4 ]; then
