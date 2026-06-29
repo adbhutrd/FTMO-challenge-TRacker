@@ -54,3 +54,55 @@ deploy_assets/.netlify/
 config.local.yaml
 *.pem
 *.key
+
+# DOTFILES & HOME SYSTEM FILES
+.bash*
+.profile
+.gitconfig
+.npmrc
+.ssh/
+.cache/
+.config/
+.local/
+.npm/
+.npm-global/
+
+# SENSITIVE / ENV FILES
+.env.*
+*.toml
+.supabase/
+.agent-browser/
+
+# STANDALONE PROJECTS (not tracked individually)
+MayaDice/
+agentic-aama/
+archive/
+assistant_activity_dashboard/
+bugbounty_team/
+bugflow/
+cyber-portfolio/
+cyber/
+expense-tracker/
+freebuff/
+hermes-agent/
+hermes-work/
+hermes_phase*.sh
+income/tools/
+meme-coin-bot/
+new-projects/
+nuclei-templates/
+pentest_service/
+phd-netherlands/
+portfolio/
+recon_service/
+siteguard/
+supabase/
+
+# BINARIES
+bin/
+
+# OLD/ARCHIVED
+archive/
+
+# LICENSE (root level is a copy)
+/LICENSE

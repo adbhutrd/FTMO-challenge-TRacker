@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FTMO Challenge Tracker</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<script src="supabase-client.js"></script>
 <style>
 :root {
   --bg: #0d1117;
@@ -357,34 +356,27 @@ tbody tr:hover { background: rgba(255,255,255,0.02); }
       <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importInput').click()">📤 Import</button>
       <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
       <button class="btn btn-primary btn-sm" onclick="promotePhase()" id="promoteBtn" style="display:none">📈 Promote to Phase 2</button>
-      <button id="cloudSyncBtn" class="btn btn-sm" style="background:var(--blue-bg);border:1px solid rgba(88,166,255,0.3);color:var(--blue)" onclick="cloudSync()">☁️ Sync</button>
-      <button id="authBtn" class="btn btn-sm btn-primary" onclick="handleAuth()" style="background:var(--gradient);border:none">🔑 Sign In</button>
       <button class="btn btn-danger btn-sm" onclick="resetAll()">↺ Reset</button>
     </div>
   </div>
 
   <!-- Quick Start Guide -->
-  <div class="setup-panel animate-in" style="background:linear-gradient(135deg, rgba(124,58,237,0.08), rgba(88,166,255,0.05));border-color:var(--accent);position:relative;overflow:hidden">
-    <div style="position:absolute;top:-50%;right:-20%;width:200px;height:200px;background:radial-gradient(circle,rgba(124,58,237,0.1),transparent 70%);pointer-events:none"></div>
-    <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;position:relative;z-index:1">
-      <div style="flex:1;min-width:280px">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-          <span style="font-size:24px">🚀</span>
-          <h2 style="color:var(--accent);margin:0;text-transform:none;font-size:18px;letter-spacing:0">How to Track Your Challenge</h2>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 20px">
-          <div style="display:flex;align-items:center;gap:8px;color:var(--text);font-size:13px"><span style="background:var(--accent);color:white;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">1</span>Set challenge type &amp; size</div>
-          <div style="display:flex;align-items:center;gap:8px;color:var(--text);font-size:13px"><span style="background:var(--accent);color:white;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">2</span>Enter ending balance each day</div>
-          <div style="display:flex;align-items:center;gap:8px;color:var(--text);font-size:13px"><span style="background:var(--accent);color:white;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">3</span>Watch real-time progress</div>
-          <div style="display:flex;align-items:center;gap:8px;color:var(--text);font-size:13px"><span style="background:var(--accent);color:white;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">4</span>Export &amp; back up your data</div>
-        </div>
+  <div class="setup-panel animate-in" style="background:var(--green-bg);border-color:var(--green)">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <div style="flex:1">
+        <h2 style="color:var(--green);margin-bottom:8px">🚀 Ready to track your FTMO Challenge?</h2>
+        <p style="color:var(--text);font-size:14px;line-height:1.6">
+          <strong>1.</strong> Set your challenge type &amp; account size below<br>
+          <strong>2.</strong> After each trading day, enter your <strong>ending balance</strong><br>
+          <strong>3.</strong> Watch real-time progress — profit target, drawdown, and days<br>
+          <strong>4.</strong> Export your data anytime to back it up
+        </p>
       </div>
-      <div style="text-align:center;padding:12px 20px;background:rgba(124,58,237,0.06);border-radius:12px;border:1px solid rgba(124,58,237,0.15)">
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">⭐ Full version with cloud sync</div>
-        <a href="https://buy.stripe.com/5kQ00lejT79186sdvh8Ra00" target="_blank" style="text-decoration:none">
-          <button class="btn btn-primary" style="font-size:15px;padding:12px 28px;white-space:nowrap">🔥 Get Pro — $19.99/mo</button>
+      <div style="text-align:center">
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">Full version with cloud sync</div>
+        <a href="https://gumroad.com/l/ezteprg" target="_blank" style="text-decoration:none">
+          <button class="btn btn-primary" style="font-size:16px;padding:14px 32px">🔥 Buy Pro Access $19.99</button>
         </a>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:6px">Cloud sync · Unlimited accounts · PDF reports</div>
       </div>
     </div>
   </div>
@@ -526,78 +518,34 @@ tbody tr:hover { background: rgba(255,255,255,0.02); }
     </div>
   </div>
 
-  <!-- Auth Status Bar -->
-  <div id="authStatusBar" class="section animate-in" style="display:none;padding:16px;background:linear-gradient(135deg,rgba(88,166,255,0.05),rgba(124,58,237,0.05));border-color:var(--blue)">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-      <div style="display:flex;align-items:center;gap:12px">
-        <span id="authAvatar" style="width:36px;height:36px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white">👤</span>
-        <div>
-          <div id="authEmail" style="font-size:14px;font-weight:600">user@email.com</div>
-          <div id="authPlan" style="font-size:12px;color:var(--text-muted)"><span class="status-badge status-info">Free Plan</span></div>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px">
-        <span id="syncStatus" style="font-size:12px;color:var(--text-muted);padding:6px 12px;background:var(--bg);border-radius:6px;border:1px solid var(--border)">☁️ Not synced</span>
-        <button class="btn btn-sm btn-secondary" onclick="signOut()">Sign Out</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Email Capture / Waitlist -->
-  <div class="section animate-in" id="waitlist" style="background:linear-gradient(135deg, var(--card), rgba(124,58,237,0.08));border-color:var(--accent);position:relative;overflow:hidden">
-    <div style="position:absolute;bottom:-30%;left:-20%;width:250px;height:250px;background:radial-gradient(circle,rgba(124,58,237,0.08),transparent 70%);pointer-events:none"></div>
-    <div style="text-align:center;max-width:520px;margin:0 auto;position:relative;z-index:1">
-      <div style="display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:100px;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);color:var(--accent);font-size:12px;font-weight:600;margin-bottom:16px">🔥 Early Bird — 50% Off</div>
-      <h2 style="color:var(--accent);text-transform:none;font-size:20px;font-weight:700">Get Pro Access When It Launches</h2>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:24px;line-height:1.7">Cloud sync, multi-account tracking, PDF reports, and email alerts. Early birds get <strong style="color:var(--accent)">50% off</strong> forever.</p>
+  <div class="section animate-in" id="waitlist" style="background:linear-gradient(135deg, var(--card), rgba(124,58,237,0.08));border-color:var(--accent)">
+    <div style="text-align:center;max-width:500px;margin:0 auto">
+      <h2 style="color:var(--accent);text-transform:none;font-size:18px">🚀 Get Pro Access When It Launches</h2>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px">Cloud sync, multi-account tracking, PDF reports, and email alerts. Join the waitlist — early birds get 50% off.</p>
       
-      <div style="display:flex;gap:12px;justify-content:center;margin-bottom:16px">
-        <div style="text-align:center;padding:12px 16px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;min-width:80px">
-          <div style="font-size:20px;font-weight:800;color:var(--accent)" id="waitlistCount2">0</div>
-          <div style="font-size:11px;color:var(--text-muted)">Joined</div>
-        </div>
-        <div style="text-align:center;padding:12px 16px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;min-width:80px">
-          <div style="font-size:20px;font-weight:800;color:var(--green)">50%</div>
-          <div style="font-size:11px;color:var(--text-muted)">Early Bird Off</div>
-        </div>
-        <div style="text-align:center;padding:12px 16px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;min-width:80px">
-          <div style="font-size:20px;font-weight:800;color:var(--blue)">$19.99</div>
-          <div style="font-size:11px;color:var(--text-muted)">/ month</div>
-        </div>
-      </div>
-      
-      <form id="waitlistForm" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:400px;margin:0 auto">
+      <form id="waitlistForm" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
         <input type="email" id="waitlistEmail" placeholder="your@email.com" required
-          style="flex:1;min-width:200px;padding:12px 18px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-size:14px;outline:none;transition:border-color 0.2s"
->
-        <button type="submit" class="btn btn-primary" style="padding:12px 28px;font-size:14px">📩 Join Free</button>
+          style="flex:1;min-width:200px;padding:12px 18px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:14px;outline:none">
+        <button type="submit" class="btn btn-primary" style="padding:12px 28px;font-size:14px">📩 Join Waitlist</button>
       </form>
       
-      <div id="waitlistSuccess" style="display:none;padding:20px;background:var(--green-bg);border-radius:12px;border:1px solid rgba(46,160,67,0.2)">
-        <div style="font-size:32px;margin-bottom:8px">🎉</div>
-        <div style="color:var(--green);font-size:16px;font-weight:600">You're on the list!</div>
-        <div style="color:var(--text-muted);font-size:13px;margin-top:4px">Early birds get 50% off. We'll email you at launch.</div>
+      <div id="waitlistSuccess" style="display:none;padding:16px;background:var(--green-bg);border-radius:8px;color:var(--green);font-size:14px">
+        ✅ You're on the list! Early bird pricing coming soon.
       </div>
       
-      <p style="font-size:11px;color:var(--text-muted);margin-top:16px">
-        🔒 No spam · Unsubscribe anytime · <span id="waitlistCount3">0</span> traders already joined
+      <p style="font-size:11px;color:var(--text-muted);margin-top:12px">
+        <span id="waitlistCount">0</span> traders already joined. No spam, unsubscribe anytime.
       </p>
     </div>
   </div>
 
   <!-- Sell CTA -->
-  <div class="price-tag animate-in" style="background:linear-gradient(135deg, rgba(124,58,237,0.1), rgba(88,166,255,0.05));border:1px solid rgba(124,58,237,0.2)">
-    <div style="display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:100px;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);color:var(--accent);font-size:12px;font-weight:600;margin-bottom:12px">🔥 BEST OFFER</div>
-    <p style="font-size:15px;color:var(--text-muted);margin-bottom:8px">Want cloud sync, mobile access, and unlimited accounts?</p>
-    <div class="price" style="font-size:36px">$19.99 <span style="font-size:14px;color:var(--text-muted);font-weight:400">/ month</span></div>
-    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:4px;font-size:13px;color:var(--text-muted)">
-      <span>☁️ Cloud Sync</span>
-      <span>📋 Unlimited Accounts</span>
-      <span>📄 PDF Reports</span>
-      <span>📧 Email Alerts</span>
-    </div>
-    <a href="https://buy.stripe.com/5kQ00lejT79186sdvh8Ra00" target="_blank" class="btn btn-primary" style="margin-top:20px;display:inline-block;font-size:16px;padding:14px 36px;text-decoration:none">🔥 Get Pro Access — $19.99/mo</a>
-    <div style="margin-top:10px;font-size:12px;color:var(--text-muted)">🛡️ 30-day money-back guarantee</div>
+  <div class="price-tag animate-in">
+    <p>🚀 Want this as a premium web app with cloud sync, mobile app, and multi-account support?</p>
+    <div class="price">$19.99 <span style="font-size:16px;color:var(--text-muted)">/ month</span></div>
+    <p style="margin-top:8px;color:var(--text-muted);font-size:13px">Cloud sync, unlimited accounts, PDF reports, email alerts.</p>
+    <a href="https://gumroad.com/l/ezteprg" target="_blank" class="btn btn-primary" style="margin-top:16px;display:inline-block;font-size:16px;padding:14px 36px;text-decoration:none">🔥 Get Pro Access — $19.99/mo</a>
   </div>
 </div>
 
@@ -1106,6 +1054,8 @@ function initWaitlist() {
   const form = document.getElementById('waitlistForm');
   const emailInput = document.getElementById('waitlistEmail');
   const successDiv = document.getElementById('waitlistSuccess');
+  const countSpan = document.getElementById('waitlistCount');
+  
   // Load waitlist from localStorage
   let waitlist = [];
   try {
@@ -1113,14 +1063,7 @@ function initWaitlist() {
     if (saved) waitlist = JSON.parse(saved);
   } catch(e) {}
   
-  // Update all count displays
-  function updateCounts() {
-    const c2 = document.getElementById('waitlistCount2');
-    const c3 = document.getElementById('waitlistCount3');
-    if (c2) c2.textContent = waitlist.length;
-    if (c3) c3.textContent = waitlist.length;
-  }
-  updateCounts();
+  countSpan.textContent = waitlist.length;
   
   form.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -1135,12 +1078,13 @@ function initWaitlist() {
       } catch(e) {}
     }
     
-    // Send via FormSubmit
+    // Send via FormSubmit (replace your@email.com with your actual email)
     const formData = new FormData();
     formData.append('email', email);
     formData.append('_subject', 'New FTMO Waitlist Signup');
     formData.append('_captcha', 'false');
     
+    // Try to send via FormSubmit (silent fail if not configured)
     try {
       fetch('https://formsubmit.co/ajax/enishshah2@gmail.com', {
         method: 'POST',
@@ -1151,119 +1095,8 @@ function initWaitlist() {
     // Show success
     form.style.display = 'none';
     successDiv.style.display = 'block';
-    updateCounts();
+    countSpan.textContent = waitlist.length;
   });
-}
-
-// ====== SUPABASE AUTH & SYNC ======
-let isAuthenticated = false;
-let userEmail = '';
-let isPro = false;
-
-async function handleAuth() {
-  if (isAuthenticated) {
-    await signOut();
-    return;
-  }
-  window.location.href = 'auth.html';
-}
-
-async function signOut() {
-  try {
-    await window.supabaseClient.signOut();
-    isAuthenticated = false;
-    userEmail = '';
-    isPro = false;
-    updateAuthUI();
-    document.getElementById('authStatusBar').style.display = 'none';
-  } catch(e) {
-    console.error('Sign out error:', e);
-  }
-}
-
-function updateAuthUI() {
-  const btn = document.getElementById('authBtn');
-  const syncBtn = document.getElementById('cloudSyncBtn');
-  if (isAuthenticated) {
-    btn.textContent = '🚪 Sign Out';
-    btn.style.background = 'var(--border)';
-    syncBtn.style.display = 'inline-flex';
-  } else {
-    btn.textContent = '🔑 Sign In';
-    btn.style.background = 'var(--gradient)';
-    syncBtn.style.display = 'none';
-  }
-}
-
-async function cloudSync() {
-  if (!isAuthenticated) {
-    window.location.href = 'auth.html';
-    return;
-  }
-  
-  const syncBtn = document.getElementById('cloudSyncBtn');
-  const syncStatus = document.getElementById('syncStatus');
-  syncBtn.textContent = '⏳ Syncing...';
-  syncBtn.disabled = true;
-  
-  try {
-    const result = await window.supabaseClient.syncWithCloud();
-    if (result.success) {
-      syncStatus.textContent = '☁️ Synced ✓';
-      syncStatus.style.color = 'var(--green)';
-      
-      // If we got data from cloud, reload state
-      if (result.syncedFromCloud) {
-        loadState();
-        loadSetup();
-        render();
-      }
-    } else if (result.reason === 'not_authenticated') {
-      syncStatus.textContent = '☁️ Sign in to sync';
-      syncStatus.style.color = 'var(--text-muted)';
-    }
-  } catch(e) {
-    console.error('Sync error:', e);
-    syncStatus.textContent = '☁️ Sync failed';
-    syncStatus.style.color = 'var(--red)';
-  }
-  
-  syncBtn.textContent = '☁️ Sync';
-  syncBtn.disabled = false;
-}
-
-async function checkAuth() {
-  if (!window.supabaseClient || !window.supabaseClient.isConfigured()) {
-    // Supabase not configured yet — hide auth features
-    document.getElementById('authBtn').style.display = 'none';
-    return;
-  }
-  
-  try {
-    const user = await window.supabaseClient.getUser();
-    if (user) {
-      isAuthenticated = true;
-      userEmail = user.email || '';
-      isPro = await window.supabaseClient.checkProStatus();
-      
-      // Show auth bar
-      const bar = document.getElementById('authStatusBar');
-      bar.style.display = 'block';
-      document.getElementById('authEmail').textContent = userEmail;
-      document.getElementById('authPlan').innerHTML = isPro 
-        ? '<span class="status-badge status-pass" style="background:rgba(46,160,67,0.15);color:var(--green)">🔥 Pro Plan</span>'
-        : '<span class="status-badge status-info">Free Plan</span>';
-      
-      updateAuthUI();
-      
-      // Auto-sync if ?sync=cloud in URL
-      if (window.location.search.includes('sync=cloud')) {
-        setTimeout(() => cloudSync(), 500);
-      }
-    }
-  } catch(e) {
-    console.error('Auth check error:', e);
-  }
 }
 
 // ====== INIT ======
@@ -1275,20 +1108,6 @@ function init() {
   loadSetup();
   render();
   initWaitlist();
-  
-  // Initialize Supabase auth — use ready flag to prevent race conditions
-  if (window.__supabaseReady) {
-    if (window.supabaseClient && window.supabaseClient.isConfigured()) {
-      checkAuth();
-    }
-  } else {
-    window.addEventListener('supabase-loaded', function initAuth() {
-      if (window.supabaseClient && window.supabaseClient.isConfigured()) {
-        checkAuth();
-      }
-      window.removeEventListener('supabase-loaded', initAuth);
-    });
-  }
 }
 
 document.addEventListener('DOMContentLoaded', init);

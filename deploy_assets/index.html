@@ -115,133 +115,6 @@ body {
   color: var(--text-muted);
 }
 
-/* ═══ NEWSLETTER ═══ */
-.newsletter {
-  padding: 80px 0;
-}
-
-.newsletter-card {
-  max-width: 640px;
-  margin: 0 auto;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 48px 36px;
-  text-align: center;
-}
-
-.newsletter-card h2 {
-  font-size: 28px;
-  margin-bottom: 12px;
-}
-
-.newsletter-card p {
-  color: var(--text-muted);
-  font-size: 15px;
-  margin-bottom: 28px;
-  line-height: 1.6;
-}
-
-.input-group {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.newsletter-input {
-  padding: 14px 18px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 15px;
-  outline: none;
-  transition: border-color 0.2s;
-  min-width: 200px;
-  flex: 1;
-}
-
-.newsletter-input:focus {
-  border-color: var(--accent);
-}
-
-.newsletter-guarantee {
-  font-size: 12px !important;
-  color: var(--text-muted) !important;
-  margin-top: 12px !important;
-  margin-bottom: 0 !important;
-}
-
-.success {
-  text-align: center;
-}
-
-.success-icon {
-  font-size: 48px;
-  margin-bottom: 12px;
-}
-
-.success h3 {
-  font-size: 22px;
-  color: var(--green);
-  margin-bottom: 8px;
-}
-
-.success p {
-  color: var(--text-muted) !important;
-  margin-bottom: 0 !important;
-}
-
-/* ═══ FOOTER ═══ */
-.footer {
-  padding: 40px 20px;
-  color: var(--text-muted);
-  font-size: 13px;
-  border-top: 1px solid var(--border);
-}
-
-.footer-grid {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 30px;
-  text-align: left;
-  padding-bottom: 30px;
-  border-bottom: 1px solid var(--border);
-}
-
-.footer-col h4 {
-  font-size: 14px;
-  color: var(--text);
-  margin-bottom: 12px;
-}
-
-.footer-col p {
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.footer-col a {
-  display: block;
-  font-size: 13px;
-  color: var(--text-muted);
-  text-decoration: none;
-  padding: 4px 0;
-  transition: color 0.2s;
-}
-
-.footer-col a:hover {
-  color: var(--accent);
-}
-
-.footer-bottom {
-  max-width: 1100px;
-  margin: 20px auto 0;
-  text-align: center;
-}
-
 /* ═══ SOCIAL PROOF ═══ */
 .social-proof {
   text-align: center;
@@ -689,24 +562,6 @@ body {
 </head>
 <body>
 
-<!-- ═══ NAV ═══ -->
-<nav style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,17,23,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 0;">
-  <div class="container" style="display:flex;align-items:center;justify-content:space-between;">
-    <a href="index.html" style="font-weight:800;font-size:18px;color:var(--text);text-decoration:none;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">📊 FTMO Tracker Pro</a>
-    <div style="display:flex;gap:20px;align-items:center;">
-      <a href="index.html" style="color:var(--accent);text-decoration:none;font-size:14px;font-weight:500;">Home</a>
-      <a href="ftmo_challenge_tracker.html" style="color:var(--text-muted);text-decoration:none;font-size:14px;font-weight:500;transition:color 0.2s;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'">Tracker</a>
-      <a href="sell.html" style="color:var(--text-muted);text-decoration:none;font-size:14px;font-weight:500;transition:color 0.2s;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'">Pro</a>
-      <a href="waitlist.html" style="color:var(--text-muted);text-decoration:none;font-size:14px;font-weight:500;transition:color 0.2s;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'">Waitlist</a>
-      <a href="portfolio.html" style="color:var(--text-muted);text-decoration:none;font-size:14px;font-weight:500;transition:color 0.2s;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'">Portfolio</a>
-      <a href="auth.html" style="padding:8px 18px;border-radius:8px;background:var(--gradient);color:white;text-decoration:none;font-size:13px;font-weight:600;transition:all 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">🔑 Sign In</a>
-    </div>
-  </div>
-</nav>
-
-<!-- Spacer for fixed nav -->
-<div style="height:60px"></div>
-
 <!-- ═══ HERO ═══ -->
 <section class="hero">
   <div class="hero-content">
@@ -918,7 +773,7 @@ body {
           <li>Email notifications & alerts</li>
           <li>Priority support</li>
         </ul>
-        <a href="https://buy.stripe.com/5kQ00lejT79186sdvh8Ra00" target="_blank" class="btn btn-primary">🚀 Buy Pro — $19.99/mo</a>
+        <a href="https://gumroad.com/l/ezteprg" target="_blank" class="btn btn-primary">🚀 Buy Pro — $19.99/mo</a>
       </div>
     </div>
   </div>
@@ -955,30 +810,6 @@ body {
   </div>
 </section>
 
-<!-- ═══ NEWSLETTER ═══ -->
-<section class="newsletter" id="newsletter">
-  <div class="container">
-    <div class="newsletter-card">
-      <span class="hero-badge">📬 FREE NEWSLETTER</span>
-      <h2>Get Weekly FTMO Tips & Strategies</h2>
-      <p>Join 260+ traders who receive exclusive challenge strategies, drawdown tips, and early access to Pro features — delivered to your inbox every week.</p>
-      <form id="newsletterForm" class="newsletter-form">
-        <div class="input-group">
-          <input type="text" id="newsletterName" placeholder="Your name" class="newsletter-input">
-          <input type="email" id="newsletterEmail" placeholder="your@email.com" required class="newsletter-input">
-          <button type="submit" class="btn btn-primary" style="width:auto;padding:14px 28px">📬 Subscribe</button>
-        </div>
-        <p class="newsletter-guarantee">No spam. Unsubscribe anytime. 🔒</p>
-      </form>
-      <div class="success" id="newsletterSuccess" style="display:none">
-        <div class="success-icon">✅</div>
-        <h3>You're subscribed!</h3>
-        <p>Check your inbox for your welcome email. 🚀</p>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ═══ FINAL CTA ═══ -->
 <section class="cta">
   <div class="container">
@@ -986,44 +817,16 @@ body {
     <p>Join 260+ traders who never miss a rule. Start free, no commitment.</p>
     <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
       <a href="ftmo_challenge_tracker.html" class="btn btn-primary btn-hero">🚀 Start Free Now</a>
-      <a href="https://buy.stripe.com/5kQ00lejT79186sdvh8Ra00" target="_blank" class="btn btn-outline btn-hero">Or Go Pro — $19.99/mo</a>
+      <a href="https://gumroad.com/l/ezteprg" target="_blank" class="btn btn-outline btn-hero">Or Go Pro — $19.99/mo</a>
     </div>
     <div class="guarantee">🛡️ 30-day money-back guarantee on Pro</div>
   </div>
 </section>
 
 <footer class="footer">
-  <div class="footer-grid">
-    <div class="footer-col">
-      <h4>FTMO Tracker Pro</h4>
-      <p>Built for traders, by traders.</p>
-      <p style="margin-top:4px">Not affiliated with FTMO.com.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Quick Links</h4>
-      <a href="ftmo_challenge_tracker.html">Free Tracker</a>
-      <a href="sell.html">Pro Version</a>
-      <a href="waitlist.html">Waitlist</a>
-      <a href="portfolio.html">Portfolio</a>
-    </div>
-    <div class="footer-col">
-      <h4>Connect</h4>
-      <a href="https://t.me/ArdTradingBot">Telegram Bot</a>
-      <a href="https://gumroad.com/l/ezteprg">Stripe</a>
-      <a href="#newsletter">📬 Newsletter</a>
-    </div>
-    <div class="footer-col">
-      <h4>📬 Join Newsletter</h4>
-      <form id="footerNewsletterForm" style="display:flex;gap:8px">
-        <input type="email" placeholder="your@email.com" required style="flex:1;padding:10px 14px;border:1px solid #30363d;border-radius:6px;background:#0d1117;color:#e6edf3;font-size:13px;outline:none">
-        <button type="submit" style="padding:10px 16px;border:none;border-radius:6px;background:#7c3aed;color:white;font-size:13px;font-weight:600;cursor:pointer">Join</button>
-      </form>
-      <p style="margin-top:6px;font-size:11px;color:#8b949e">No spam. Unsubscribe anytime.</p>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p>Telegram: <a href="https://t.me/ArdTradingBot" style="color:var(--accent);text-decoration:none">@ArdTradingBot</a> | <a href="https://buy.stripe.com/5kQ00lejT79186sdvh8Ra00" style="color:var(--accent);text-decoration:none">Pro Version</a></p>
-  </div>
+  <p>FTMO Challenge Tracker — Built for traders, by traders.</p>
+  <p style="margin-top:4px">Not affiliated with FTMO.com. All rules are based on publicly available information.</p>
+  <p style="margin-top:4px">Telegram: <a href="https://t.me/ArdTradingBot" style="color:var(--accent);text-decoration:none">@ArdTradingBot</a> | <a href="https://gumroad.com/l/ezteprg" style="color:var(--accent);text-decoration:none">Pro Version</a></p>
 </footer>
 
 <script>
@@ -1049,68 +852,6 @@ document.querySelectorAll('.animate').forEach(el => {
   el.style.animationPlayState = 'paused';
   observer.observe(el);
 });
-
-// Newsletter form handler
-function handleNewsletterSubmit(formId, nameInputId, emailInputId, successId) {
-  const form = document.getElementById(formId);
-  if (!form) return;
-  
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const email = document.getElementById(emailInputId).value.trim();
-    const name = document.getElementById(nameInputId) ? document.getElementById(nameInputId).value.trim() : '';
-    if (!email) return;
-    
-    // Store locally
-    let subs = [];
-    try {
-      const saved = localStorage.getItem('ftmoNewsletter');
-      if (saved) subs = JSON.parse(saved);
-    } catch(e) {}
-    if (!subs.find(s => s.email === email)) {
-      subs.push({email, name, date: new Date().toISOString()});
-      try { localStorage.setItem('ftmoNewsletter', JSON.stringify(subs)); } catch(e) {}
-    }
-
-    // Send via FormSubmit
-    const fd = new FormData();
-    fd.append('name', name || 'Newsletter Subscriber');
-    fd.append('email', email);
-    fd.append('_subject', '📬 FTMO Newsletter Signup');
-    fd.append('_captcha', 'false');
-    fd.append('_template', 'table');
-    fetch('https://formsubmit.co/ajax/enishshah2@gmail.com', { method: 'POST', body: fd }).catch(function(){});
-    
-    form.style.display = 'none';
-    document.getElementById(successId).style.display = 'block';
-  });
-}
-
-handleNewsletterSubmit('newsletterForm', 'newsletterName', 'newsletterEmail', 'newsletterSuccess');
-// Footer form - use querySelector since input doesn't have an id
-(function() {
-  const form = document.getElementById('footerNewsletterForm');
-  if (!form) return;
-  const input = form.querySelector('input[type="email"]');
-  if (!input) return;
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const email = input.value.trim();
-    if (!email) return;
-    let subs = [];
-    try { const saved = localStorage.getItem('ftmoNewsletter'); if (saved) subs = JSON.parse(saved); } catch(e){}
-    if (!subs.find(s => s.email === email)) {
-      subs.push({email, name: '', date: new Date().toISOString()});
-      try { localStorage.setItem('ftmoNewsletter', JSON.stringify(subs)); } catch(e){}
-    }
-    const fd = new FormData();
-    fd.append('email', email);
-    fd.append('_subject', '📬 FTMO Newsletter Signup');
-    fd.append('_captcha', 'false');
-    fetch('https://formsubmit.co/ajax/enishshah2@gmail.com', { method: 'POST', body: fd }).catch(function(){});
-    form.innerHTML = '<p style="color:#2ea043;font-size:14px">✅ Subscribed! Check your inbox.</p>';
-  });
-})();
 </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-# 🚀 Enish Shah — Autonomous Income & Trading System
+# 🚀 Adbhut Ram Das — Autonomous Income & Trading System
 
 > **Live Site:** https://bright-palmier-d43338.netlify.app
 > **Telegram Bot:** @ArdTradingBot
@@ -118,9 +118,9 @@ All services are monitored by `24x7_guardian.sh` and auto-restart on failure.
 
 | Source | Price | Payment |
 |--------|-------|---------|
-| FTMO Tracker Pro | $19.99/month | Stripe |
+| FTMO Tracker Pro | $19.99/month | Gumroad |
 | Custom Bot Dev | $49–$199 | Crypto/PayPal/Bank |
-| Bug Bounty Setup | $19.99/month | Stripe |
+| Bug Bounty Setup | $19.99/month | Email/Gumroad |
 | Security Audit | $400–$2,000 | PayPal/Bank |
 | Full Automation Suite | Custom | Any method |
 
@@ -199,9 +199,9 @@ cd ~/income && python3 -m tools.income_orchestrator start
 | Pro Version | https://bright-palmier-d43338.netlify.app/sell.html |
 | Telegram Bot | https://t.me/ArdTradingBot |
 | Portfolio | https://bright-palmier-d43338.netlify.app/portfolio.html |
-| Stripe Payment | https://buy.stripe.com/5kQ00lejT79186sdvh8Ra00 |
+| Gumroad Payment | https://gumroad.com/l/ezteprg |
 | GitHub | https://github.com/adbhutrd/FTMO-challenge-TRacker.git |
 
 ---
 
-*Built with ❤️ by Enish Shah · MSc Cyber Security (Distinction)*
+*Built with ❤️ by Adbhut Ram Das · MSc Cyber Security (Distinction)*

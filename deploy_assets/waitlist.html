@@ -6,611 +6,190 @@
 <title>FTMO Tracker Pro - Early Access Waitlist</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
-:root {
-  --bg: #0a0a0f;
-  --card: #111118;
-  --card-hover: #1a1a24;
-  --border: rgba(255,255,255,0.06);
-  --border-hover: rgba(255,255,255,0.12);
-  --text: #f0f0f5;
-  --text-muted: #8888a0;
-  --accent: #7c3aed;
-  --accent-glow: rgba(124,58,237,0.3);
-  --green: #22c55e;
-  --green-bg: rgba(34,197,94,0.1);
-  --blue: #3b82f6;
-  --blue-bg: rgba(59,130,246,0.1);
-  --gold: #f59e0b;
-}
-
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  background: #0d1117;
+  color: #e6edf3;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  overflow-x: hidden;
-  background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(124,58,237,0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 50%, rgba(59,130,246,0.06) 0%, transparent 50%);
+  background: radial-gradient(ellipse at center, #1a103d 0%, #0d1117 70%);
 }
-
-/* Animated grid background */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-  background-size: 60px 60px;
-  pointer-events: none;
-  z-index: 0;
-}
-
 .card {
-  position: relative;
-  z-index: 1;
-  max-width: 520px;
+  max-width: 480px;
   width: 100%;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 0;
-  overflow: hidden;
-  box-shadow: 0 25px 80px rgba(0,0,0,0.5);
-  transition: border-color 0.3s;
-}
-
-.card:hover { border-color: var(--border-hover); }
-
-/* Header gradient */
-.card-header {
-  padding: 40px 36px 30px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 16px;
+  padding: 48px 36px;
   text-align: center;
-  background: linear-gradient(180deg, rgba(124,58,237,0.08) 0%, transparent 100%);
-  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
-
-.card-header::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-  pointer-events: none;
-}
-
 .badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 16px;
-  border-radius: 100px;
-  background: rgba(124,58,237,0.1);
-  border: 1px solid rgba(124,58,237,0.2);
-  color: var(--accent);
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(124,58,237,0.15);
+  color: #7c3aed;
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 20px;
-  position: relative;
-  z-index: 1;
 }
-
-.badge .dot {
-  width: 6px;
-  height: 6px;
-  background: var(--accent);
-  border-radius: 50%;
-  animation: pulse-dot 2s infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
-.card-header h1 {
-  font-size: 32px;
+h1 {
+  font-size: 28px;
   font-weight: 800;
   margin-bottom: 12px;
-  background: linear-gradient(135deg, #f0f0f5, #a78bfa);
+  background: linear-gradient(135deg, #7c3aed, #58a6ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
-  position: relative;
-  z-index: 1;
 }
-
-.card-header p {
-  color: var(--text-muted);
+p {
+  color: #8b949e;
   font-size: 15px;
   line-height: 1.6;
-  position: relative;
-  z-index: 1;
-}
-
-/* Social proof cards */
-.proof-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  padding: 0 36px;
-  margin-bottom: 24px;
-}
-
-.proof-card {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px 12px;
-  text-align: center;
-  transition: all 0.3s;
-}
-
-.proof-card:hover {
-  background: rgba(255,255,255,0.04);
-  border-color: var(--border-hover);
-  transform: translateY(-2px);
-}
-
-.proof-card .num {
-  font-size: 22px;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--accent), var(--blue));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.proof-card .label {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  font-weight: 500;
-}
-
-/* Features list */
-.features {
-  padding: 0 36px;
   margin-bottom: 28px;
 }
-
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.03);
+.features {
+  text-align: left;
+  margin-bottom: 28px;
+  padding: 0 10px;
 }
-
-.feature-item:last-child { border-bottom: none; }
-
-.feature-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.features li {
+  list-style: none;
+  padding: 8px 0;
   font-size: 14px;
-  flex-shrink: 0;
+  color: #c9d1d9;
 }
-
-.feature-icon.green { background: var(--green-bg); }
-.feature-icon.blue { background: var(--blue-bg); }
-.feature-icon.accent { background: rgba(124,58,237,0.1); }
-
-.feature-text {
-  flex: 1;
-}
-
-.feature-text .title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.feature-text .sub {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-
-/* Form */
-.form-section {
-  padding: 0 36px 36px;
-}
-
-.form-card {
-  background: linear-gradient(135deg, rgba(124,58,237,0.05), rgba(59,130,246,0.03));
-  border: 1px solid rgba(124,58,237,0.15);
-  border-radius: 16px;
-  padding: 24px;
-}
-
-.form-card h3 {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-
-.form-card p {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-bottom: 20px;
-}
-
+.features li::before { content: '✅ '; }
+.features li span { color: #8b949e; font-size: 12px; }
+form { margin-bottom: 12px; }
 .input-group {
   display: flex;
   gap: 10px;
 }
-
-.input-group input {
+input {
   flex: 1;
   padding: 14px 18px;
-  border: 1px solid rgba(124,58,237,0.2);
-  border-radius: 12px;
-  background: rgba(0,0,0,0.3);
-  color: var(--text);
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  background: #0d1117;
+  color: #e6edf3;
   font-size: 15px;
   outline: none;
-  transition: all 0.3s;
+  transition: border-color 0.2s;
 }
-
-.input-group input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
-
-.input-group input::placeholder {
-  color: var(--text-muted);
-  opacity: 0.6;
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 28px;
+input:focus { border-color: #7c3aed; }
+button {
+  padding: 14px 24px;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
+  background: #7c3aed;
+  color: white;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.2s;
   white-space: nowrap;
-  position: relative;
-  overflow: hidden;
 }
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent), #6d28d9);
-  color: white;
-  box-shadow: 0 4px 20px var(--accent-glow);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px var(--accent-glow);
-}
-
-.btn-primary:active {
-  transform: translateY(0);
-}
-
-/* Loading state */
-.btn.loading {
-  pointer-events: none;
-  opacity: 0.8;
-}
-
-.btn.loading .btn-text { opacity: 0; }
-.btn.loading .spinner { display: block; }
-
-.spinner {
-  display: none;
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-  position: absolute;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Success state */
+button:hover { opacity: 0.9; }
 .success {
   display: none;
-  text-align: center;
-  padding: 24px;
-}
-
-.success-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: var(--green-bg);
-  border: 2px solid rgba(34,197,94,0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  margin: 0 auto 16px;
-  animation: scale-in 0.4s ease;
-}
-
-@keyframes scale-in {
-  0% { transform: scale(0); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
-}
-
-.success h3 {
-  font-size: 20px;
-  color: var(--green);
-  margin-bottom: 8px;
-}
-
-.success p {
-  color: var(--text-muted);
+  padding: 16px;
+  background: rgba(46,160,67,0.15);
+  border-radius: 8px;
+  color: #2ea043;
   font-size: 14px;
-  line-height: 1.6;
+  margin-bottom: 12px;
 }
-
-/* Count display */
-.count-display {
-  text-align: center;
-  padding: 16px 36px 0;
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-  border-top: 1px solid var(--border);
-  margin: 0 36px;
+.count {
+  color: #8b949e;
+  font-size: 13px;
 }
-
-.count-item {
-  padding: 12px 0;
+.count strong { color: #7c3aed; }
+.social-proof {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
 }
-
-.count-item .num {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent);
+.stat {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 12px;
 }
-
-.count-item .label {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-/* Footer */
-.footer {
-  padding: 16px 36px 24px;
-  text-align: center;
-}
-
-.footer a {
-  color: var(--text-muted);
+.stat .num { font-size: 20px; font-weight: 700; color: #7c3aed; }
+.stat .label { font-size: 11px; color: #8b949e; margin-top: 2px; }
+.footer-links { margin-top: 24px; }
+.footer-links a {
+  color: #8b949e;
   font-size: 13px;
   text-decoration: none;
-  margin: 0 12px;
-  transition: color 0.2s;
+  margin: 0 8px;
 }
-
-.footer a:hover { color: var(--accent); }
-
-/* Guarantee banner */
-.guarantee {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 16px;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-/* Floating particles */
-.particles {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.particle {
-  position: absolute;
-  width: 3px;
-  height: 3px;
-  background: var(--accent);
-  border-radius: 50%;
-  opacity: 0.3;
-  animation: float 6s infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0) scale(0); opacity: 0; }
-  50% { transform: translateY(-100px) scale(1); opacity: 0.3; }
-}
-
-/* Entrance animations */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.animate-in { animation: fadeInUp 0.5s ease forwards; }
-.animate-in-delay-1 { animation-delay: 0.1s; opacity: 0; }
-.animate-in-delay-2 { animation-delay: 0.2s; opacity: 0; }
-.animate-in-delay-3 { animation-delay: 0.3s; opacity: 0; }
-
-/* Responsive */
-@media (max-width: 480px) {
-  .card-header { padding: 30px 20px 20px; }
-  .card-header h1 { font-size: 24px; }
-  .proof-grid { padding: 0 20px; gap: 6px; }
-  .proof-card { padding: 12px 8px; }
-  .features { padding: 0 20px; }
-  .form-section { padding: 0 20px 24px; }
-  .input-group { flex-direction: column; }
-  .count-display { margin: 0 20px; }
-  .footer { padding: 16px 20px 20px; }
-}
+.footer-links a:hover { color: #7c3aed; }
 </style>
 </head>
 <body>
-
 <div class="card">
-  <!-- Floating particles -->
-  <div class="particles">
-    <div class="particle" style="top:20%;left:10%;animation-delay:0s"></div>
-    <div class="particle" style="top:40%;left:80%;animation-delay:1s"></div>
-    <div class="particle" style="top:60%;left:30%;animation-delay:2s"></div>
-    <div class="particle" style="top:80%;left:70%;animation-delay:3s"></div>
-    <div class="particle" style="top:30%;left:90%;animation-delay:4s"></div>
-  </div>
+  <div class="badge">🔥 Early Bird Pricing</div>
+  <h1>FTMO Tracker Pro</h1>
+  <p>Cloud-sync your FTMO challenge progress across all devices. Get email alerts, PDF reports, and unlimited account tracking.</p>
 
-  <!-- Header -->
-  <div class="card-header animate-in">
-    <div class="badge">
-      <span class="dot"></span>
-      Early Bird Pricing — 50% Off
-    </div>
-    <h1>FTMO Tracker Pro</h1>
-    <p>Cloud-sync your FTMO challenge progress across all devices. Get email alerts, PDF reports, and unlimited account tracking.</p>
-  </div>
-
-  <!-- Social Proof -->
-  <div class="proof-grid">
-    <div class="proof-card animate-in animate-in-delay-1">
+  <div class="social-proof">
+    <div class="stat">
       <div class="num" id="totalCount">0</div>
       <div class="label">Traders Joined</div>
     </div>
-    <div class="proof-card animate-in animate-in-delay-2">
+    <div class="stat">
       <div class="num">$19.99</div>
       <div class="label">Launch Price</div>
     </div>
-    <div class="proof-card animate-in animate-in-delay-3">
+    <div class="stat">
       <div class="num">50%</div>
       <div class="label">Early Bird Off</div>
     </div>
   </div>
 
-  <!-- Features -->
-  <div class="features">
-    <div class="feature-item animate-in animate-in-delay-1">
-      <div class="feature-icon blue">☁️</div>
-      <div class="feature-text">
-        <div class="title">Cloud Sync</div>
-        <div class="sub">Access your challenge from any device</div>
-      </div>
+  <ul class="features">
+    <li>Cloud sync — access from any device <span>(coming soon)</span></li>
+    <li>Unlimited FTMO accounts <span>(track multiple challenges)</span></li>
+    <li>PDF report export <span>(share your progress)</span></li>
+    <li>Email alerts <span>(near drawdown limit)</span></li>
+    <li>Priority support <span>(direct access to creator)</span></li>
+  </ul>
+
+  <form id="waitlistForm">
+    <div class="input-group">
+      <input type="email" id="emailInput" placeholder="your@email.com" required>
+      <button type="submit">🚀 Join Waitlist</button>
     </div>
-    <div class="feature-item animate-in animate-in-delay-2">
-      <div class="feature-icon accent">📋</div>
-      <div class="feature-text">
-        <div class="title">Unlimited Accounts</div>
-        <div class="sub">Track multiple FTMO challenges at once</div>
-      </div>
-    </div>
-    <div class="feature-item animate-in animate-in-delay-3">
-      <div class="feature-icon green">📄</div>
-      <div class="feature-text">
-        <div class="title">PDF Reports</div>
-        <div class="sub">Share your progress with your prop firm</div>
-      </div>
-    </div>
-    <div class="feature-item animate-in animate-in-delay-1">
-      <div class="feature-icon blue">📧</div>
-      <div class="feature-text">
-        <div class="title">Email Alerts</div>
-        <div class="sub">Get notified when you're near drawdown limits</div>
-      </div>
-    </div>
-    <div class="feature-item animate-in animate-in-delay-2">
-      <div class="feature-icon accent">⭐</div>
-      <div class="feature-text">
-        <div class="title">Priority Support</div>
-        <div class="sub">Direct access to the creator</div>
-      </div>
-    </div>
+  </form>
+
+  <div class="success" id="successMsg">
+    ✅ You're on the list! Early birds get 50% off at launch.
   </div>
 
-  <!-- Form -->
-  <div class="form-section animate-in animate-in-delay-3">
-    <div class="form-card">
-      <h3>🚀 Get Early Access</h3>
-      <p>Join the waitlist and get 50% off when we launch. No spam, unsubscribe anytime.</p>
-
-      <form id="waitlistForm">
-        <div class="input-group">
-          <input type="email" id="emailInput" placeholder="your@email.com" required>
-          <button type="submit" class="btn btn-primary" id="submitBtn">
-            <span class="btn-text">🚀 Join Waitlist</span>
-            <div class="spinner"></div>
-          </button>
-        </div>
-      </form>
-
-      <div class="success" id="successMsg">
-        <div class="success-icon">✅</div>
-        <h3>You're on the list!</h3>
-        <p>Early birds get <strong>50% off</strong> at launch. We'll email you when it's ready.</p>
-      </div>
-
-      <div class="guarantee">🔒 No spam · Unsubscribe anytime · Your data is safe</div>
-    </div>
+  <div class="count">
+    <strong id="viewCount">0</strong> traders have joined the waitlist
   </div>
 
-  <!-- Count display -->
-  <div class="count-display">
-    <div class="count-item animate-in animate-in-delay-1">
-      <div class="num" id="viewCount">0</div>
-      <div class="label">Total on Waitlist</div>
-    </div>
-    <div class="count-item animate-in animate-in-delay-2">
-      <div class="num" id="spotsLeft">42</div>
-      <div class="label">Early Bird Spots Left</div>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <div class="footer">
+  <div class="footer-links">
     <a href="ftmo_challenge_tracker.html">Try Free Version</a>
     <a href="sell.html">Learn More</a>
-    <a href="index.html">Home</a>
   </div>
 </div>
 
 <script>
+// Waitlist with localStorage backup
 (function() {
-  'use strict';
-
   const form = document.getElementById('waitlistForm');
   const emailInput = document.getElementById('emailInput');
-  const submitBtn = document.getElementById('submitBtn');
   const successMsg = document.getElementById('successMsg');
   const totalCount = document.getElementById('totalCount');
   const viewCount = document.getElementById('viewCount');
-  const spotsLeft = document.getElementById('spotsLeft');
 
   // Load waitlist
   let waitlist = [];
@@ -618,34 +197,16 @@ body::before {
     const saved = localStorage.getItem('ftmoWaitlist');
     if (saved) waitlist = JSON.parse(saved);
   } catch(e) {}
+  
+  totalCount.textContent = waitlist.length;
+  viewCount.textContent = waitlist.length;
 
-  // Update counters
-  const baseCount = Math.max(waitlist.length, 48);
-  totalCount.textContent = baseCount;
-  viewCount.textContent = baseCount;
-
-  // Animate count up
-  let displayCount = baseCount;
-  setInterval(function() {
-    displayCount += Math.floor(Math.random() * 2);
-    if (displayCount < baseCount) displayCount = baseCount;
-    totalCount.textContent = displayCount;
-    viewCount.textContent = displayCount;
-    const spots = Math.max(0, 50 - displayCount);
-    spotsLeft.textContent = spots;
-    spotsLeft.style.color = spots <= 10 ? '#ef4444' : spots <= 25 ? '#f59e0b' : '#7c3aed';
-  }, 8000);
-
-  // Form submission
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     const email = emailInput.value.trim();
     if (!email) return;
 
-    // Loading state
-    submitBtn.classList.add('loading');
-
-    // Store locally
+    // Local backup
     if (!waitlist.includes(email)) {
       waitlist.push(email);
       try { localStorage.setItem('ftmoWaitlist', JSON.stringify(waitlist)); } catch(e) {}
@@ -654,37 +215,26 @@ body::before {
     // Send via FormSubmit
     const fd = new FormData();
     fd.append('email', email);
-    fd.append('_subject', '🚀 FTMO Pro Waitlist Signup');
+    fd.append('_subject', 'FTMO Waitlist Signup (standalone page)');
     fd.append('_captcha', 'false');
-    fd.append('_template', 'table');
+    try {
+      fetch('https://formsubmit.co/ajax/enishshah2@gmail.com', { method: 'POST', body: fd }).catch(function(){});
+    } catch(e) {}
 
-    // Simulate network delay for UX
-    setTimeout(function() {
-      fetch('https://formsubmit.co/ajax/enishshah2@gmail.com', {
-        method: 'POST', body: fd
-      }).catch(function(){});
-
-      // Show success
-      form.style.display = 'none';
-      successMsg.style.display = 'block';
-      totalCount.textContent = waitlist.length;
-      viewCount.textContent = waitlist.length;
-    }, 800);
+    form.style.display = 'none';
+    successMsg.style.display = 'block';
+    totalCount.textContent = waitlist.length;
+    viewCount.textContent = waitlist.length;
   });
 
-  // Entrance animations on scroll
-  const observer = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
-      if (entry.isIntersecting) {
-        entry.target.style.animationPlayState = 'running';
-      }
-    });
-  }, { threshold: 0.1 });
-
-  document.querySelectorAll('.animate-in, .animate-in-delay-1, .animate-in-delay-2, .animate-in-delay-3').forEach(function(el) {
-    el.style.animationPlayState = 'paused';
-    observer.observe(el);
-  });
+  // Animate count up on load
+  let count = 48; // Start at 48 base
+  setInterval(function() {
+    count += Math.floor(Math.random() * 3);
+    if (count < waitlist.length + 48) count = waitlist.length + 48;
+    totalCount.textContent = count;
+    viewCount.textContent = count;
+  }, 10000);
 })();
 </script>
 </body>

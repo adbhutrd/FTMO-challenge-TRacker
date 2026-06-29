@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daily Expense Tracker — Free & Open Source</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="description" content="100% free, open-source daily expense tracker. Track spending, see charts, export data. No signup, no tracking, no ads. Made with ❤️.">
+<meta property="og:title" content="Daily Expense Tracker — Free & Open Source">
+<meta property="og:description" content="100% free daily expense tracker with charts, categories, CSV export. No signup required. Open source.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://github.com/adbhutrd/expense-tracker">
+<meta property="og:image" content="https://raw.githubusercontent.com/adbhutrd/expense-tracker/main/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Daily Expense Tracker — Free & Open Source">
+<meta name="twitter:description" content="100% free daily expense tracker with charts, categories, CSV export. No signup required. Open source.">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f1117;--card:#181b24;--border:#2a2d3a;
+  --text:#e6edf3;--muted:#8b949e;--accent:#7c3aed;
+  --green:#3fb950;--red:#f85149;--blue:#58a6ff;
+  --orange:#d29922;--pink:#f778ba;
+  --gradient:linear-gradient(135deg,#7c3aed,#2563eb);
+  --shadow:0 4px 24px rgba(0,0,0,.3);
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;padding:20px}
+.container{max-width:1100px;margin:0 auto}
+h1{font-size:28px;font-weight:700;margin-bottom:4px}
+h2{font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text)}
+h3{font-size:14px;font-weight:600;margin-bottom:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.header{text-align:center;margin-bottom:32px;padding:32px 0}
+.header p{color:var(--muted);font-size:14px;margin-top:6px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+@media(max-width:768px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;box-shadow:var(--shadow)}
+.card-full{grid-column:1/-1}
+.stat-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.stat-box{flex:1;min-width:140px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+.stat-box .amount{font-size:24px;font-weight:700;margin-top:4px}
+.stat-box .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.stat-box.income .amount{color:var(--green)}
+.stat-box.expense .amount{color:var(--red)}
+.stat-box.balance .amount{color:var(--blue)}
+.stat-box.today .amount{color:var(--orange)}
+input,select{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-size:14px;width:100%;outline:none;transition:border-color .2s}
+input:focus,select:focus{border-color:var(--accent)}
+label{font-size:13px;color:var(--muted);margin-bottom:4px;display:block}
+.form-group{margin-bottom:14px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--gradient);color:white}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+.btn-danger{background:transparent;color:var(--red);border:1px solid rgba(248,81,73,.3)}
+.btn-danger:hover{background:rgba(248,81,73,.1)}
+.btn-secondary{background:var(--bg);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--accent)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--muted);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+td{padding:10px 12px;border-bottom:1px solid rgba(42,45,58,.5)}
+tr:hover td{background:rgba(124,58,237,.04)}
+.badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.badge-food{background:rgba(248,81,73,.15);color:#f85149}
+.badge-transport{background:rgba(210,153,34,.15);color:#d29922}
+.badge-entertainment{background:rgba(247,120,186,.15);color:#f778ba}
+.badge-shopping{background:rgba(124,58,237,.15);color:#a78bfa}
+.badge-bills{background:rgba(248,81,73,.15);color:#f85149}
+.badge-health{background:rgba(63,185,80,.15);color:#3fb950}
+.badge-education{background:rgba(88,166,255,.15);color:#58a6ff}
+.badge-savings{background:rgba(63,185,80,.15);color:#3fb950}
+.badge-other{background:rgba(139,148,158,.15);color:#8b949e}
+.badge-income{background:rgba(63,185,80,.15);color:#3fb950}
+.chart-container{position:relative;height:250px;margin-top:10px}
+.type-toggle{display:flex;gap:0;margin-bottom:14px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.type-btn{flex:1;padding:10px;text-align:center;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s;background:var(--bg);color:var(--muted)}
+.type-btn.active-expense{background:rgba(248,81,73,.15);color:var(--red);border-right:1px solid var(--border)}
+.type-btn.active-income{background:rgba(63,185,80,.15);color:var(--green)}
+.type-btn:not(.active-expense):not(.active-income){border-right:1px solid var(--border)}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-state .icon{font-size:48px;margin-bottom:12px}
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:end}
+.filter-bar .form-group{margin-bottom:0;flex:1;min-width:120px}
+.fade-in{animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--green);border-radius:10px;padding:12px 20px;font-size:13px;z-index:200;animation:slideUp .3s ease;display:none}
+.toast.show{display:block}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.budget-bar{height:6px;background:var(--bg);border-radius:3px;margin-top:6px;overflow:hidden}
+.budget-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.delete-btn{opacity:0;transition:opacity .2s}
+tr:hover .delete-btn{opacity:1}
+
+
+/* ── Pro Banner ────────────────────────────────────────────────────── */
+.pro-banner{background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(37,99,235,.12));border:1px solid rgba(124,58,237,.3);border-radius:12px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.pro-banner-text h3{color:var(--text);font-size:16px;margin-bottom:4px;text-transform:none;letter-spacing:0}
+.pro-banner-text p{color:var(--muted);font-size:13px;margin:0}
+.pro-badge{background:var(--gradient);color:white;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-left:8px}
+
+/* ── Feature Lock Overlay ─────────────────────────────────────────── */
+.feature-locked{position:relative;overflow:hidden;cursor:pointer}
+.feature-locked:hover{border-color:var(--accent)}
+.feature-locked::after{content:'🔒 PRO';position:absolute;top:12px;right:12px;background:var(--gradient);color:white;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.5px;z-index:5}
+.feature-locked .card-content{filter:blur(3px);pointer-events:none;user-select:none}
+
+/* ── Upgrade Modal ────────────────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal h2{margin-bottom:20px}
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.plan-card{border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;transition:all .2s}
+.plan-card.free{border-color:var(--border)}
+.plan-card.pro{border-color:var(--accent);background:rgba(124,58,237,.08)}
+.plan-card h4{font-size:14px;margin-bottom:4px}
+.plan-card .price{font-size:22px;font-weight:700;margin:8px 0}
+.plan-card .price span{font-size:13px;font-weight:400;color:var(--muted)}
+.plan-card ul{list-style:none;text-align:left;font-size:12px;color:var(--muted)}
+.plan-card ul li{padding:4px 0}
+.plan-card ul li::before{content:'✓ ';color:var(--green);font-weight:700}
+.plan-card ul li.disabled::before{content:'✗ ';color:var(--red)}
+.plan-card ul li.disabled{color:var(--border)}
+
+/* ── Donate Section ───────────────────────────────────────────────── */
+.donate-section{text-align:center;padding:32px 24px;background:linear-gradient(135deg,rgba(124,58,237,.05),rgba(37,99,235,.05));border:1px solid var(--border);border-radius:12px;margin-bottom:20px}
+.donate-section h3{color:var(--text);font-size:18px;text-transform:none;letter-spacing:0;margin-bottom:6px}
+.donate-section p{color:var(--muted);font-size:13px;margin-bottom:16px}
+.donate-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-coffee{background:#FFDD00;color:#000;font-weight:700}
+.btn-coffee:hover{background:#ffe633;transform:translateY(-1px)}
+.btn-sponsor{background:#EA4AAA;color:white}
+.btn-sponsor:hover{background:#f06bc0;transform:translateY(-1px)}
+.btn-kofi{background:#FF5E5B;color:white}
+.btn-kofi:hover{background:#ff7e7b;transform:translateY(-1px)}
+
+/* ── Footer ────────────────────────────────────────────────────────── */
+.footer{text-align:center;padding:24px;border-top:1px solid var(--border);margin-top:20px;color:var(--muted);font-size:12px}
+.footer a{color:var(--accent);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+.footer-links{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
+.os-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.3);color:var(--green);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600}
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- Header with open-source badge -->
+  <div class="header">
+    <h1>💰 Daily Expense Tracker</h1>
+    <p>Track every penny. See where your money goes.</p>
+    <div style="margin-top:10px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <span class="os-badge">🔓 Free & Open Source</span>
+      <span class="os-badge" style="background:rgba(88,166,255,.1);border-color:rgba(88,166,255,.3);color:var(--blue)">💾 100% Client-Side</span>
+    </div>
+  </div>
+
+  <!-- Pro Upsell Banner -->
+  <div class="pro-banner fade-in" id="proBanner" style="display:none">
+    <div class="pro-banner-text">
+      <h3>🚀 Unlock Pro Features <span class="pro-badge">PRO</span></h3>
+      <p>Cloud sync, AI spending insights, multi-device, recurring transactions & more</p>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="showUpgradeModal()">Upgrade to Pro — $4.99/mo</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stat-row fade-in">
+    <div class="stat-box income">
+      <div class="label">Income</div>
+      <div class="amount" id="totalIncome">$0.00</div>
+    </div>
+    <div class="stat-box expense">
+      <div class="label">Expenses</div>
+      <div class="amount" id="totalExpense">$0.00</div>
+    </div>
+    <div class="stat-box balance">
+      <div class="label">Balance</div>
+      <div class="amount" id="totalBalance">$0.00</div>
+    </div>
+    <div class="stat-box today">
+      <div class="label">Today</div>
+      <div class="amount" id="todayTotal">$0.00</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- Add Transaction -->
+    <div class="card">
+      <h2>Add Transaction</h2>
+      <div class="type-toggle" id="typeToggle">
+        <div class="type-btn active-expense" data-type="expense" onclick="setType('expense')">🔴 Expense</div>
+        <div class="type-btn" data-type="income" onclick="setType('income')">🟢 Income</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Amount ($)</label>
+          <input type="number" id="amount" placeholder="0.00" step="0.01" min="0">
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="date">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="category">
+          <option value="food">🍔 Food & Dining</option>
+          <option value="transport">🚗 Transport</option>
+          <option value="entertainment">🎬 Entertainment</option>
+          <option value="shopping">🛍️ Shopping</option>
+          <option value="bills">📋 Bills & Utilities</option>
+          <option value="health">💊 Health</option>
+          <option value="education">📚 Education</option>
+          <option value="savings">🏦 Savings</option>
+          <option value="other">📦 Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" id="description" placeholder="What was this for?">
+      </div>
+      <button class="btn btn-primary" onclick="addTransaction()" style="width:100%">➕ Add Transaction</button>
+    </div>
+
+    <!-- Charts -->
+    <div class="card">
+      <h2>Spending Breakdown</h2>
+      <div class="chart-container">
+        <canvas id="categoryChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Budget & Trend -->
+    <div class="card">
+      <h2>Daily Spending (Last 7 Days)</h2>
+      <div class="chart-container">
+        <canvas id="trendChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Monthly Summary -->
+    <div class="card">
+      <h2>Monthly Summary</h2>
+      <div id="monthlySummary"></div>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="card card-full">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+        <h2 style="margin:0">Transactions</h2>
+        <div class="btn-group">
+          <button class="btn btn-secondary btn-sm" onclick="exportCSV()">📥 Export CSV</button>
+          <button class="btn btn-secondary btn-sm" onclick="exportJSON()">💾 Backup JSON</button>
+          <label class="btn btn-secondary btn-sm" style="margin:0">📤 Import<input type="file" accept=".json" style="display:none" onchange="importJSON(event)"></label>
+          <button class="btn btn-danger btn-sm" onclick="clearAll()">🗑️ Clear All</button>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <div class="form-group">
+          <label>From</label>
+          <input type="date" id="filterFrom" onchange="renderTable()">
+        </div>
+        <div class="form-group">
+          <label>To</label>
+          <input type="date" id="filterTo" onchange="renderTable()">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="filterCategory" onchange="renderTable()">
+            <option value="">All</option>
+            <option value="food">Food</option>
+            <option value="transport">Transport</option>
+            <option value="entertainment">Entertainment</option>
+            <option value="shopping">Shopping</option>
+            <option value="bills">Bills</option>
+            <option value="health">Health</option>
+            <option value="education">Education</option>
+            <option value="savings">Savings</option>
+            <option value="income">Income</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Search</label>
+          <input type="text" id="filterSearch" placeholder="Search..." oninput="renderTable()">
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Amount</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="transactionTable"></tbody>
+        </table>
+        <div class="empty-state" id="emptyState" style="display:none">
+          <div class="icon">📭</div>
+          <p>No transactions yet. Add your first one above!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Recurring Transactions (Working — 3 free rules) ────────── -->
+    <div class="card card-full">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+        <div>
+          <h2 style="margin:0">🔄 Recurring Transactions</h2>
+          <p style="color:var(--muted);font-size:12px;margin-top:2px">Subscriptions, rent, salary — set once, tracked forever</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span id="recurringCount" style="font-size:12px;color:var(--muted)"></span>
+          <button class="btn btn-primary btn-sm" onclick="showAddRecurring()">➕ Add Rule</button>
+        </div>
+      </div>
+      <div id="recurringUpsell" style="display:none;background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(37,99,235,.08));border:1px solid rgba(124,58,237,.25);border-radius:10px;padding:14px 18px;margin-bottom:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div>
+          <span style="font-size:13px;font-weight:600;color:var(--text)">🔒 Free plan: 3 rules max</span>
+          <span style="font-size:12px;color:var(--muted);margin-left:6px">Upgrade for unlimited rules + auto-detection</span>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="showUpgradeModal()" style="white-space:nowrap">Upgrade Pro — $4.99/mo</button>
+      </div>
+      <div id="recurringForm" style="display:none;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Amount ($)</label>
+            <input type="number" id="recAmount" placeholder="0.00" step="0.01" min="0">
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <select id="recType">
+              <option value="expense">🔴 Expense</option>
+              <option value="income">🟢 Income</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Category</label>
+            <select id="recCategory">
+              <option value="food">🍔 Food & Dining</option>
+              <option value="transport">🚗 Transport</option>
+              <option value="entertainment">🎬 Entertainment</option>
+              <option value="shopping">🛍️ Shopping</option>
+              <option value="bills">📋 Bills & Utilities</option>
+              <option value="health">💊 Health</option>
+              <option value="education">📚 Education</option>
+              <option value="savings">🏦 Savings</option>
+              <option value="other">📦 Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Frequency</label>
+            <select id="recFrequency">
+              <option value="weekly">Weekly</option>
+              <option value="biweekly">Every 2 Weeks</option>
+              <option value="monthly" selected>Monthly</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Description</label>
+            <input type="text" id="recDescription" placeholder="e.g. Netflix, Rent, Salary">
+          </div>
+          <div class="form-group">
+            <label>Start Date</label>
+            <input type="date" id="recStartDate">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary btn-sm" onclick="addRecurring()" style="flex:1">✅ Save Rule</button>
+          <button class="btn btn-secondary btn-sm" onclick="hideAddRecurring()">Cancel</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Description</th><th>Amount</th><th>Frequency</th><th>Category</th><th>Next Date</th><th></th></tr></thead>
+          <tbody id="recurringTable"></tbody>
+        </table>
+        <div class="empty-state" id="recurringEmpty" style="display:none;padding:24px">
+          <div class="icon">🔄</div>
+          <p>No recurring rules yet. Click "Add Rule" to track subscriptions, rent, or salary!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── AI Insights (Working — 1 free insight per visit) ───────── -->
+    <div class="card card-full">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+        <div>
+          <h2 style="margin:0">🤖 AI Spending Insights</h2>
+          <p style="color:var(--muted);font-size:12px;margin-top:2px">Personalized tips on where to save based on your data</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span id="insightCount" style="font-size:12px;color:var(--muted)"></span>
+          <button class="btn btn-primary btn-sm" onclick="getNewInsight()">💡 New Insight</button>
+        </div>
+      </div>
+      <div id="aiInsight" style="display:none;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px"></div>
+      <div id="aiUpsell" style="display:none;background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(37,99,235,.08));border:1px solid rgba(124,58,237,.25);border-radius:10px;padding:14px 18px;margin-bottom:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div>
+          <span style="font-size:13px;font-weight:600;color:var(--text)">🔒 Free plan: 1 insight per visit</span>
+          <span style="font-size:12px;color:var(--muted);margin-left:6px">Upgrade for unlimited insights + predictions</span>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="showUpgradeModal()" style="white-space:nowrap">Upgrade Pro — $4.99/mo</button>
+      </div>
+      <div class="empty-state" id="aiEmpty">
+        <div class="icon">🤖</div>
+        <p>Add some transactions first, then click "New Insight" to get personalized spending tips!</p>
+      </div>
+    </div>
+
+    <!-- ── Budget Goals (Working — 1 free goal) ─────────────────── -->
+    <div class="card card-full">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+        <div>
+          <h2 style="margin:0">🎯 Budget Goals</h2>
+          <p style="color:var(--muted);font-size:12px;margin-top:2px">Set monthly limits per category, track progress with alerts</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span id="budgetCount" style="font-size:12px;color:var(--muted)"></span>
+          <button class="btn btn-primary btn-sm" onclick="showAddBudget()">➕ Add Goal</button>
+        </div>
+      </div>
+      <div id="budgetUpsell" style="display:none;background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(37,99,235,.08));border:1px solid rgba(124,58,237,.25);border-radius:10px;padding:14px 18px;margin-bottom:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div>
+          <span style="font-size:13px;font-weight:600;color:var(--text)">🔒 Free plan: 1 goal max</span>
+          <span style="font-size:12px;color:var(--muted);margin-left:6px">Upgrade for unlimited goals + alerts</span>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="showUpgradeModal()" style="white-space:nowrap">Upgrade Pro — $4.99/mo</button>
+      </div>
+      <div id="budgetForm" style="display:none;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Category</label>
+            <select id="budgetCategory">
+              <option value="food">🍔 Food & Dining</option>
+              <option value="transport">🚗 Transport</option>
+              <option value="entertainment">🎬 Entertainment</option>
+              <option value="shopping">🛍️ Shopping</option>
+              <option value="bills">📋 Bills & Utilities</option>
+              <option value="health">💊 Health</option>
+              <option value="education">📚 Education</option>
+              <option value="savings">🏦 Savings</option>
+              <option value="other">📦 Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Monthly Limit ($)</label>
+            <input type="number" id="budgetLimit" placeholder="0.00" step="0.01" min="0">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary btn-sm" onclick="addBudget()" style="flex:1">✅ Save Goal</button>
+          <button class="btn btn-secondary btn-sm" onclick="hideAddBudget()">Cancel</button>
+        </div>
+      </div>
+      <div id="budgetGoals"></div>
+      <div class="empty-state" id="budgetEmpty" style="display:none;padding:24px">
+        <div class="icon">🎯</div>
+        <p>No budget goals yet. Click "Add Goal" to set a monthly spending limit!</p>
+      </div>
+    </div>
+
+    <!-- ── PRO: Multi-Device (Locked) ───────────────────────────────── -->
+    <div class="card card-full feature-locked" onclick="showUpgradeModal()">
+      <div class="card-content">
+        <h2>📱 Multi-Device Sync</h2>
+        <p style="color:var(--muted);font-size:13px">Sign in on any device — your data follows you. Desktop, phone, tablet — always in sync.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Donate Section ───────────────────────────────────────────── -->
+  <div class="donate-section fade-in">
+    <h3>☕ Enjoy this tool? Buy me a coffee!</h3>
+    <p>This tool is 100% free and open source. If it saved you time or money, consider supporting development.</p>
+    <div class="donate-btns">
+      <a href="https://www.buymeacoffee.com/adbhutrd" target="_blank" class="btn btn-coffee btn-sm">☕ Buy Me a Coffee</a>
+      <a href="https://github.com/sponsors/adbhutrd" target="_blank" class="btn btn-sponsor btn-sm">💖 GitHub Sponsors</a>
+      <a href="https://ko-fi.com/adbhutrd" target="_blank" class="btn btn-kofi btn-sm">❤️ Ko-fi</a>
+    </div>
+  </div>
+
+  <!-- ── Sponsor / Ad Banner ─────────────────────────────────────── -->
+  <div class="card card-full" style="text-align:center;padding:20px;margin-bottom:20px">
+    <p style="color:var(--muted);font-size:12px;margin-bottom:8px">Sponsored by</p>
+    <a href="https://github.com/adbhutrd/FTMO-challenge-TRacker" target="_blank" style="text-decoration:none">
+      <span style="font-size:16px;font-weight:700;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent">
+        📊 FTMO Challenge Tracker Pro
+      </span>
+    </a>
+    <p style="color:var(--muted);font-size:12px;margin-top:4px">Pass prop firm challenges with cloud-synced tracking — $19.99/mo</p>
+  </div>
+
+  <!-- ── Footer ──────────────────────────────────────────────────── -->
+  <div class="footer">
+    <div class="footer-links">
+      <a href="https://github.com/adbhutrd/expense-tracker" target="_blank">⭐ Star on GitHub</a>
+      <a href="https://github.com/adbhutrd/expense-tracker/issues" target="_blank">🐛 Report Bug</a>
+      <a href="https://github.com/adbhutrd/expense-tracker/pulls" target="_blank">🤝 Contribute</a>
+      <a href="https://github.com/adbhutrd/expense-tracker#readme" target="_blank">📖 Documentation</a>
+    </div>
+    <p>Made with ❤️ by <a href="https://github.com/adbhutrd" target="_blank">Adbhut Ram Das</a> · MIT License · Free Forever</p>
+    <p style="margin-top:4px">All data stays on your device. No tracking. No ads from us. 🛡️</p>
+  </div>
+</div>
+
+<!-- ── Upgrade Modal ─────────────────────────────────────────────── -->
+<div class="modal-overlay" id="upgradeModal" onclick="if(event.target===this)closeUpgradeModal()">
+  <div class="modal">
+    <h2 style="text-align:center">🚀 Upgrade to Pro</h2>
+    <div class="plan-grid">
+      <div class="plan-card free">
+        <h4>Free</h4>
+        <div class="price">$0 <span>forever</span></div>
+        <ul>
+          <li>Unlimited transactions</li>
+          <li>All 9 categories</li>
+          <li>Charts & analytics</li>
+          <li>CSV & JSON export</li>
+          <li>Recurring rules (3 max)</li>
+          <li>Budget goal (1 max)</li>
+          <li>1 AI insight per visit</li>
+          <li class="disabled">Cloud sync</li>
+          <li class="disabled">Unlimited recurring</li>
+          <li class="disabled">Unlimited AI insights</li>
+          <li class="disabled">Unlimited budget goals</li>
+          <li class="disabled">Multi-device</li>
+        </ul>
+      </div>
+      <div class="plan-card pro">
+        <h4>Pro <span class="pro-badge">PRO</span></h4>
+        <div class="price" style="color:var(--accent)">$4.99 <span>/month</span></div>
+        <ul>
+          <li>Everything in Free</li>
+          <li>Cloud sync (Supabase)</li>
+          <li>Recurring transactions</li>
+          <li>AI spending insights</li>
+          <li>Budget goals & alerts</li>
+          <li>Multi-device sync</li>
+          <li>Priority support</li>
+          <li>Early access features</li>
+          <li>&nbsp;</li>
+        </ul>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px">
+      <button class="btn btn-secondary" onclick="closeUpgradeModal()" style="flex:1">Maybe Later</button>
+      <a href="https://gumroad.com/l/ezteprg" target="_blank" class="btn btn-primary" style="flex:2;text-align:center;justify-content:center">🔥 Get Pro — $4.99/mo</a>
+    </div>
+    <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:12px">Cancel anytime · Secure payment via Stripe · No data collection</p>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// State
+let transactions = JSON.parse(localStorage.getItem('expenses_transactions') || '[]');
+let currentType = 'expense';
+let categoryChart, trendChart;
+
+const CATEGORY_ICONS = {
+  food:'🍔', transport:'🚗', entertainment:'🎬', shopping:'🛍️',
+  bills:'📋', health:'💊', education:'📚', savings:'🏦', other:'📦', income:'💵'
+};
+
+const CATEGORY_COLORS = {
+  food:'#f85149', transport:'#d29922', entertainment:'#f778ba',
+  shopping:'#a78bfa', bills:'#f85149', health:'#3fb950',
+  education:'#58a6ff', savings:'#3fb950', other:'#8b949e'
+};
+
+// Init
+document.getElementById('date').valueAsDate = new Date();
+function setType(type) {
+  currentType = type;
+  const btns = document.querySelectorAll('.type-btn');
+  btns.forEach(b => {
+    b.className = 'type-btn';
+    if (b.dataset.type === type) b.className = type === 'expense' ? 'type-btn active-expense' : 'type-btn active-income';
+  });
+}
+
+function addTransaction() {
+  const amount = parseFloat(document.getElementById('amount').value);
+  const date = document.getElementById('date').value;
+  const category = document.getElementById('category').value;
+  const description = document.getElementById('description').value.trim();
+
+  if (!amount || amount <= 0) { showToast('⚠️ Enter a valid amount'); return; }
+  if (!date) { showToast('⚠️ Select a date'); return; }
+
+  transactions.push({
+    id: Date.now(),
+    type: currentType,
+    amount,
+    date,
+    category: currentType === 'income' ? 'income' : category,
+    description: description || (currentType === 'income' ? 'Income' : category)
+  });
+
+  localStorage.setItem('expenses_transactions', JSON.stringify(transactions));
+  document.getElementById('amount').value = '';
+  document.getElementById('description').value = '';
+  showToast(currentType === 'income' ? '✅ Income added!' : '✅ Expense added!');
+  renderAll();
+}
+
+function deleteTransaction(id) {
+  transactions = transactions.filter(t => t.id !== id);
+  localStorage.setItem('expenses_transactions', JSON.stringify(transactions));
+  renderAll();
+}
+
+function clearAll() {
+  if (!confirm('Delete ALL transactions? This cannot be undone.')) return;
+  transactions = [];
+  localStorage.setItem('expenses_transactions', JSON.stringify(transactions));
+  renderAll();
+  showToast('🗑️ All transactions cleared');
+}
+
+function renderAll() {
+  renderStats();
+  renderTable();
+  renderCharts();
+  renderMonthlySummary();
+  renderBudgets();
+}
+
+function renderStats() {
+  const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+  const expense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+  const today = new Date().toISOString().slice(0, 10);
+  const todayTotal = transactions.filter(t => t.date === today && t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+
+  document.getElementById('totalIncome').textContent = '$' + income.toFixed(2);
+  document.getElementById('totalExpense').textContent = '$' + expense.toFixed(2);
+  document.getElementById('totalBalance').textContent = '$' + (income - expense).toFixed(2);
+  document.getElementById('todayTotal').textContent = '$' + todayTotal.toFixed(2);
+}
+
+function getFiltered() {
+  const from = document.getElementById('filterFrom').value;
+  const to = document.getElementById('filterTo').value;
+  const cat = document.getElementById('filterCategory').value;
+  const search = document.getElementById('filterSearch').value.toLowerCase();
+
+  return transactions.filter(t => {
+    if (from && t.date < from) return false;
+    if (to && t.date > to) return false;
+    if (cat && t.category !== cat) return false;
+    if (search && !t.description.toLowerCase().includes(search) && !t.category.includes(search)) return false;
+    return true;
+  }).sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
+}
+
+function renderTable() {
+  const filtered = getFiltered();
+  const tbody = document.getElementById('transactionTable');
+  const empty = document.getElementById('emptyState');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = filtered.map(t => `
+    <tr>
+      <td>${formatDate(t.date)}</td>
+      <td>${escapeHtml(t.description)}</td>
+      <td><span class="badge badge-${escapeHtml(t.category)}">${CATEGORY_ICONS[t.category] || ''} ${escapeHtml(t.category)}</span></td>
+      <td style="font-weight:600;color:${t.type === 'income' ? 'var(--green)' : 'var(--red)'}">
+        ${t.type === 'income' ? '+' : '-'}$${t.amount.toFixed(2)}
+      </td>
+      <td><button class="btn btn-danger btn-sm delete-btn" onclick="deleteTransaction(${t.id})">✕</button></td>
+    </tr>
+  `).join('');
+}
+
+function renderCharts() {
+  const catData = {};
+  transactions.filter(t => t.type === 'expense').forEach(t => {
+    catData[t.category] = (catData[t.category] || 0) + t.amount;
+  });
+
+  const catLabels = Object.keys(catData).filter(c => c !== 'income');
+  const catValues = catLabels.map(c => catData[c]);
+  const catColors = catLabels.map(c => CATEGORY_COLORS[c] || '#8b949e');
+
+  if (categoryChart) categoryChart.destroy();
+  categoryChart = new Chart(document.getElementById('categoryChart'), {
+    type: 'doughnut',
+    data: {
+      labels: catLabels.map(c => `${CATEGORY_ICONS[c] || ''} ${c}`),
+      datasets: [{ data: catValues, backgroundColor: catColors, borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right', labels: { color: '#8b949e', font: { size: 11 }, padding: 8 } }
+      },
+      cutout: '65%'
+    }
+  });
+
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(d.toISOString().slice(0, 10));
+  }
+  const dailyExpenses = days.map(d =>
+    transactions.filter(t => t.date === d && t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+  );
+  const dailyIncome = days.map(d =>
+    transactions.filter(t => t.date === d && t.type === 'income').reduce((s, t) => s + t.amount, 0)
+  );
+
+  if (trendChart) trendChart.destroy();
+  trendChart = new Chart(document.getElementById('trendChart'), {
+    type: 'bar',
+    data: {
+      labels: days.map(d => {
+        const dt = new Date(d + 'T00:00:00');
+        return dt.toLocaleDateString('en', { weekday: 'short', month: 'short', day: 'numeric' });
+      }),
+      datasets: [
+        { label: 'Expenses', data: dailyExpenses, backgroundColor: 'rgba(248,81,73,.6)', borderRadius: 4 },
+        { label: 'Income', data: dailyIncome, backgroundColor: 'rgba(63,185,80,.6)', borderRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#8b949e', font: { size: 11 } } } },
+      scales: {
+        x: { grid: { color: 'rgba(42,45,58,.5)' }, ticks: { color: '#8b949e', font: { size: 10 } } },
+        y: { grid: { color: 'rgba(42,45,58,.5)' }, ticks: { color: '#8b949e', callback: v => '$' + v } }
+      }
+    }
+  });
+}
+
+function renderMonthlySummary() {
+  const now = new Date();
+  const month = now.toISOString().slice(0, 7);
+  const monthTx = transactions.filter(t => t.date.startsWith(month));
+  const monthIncome = monthTx.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+  const monthExpense = monthTx.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+
+  const catTotals = {};
+  monthTx.filter(t => t.type === 'expense').forEach(t => {
+    catTotals[t.category] = (catTotals[t.category] || 0) + t.amount;
+  });
+
+  const sorted = Object.entries(catTotals).sort((a, b) => b[1] - a[1]);
+  const maxVal = sorted.length > 0 ? sorted[0][1] : 1;
+
+  document.getElementById('monthlySummary').innerHTML = `
+    <div style="display:flex;gap:16px;margin-bottom:16px">
+      <div class="stat-box income" style="flex:1"><div class="label">Income</div><div class="amount" style="font-size:18px">$${monthIncome.toFixed(2)}</div></div>
+      <div class="stat-box expense" style="flex:1"><div class="label">Expenses</div><div class="amount" style="font-size:18px">$${monthExpense.toFixed(2)}</div></div>
+    </div>
+    <h3>Category Breakdown</h3>
+    ${sorted.length === 0 ? '<p style="color:var(--muted);font-size:13px">No expenses this month</p>' :
+    sorted.map(([cat, val]) => `
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-size:13px">
+          <span>${CATEGORY_ICONS[cat] || ''} ${cat}</span>
+          <span style="color:var(--red);font-weight:600">$${val.toFixed(2)}</span>
+        </div>
+        <div class="budget-bar">
+          <div class="budget-fill" style="width:${(val / maxVal * 100).toFixed(1)}%;background:${CATEGORY_COLORS[cat] || '#8b949e'}"></div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+// ── Upgrade Modal ──
+function showUpgradeModal() {
+  document.getElementById('upgradeModal').classList.add('show');
+}
+function closeUpgradeModal() {
+  document.getElementById('upgradeModal').classList.remove('show');
+}
+
+// Export
+function exportCSV() {
+  const headers = ['Date', 'Type', 'Category', 'Description', 'Amount'];
+  const rows = getFiltered().map(t => [t.date, t.type, t.category, `"${t.description}"`, t.amount]);
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  download(csv, 'expenses.csv', 'text/csv');
+  showToast('📥 CSV exported!');
+}
+
+function exportJSON() {
+  const json = JSON.stringify(transactions, null, 2);
+  download(json, 'expenses_backup.json', 'application/json');
+  showToast('💾 Backup saved!');
+}
+
+function importJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data)) throw new Error();
+      transactions = data;
+      localStorage.setItem('expenses_transactions', JSON.stringify(transactions));
+      renderAll();
+      showToast(`📤 Imported ${data.length} transactions!`);
+    } catch { showToast('⚠️ Invalid file'); }
+  };
+  reader.readAsText(file);
+}
+
+function download(content, name, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function formatDate(d) {
+  return new Date(d + 'T00:00:00').toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(s));
+  return div.innerHTML;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── Recurring Transactions ──
+let recurringRules = JSON.parse(localStorage.getItem('expenses_recurring') || '[]');
+const FREE_RECURRING_LIMIT = 3;
+
+function showAddRecurring() {
+  if (recurringRules.length >= FREE_RECURRING_LIMIT) {
+    showToast('🔒 Free plan: max 3 rules. Upgrade for unlimited!');
+    showUpgradeModal();
+    return;
+  }
+  document.getElementById('recurringForm').style.display = 'block';
+  document.getElementById('recStartDate').valueAsDate = new Date();
+  document.getElementById('recAmount').focus();
+}
+
+function hideAddRecurring() {
+  document.getElementById('recurringForm').style.display = 'none';
+  document.getElementById('recAmount').value = '';
+  document.getElementById('recDescription').value = '';
+}
+
+function addRecurring() {
+  const amount = parseFloat(document.getElementById('recAmount').value);
+  const type = document.getElementById('recType').value;
+  const category = document.getElementById('recCategory').value;
+  const frequency = document.getElementById('recFrequency').value;
+  const description = document.getElementById('recDescription').value.trim();
+  const startDate = document.getElementById('recStartDate').value;
+
+  if (!amount || amount <= 0) { showToast('⚠️ Enter a valid amount'); return; }
+  if (!startDate) { showToast('⚠️ Select a start date'); return; }
+  if (!description) { showToast('⚠️ Enter a description'); return; }
+
+  recurringRules.push({
+    id: Date.now(),
+    type,
+    amount,
+    category,
+    frequency,
+    description,
+    startDate,
+    lastGenerated: null
+  });
+
+  localStorage.setItem('expenses_recurring', JSON.stringify(recurringRules));
+  hideAddRecurring();
+  renderRecurring();
+  showToast('✅ Recurring rule added!');
+}
+
+function deleteRecurring(id) {
+  if (!confirm('Delete this recurring rule? Future transactions will stop generating.')) return;
+  recurringRules = recurringRules.filter(r => r.id !== id);
+  localStorage.setItem('expenses_recurring', JSON.stringify(recurringRules));
+  renderRecurring();
+}
+
+function getNextDate(rule) {
+  const last = rule.lastGenerated || rule.startDate;
+  const d = new Date(last + 'T00:00:00');
+  switch (rule.frequency) {
+    case 'weekly': d.setDate(d.getDate() + 7); break;
+    case 'biweekly': d.setDate(d.getDate() + 14); break;
+    case 'monthly': d.setMonth(d.getMonth() + 1); break;
+    case 'quarterly': d.setMonth(d.getMonth() + 3); break;
+    case 'yearly': d.setFullYear(d.getFullYear() + 1); break;
+  }
+  return d.toISOString().slice(0, 10);
+}
+
+function generateRecurringTransactions() {
+  const today = new Date().toISOString().slice(0, 10);
+  let generated = 0;
+
+  recurringRules.forEach(rule => {
+    let nextDate = rule.lastGenerated ? getNextDate(rule) : rule.startDate;
+
+    while (nextDate <= today && generated < 20) {
+      // Check if this transaction already exists for this date + rule
+      const exists = transactions.some(t =>
+        t.recurringId === rule.id && t.date === nextDate
+      );
+
+      if (!exists) {
+        transactions.push({
+          id: Date.now() + generated,
+          type: rule.type,
+          amount: rule.amount,
+          date: nextDate,
+          category: rule.type === 'income' ? 'income' : rule.category,
+          description: '🔄 ' + rule.description,
+          recurringId: rule.id
+        });
+        generated++;
+      }
+
+      rule.lastGenerated = nextDate;
+      nextDate = getNextDate(rule);
+    }
+  });
+
+  if (generated > 0) {
+    localStorage.setItem('expenses_transactions', JSON.stringify(transactions));
+    localStorage.setItem('expenses_recurring', JSON.stringify(recurringRules));
+    renderAll();
+    showToast(`🔄 Generated ${generated} recurring transaction${generated > 1 ? 's' : ''}`);
+  }
+}
+
+function renderRecurring() {
+  const tbody = document.getElementById('recurringTable');
+  const empty = document.getElementById('recurringEmpty');
+  const countEl = document.getElementById('recurringCount');
+  const upsell = document.getElementById('recurringUpsell');
+
+  countEl.textContent = `${recurringRules.length}/${FREE_RECURRING_LIMIT} free rules`;
+
+  // Show upsell when at or near limit
+  if (recurringRules.length >= FREE_RECURRING_LIMIT) {
+    upsell.style.display = 'flex';
+  } else {
+    upsell.style.display = 'none';
+  }
+
+  if (recurringRules.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  const freqLabels = { weekly: 'Weekly', biweekly: 'Every 2 Weeks', monthly: 'Monthly', quarterly: 'Quarterly', yearly: 'Yearly' };
+
+  tbody.innerHTML = recurringRules.map(r => {
+    const nextDate = r.lastGenerated ? getNextDate(r) : r.startDate;
+    return `
+    <tr>
+      <td style="font-weight:500">🔄 ${escapeHtml(r.description)}</td>
+      <td style="font-weight:600;color:${r.type === 'income' ? 'var(--green)' : 'var(--red)'}">
+        ${r.type === 'income' ? '+' : '-'}$${r.amount.toFixed(2)}
+      </td>
+      <td><span class="badge badge-other">${freqLabels[r.frequency] || r.frequency}</span></td>
+      <td><span class="badge badge-${escapeHtml(r.category)}">${CATEGORY_ICONS[r.category] || ''} ${escapeHtml(r.category)}</span></td>
+      <td style="font-size:12px;color:var(--muted)">${formatDate(nextDate)}</td>
+      <td><button class="btn btn-danger btn-sm delete-btn" onclick="deleteRecurring(${r.id})" style="opacity:1">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Budget Goals ──
+let budgetGoals = JSON.parse(localStorage.getItem('expenses_budgets') || '[]');
+const FREE_BUDGET_LIMIT = 1;
+
+function showAddBudget() {
+  if (budgetGoals.length >= FREE_BUDGET_LIMIT) {
+    showToast('🔒 Free plan: max 1 goal. Upgrade for unlimited!');
+    showUpgradeModal();
+    return;
+  }
+  document.getElementById('budgetForm').style.display = 'block';
+  document.getElementById('budgetLimit').focus();
+}
+
+function hideAddBudget() {
+  document.getElementById('budgetForm').style.display = 'none';
+  document.getElementById('budgetLimit').value = '';
+}
+
+function addBudget() {
+  const category = document.getElementById('budgetCategory').value;
+  const limit = parseFloat(document.getElementById('budgetLimit').value);
+
+  if (!limit || limit <= 0) { showToast('⚠️ Enter a valid limit'); return; }
+
+  // Check if goal already exists for this category
+  const existing = budgetGoals.find(b => b.category === category);
+  if (existing) {
+    existing.limit = limit;
+    localStorage.setItem('expenses_budgets', JSON.stringify(budgetGoals));
+    hideAddBudget();
+    renderBudgets();
+    showToast('✅ Budget goal updated!');
+    return;
+  }
+
+  budgetGoals.push({ id: Date.now(), category, limit });
+  localStorage.setItem('expenses_budgets', JSON.stringify(budgetGoals));
+  hideAddBudget();
+  renderBudgets();
+  showToast('✅ Budget goal added!');
+}
+
+function deleteBudget(id) {
+  if (!confirm('Delete this budget goal?')) return;
+  budgetGoals = budgetGoals.filter(b => b.id !== id);
+  localStorage.setItem('expenses_budgets', JSON.stringify(budgetGoals));
+  renderBudgets();
+}
+
+function getMonthCategorySpend(category) {
+  const month = new Date().toISOString().slice(0, 7);
+  return transactions
+    .filter(t => t.type === 'expense' && t.category === category && t.date.startsWith(month))
+    .reduce((s, t) => s + t.amount, 0);
+}
+
+function renderBudgets() {
+  const container = document.getElementById('budgetGoals');
+  const empty = document.getElementById('budgetEmpty');
+  const countEl = document.getElementById('budgetCount');
+  const upsell = document.getElementById('budgetUpsell');
+
+  countEl.textContent = `${budgetGoals.length}/${FREE_BUDGET_LIMIT} free goals`;
+  upsell.style.display = budgetGoals.length >= FREE_BUDGET_LIMIT ? 'flex' : 'none';
+
+  if (budgetGoals.length === 0) {
+    container.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  container.innerHTML = budgetGoals.map(b => {
+    const spent = getMonthCategorySpend(b.category);
+    const pct = Math.min((spent / b.limit) * 100, 100);
+    const overBudget = spent > b.limit;
+    const nearLimit = pct >= 80 && !overBudget;
+    let barColor = CATEGORY_COLORS[b.category] || '#8b949e';
+    if (overBudget) barColor = 'var(--red)';
+    else if (nearLimit) barColor = 'var(--orange)';
+
+    return `
+    <div style="background:var(--bg);border:1px solid ${overBudget ? 'rgba(248,81,73,.4)' : 'var(--border)'};border-radius:10px;padding:16px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:16px">${CATEGORY_ICONS[b.category] || ''}</span>
+          <span style="font-weight:600;font-size:14px;text-transform:capitalize">${escapeHtml(b.category)}</span>
+          ${overBudget ? '<span style="background:rgba(248,81,73,.15);color:var(--red);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">⚠️ OVER</span>' : nearLimit ? '<span style="background:rgba(210,153,34,.15);color:var(--orange);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">⚡ CLOSE</span>' : ''}
+        </div>
+        <button class="btn btn-danger btn-sm delete-btn" onclick="deleteBudget(${b.id})" style="opacity:1;font-size:11px">✕</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">
+        <span style="color:var(--muted)">Spent this month</span>
+        <span style="font-weight:600;color:${overBudget ? 'var(--red)' : 'var(--text)'}">$${spent.toFixed(2)} / $${b.limit.toFixed(2)}</span>
+      </div>
+      <div class="budget-bar" style="height:8px">
+        <div class="budget-fill" style="width:${pct.toFixed(1)}%;background:${barColor}"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px">
+        <span>${pct.toFixed(0)}% used</span>
+        <span>${overBudget ? '-$' + (spent - b.limit).toFixed(2) + ' over' : '$' + (b.limit - spent).toFixed(2) + ' left'}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── AI Spending Insights ──
+let insightUsed = false;
+
+function generateInsight() {
+  const expenses = transactions.filter(t => t.type === 'expense');
+  if (expenses.length === 0) return null;
+
+  const totalExpense = expenses.reduce((s, t) => s + t.amount, 0);
+  const totalIncome = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+  const now = new Date();
+  const month = now.toISOString().slice(0, 7);
+  const monthExpenses = expenses.filter(t => t.date.startsWith(month));
+  const monthTotal = monthExpenses.reduce((s, t) => s + t.amount, 0);
+
+  // Category breakdown
+  const catTotals = {};
+  expenses.forEach(t => { catTotals[t.category] = (catTotals[t.category] || 0) + t.amount; });
+  const sortedCats = Object.entries(catTotals).sort((a, b) => b[1] - a[1]);
+  const topCat = sortedCats[0];
+  const topCatPct = ((topCat[1] / totalExpense) * 100).toFixed(0);
+
+  // Daily average
+  const uniqueDays = [...new Set(expenses.map(t => t.date))];
+  const avgDaily = totalExpense / Math.max(uniqueDays.length, 1);
+
+  // Weekend vs weekday
+  let weekendSpend = 0, weekdaySpend = 0, weekendCount = 0, weekdayCount = 0;
+  expenses.forEach(t => {
+    const d = new Date(t.date + 'T00:00:00').getDay();
+    if (d === 0 || d === 6) { weekendSpend += t.amount; weekendCount++; }
+    else { weekdaySpend += t.amount; weekdayCount++; }
+  });
+  const avgWeekend = weekendCount > 0 ? weekendSpend / weekendCount : 0;
+  const avgWeekday = weekdayCount > 0 ? weekdaySpend / weekdayCount : 0;
+
+  // Biggest single expense
+  const biggest = expenses.reduce((max, t) => t.amount > max.amount ? t : max, expenses[0]);
+
+  // Savings rate
+  const savingsRate = totalIncome > 0 ? (((totalIncome - totalExpense) / totalIncome) * 100).toFixed(0) : 0;
+
+  // Recent trend (last 7 days vs previous 7 days)
+  const today = now.toISOString().slice(0, 10);
+  const d7 = new Date(now); d7.setDate(d7.getDate() - 7);
+  const d14 = new Date(now); d14.setDate(d14.getDate() - 14);
+  const recent7 = expenses.filter(t => t.date >= d7.toISOString().slice(0, 10) && t.date <= today).reduce((s, t) => s + t.amount, 0);
+  const prev7 = expenses.filter(t => t.date >= d14.toISOString().slice(0, 10) && t.date < d7.toISOString().slice(0, 10)).reduce((s, t) => s + t.amount, 0);
+
+  // Build insights pool
+  const insights = [];
+
+  if (topCatPct > 30) {
+    insights.push({
+      icon: CATEGORY_ICONS[topCat[0]] || '📊',
+      title: `${CATEGORY_ICONS[topCat[0]] || ''} ${topCat[0]} is your biggest expense`,
+      text: `You've spent $${topCat[1].toFixed(2)} on ${topCat[0]} — that's ${topCatPct}% of your total spending. Consider setting a budget goal for this category.`,
+      color: CATEGORY_COLORS[topCat[0]] || '#8b949e'
+    });
+  }
+
+  if (avgWeekend > avgWeekday * 1.3 && weekendCount > 2) {
+    insights.push({
+      icon: '📅',
+      title: 'Weekend spending is higher than weekdays',
+      text: `You spend $${avgWeekend.toFixed(2)} per weekend transaction vs $${avgWeekday.toFixed(2)} on weekdays. That's ${((avgWeekend / avgWeekday - 1) * 100).toFixed(0)}% more. Try planning weekend activities on a budget!`,
+      color: 'var(--orange)'
+    });
+  }
+
+  if (savingsRate < 20 && totalIncome > 0) {
+    insights.push({
+      icon: '⚠️',
+      title: 'Your savings rate could be higher',
+      text: `You're saving ${savingsRate}% of your income. Financial experts recommend 20%+. Consider reducing spending in your top category (${topCat[0]}).`,
+      color: 'var(--red)'
+    });
+  } else if (savingsRate >= 20 && totalIncome > 0) {
+    insights.push({
+      icon: '🎉',
+      title: 'Great savings rate!',
+      text: `You're saving ${savingsRate}% of your income — that's above the recommended 20%. Keep up the excellent financial discipline!`,
+      color: 'var(--green)'
+    });
+  }
+
+  if (recent7 > prev7 * 1.2 && prev7 > 0) {
+    insights.push({
+      icon: '📈',
+      title: 'Spending is trending up',
+      text: `Your last 7 days ($${recent7.toFixed(2)}) are ${((recent7 / prev7 - 1) * 100).toFixed(0)}% higher than the previous week ($${prev7.toFixed(2)}). Keep an eye on your spending!`,
+      color: 'var(--red)'
+    });
+  } else if (recent7 < prev7 * 0.8 && prev7 > 0) {
+    insights.push({
+      icon: '📉',
+      title: 'Spending is trending down — nice!',
+      text: `Your last 7 days ($${recent7.toFixed(2)}) are ${((1 - recent7 / prev7) * 100).toFixed(0)}% lower than the previous week ($${prev7.toFixed(2)}). You're on the right track!`,
+      color: 'var(--green)'
+    });
+  }
+
+  insights.push({
+    icon: '💰',
+    title: `Average daily spend: $${avgDaily.toFixed(2)}`,
+    text: `Based on ${uniqueDays.length} active days, you spend about $${avgDaily.toFixed(2)} per day. At this rate, that's $${(avgDaily * 30).toFixed(2)}/month.`,
+    color: 'var(--blue)'
+  });
+
+  if (biggest.amount > avgDaily * 3) {
+    insights.push({
+      icon: '🔍',
+      title: `Biggest expense: $${biggest.amount.toFixed(2)}`,
+      text: `"${biggest.description}" on ${formatDate(biggest.date)} was ${((biggest.amount / avgDaily)).toFixed(1)}x your daily average. Was this a one-time purchase?`,
+      color: 'var(--pink)'
+    });
+  }
+
+  if (sortedCats.length >= 3) {
+    const midCats = sortedCats.slice(0, 3);
+    insights.push({
+      icon: '📊',
+      title: 'Your top 3 categories',
+      text: midCats.map(([c, v]) => `${CATEGORY_ICONS[c] || ''} ${c}: $${v.toFixed(2)} (${((v / totalExpense) * 100).toFixed(0)}%)`).join(' · '),
+      color: 'var(--accent)'
+    });
+  }
+
+  // Pick a random insight that hasn't been shown this session
+  if (insights.length === 0) return null;
+  const idx = Math.floor(Math.random() * insights.length);
+  return insights[idx];
+}
+
+function getNewInsight() {
+  if (transactions.filter(t => t.type === 'expense').length === 0) {
+    showToast('⚠️ Add some transactions first!');
+    return;
+  }
+
+  if (insightUsed) {
+    showToast('🔒 Free plan: 1 insight per visit. Upgrade for unlimited!');
+    document.getElementById('aiUpsell').style.display = 'flex';
+    return;
+  }
+
+  const insight = generateInsight();
+  if (!insight) { showToast('⚠️ Not enough data for insights yet'); return; }
+
+  insightUsed = true;
+  document.getElementById('aiEmpty').style.display = 'none';
+  document.getElementById('aiUpsell').style.display = 'flex';
+  document.getElementById('insightCount').textContent = '1/1 free insight';
+
+  const el = document.getElementById('aiInsight');
+  el.style.display = 'block';
+  el.innerHTML = `
+    <div style="display:flex;align-items:flex-start;gap:14px">
+      <span style="font-size:28px;line-height:1">${insight.icon}</span>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:15px;margin-bottom:6px;color:${insight.color}">${escapeHtml(insight.title)}</div>
+        <p style="color:var(--muted);font-size:13px;line-height:1.5;margin:0">${escapeHtml(insight.text)}</p>
+      </div>
+    </div>
+  `;
+  showToast('🤖 Insight generated!');
+}
+
+// Show Pro banner only after user has 10+ transactions (better conversion)
+(function checkProBanner() {
+  const txCount = transactions.length;
+  const banner = document.getElementById('proBanner');
+  if (txCount >= 10) {
+    banner.style.display = 'flex';
+  } else {
+    banner.style.display = 'none';
+  }
+})();
+
+// Generate recurring transactions on page load
+generateRecurringTransactions();
+renderRecurring();
+
+// Keyboard shortcut
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeUpgradeModal();
+  if (e.key === 'Enter' && document.activeElement.id === 'description') addTransaction();
+  if (e.key === 'Enter' && document.activeElement.id === 'amount') {
+    e.preventDefault();
+    document.getElementById('description').focus();
+  }
+});
+
+// Init
+renderAll();
+</script>
+</body>
+</html>

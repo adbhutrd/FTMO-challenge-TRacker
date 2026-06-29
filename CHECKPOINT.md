@@ -4,8 +4,8 @@
 
 ### 1️⃣ Payment System (Stripe) — LIVE
 - Created Stripe product **"FTMO Tracker Pro"** at **$19.99/month**
-- **Payment link:** https://buy.stripe.com/5kQ00lejT79186sdvh8Ra00
-- **Warning:** Uses Ko-fi-linked Stripe account — Stripe recommends creating a fresh account
+- **Payment link (Gumroad):** https://gumroad.com/l/ezteprg
+- **Note:** Payment now uses Gumroad (verified working) — Stripe account deprecated
 - Keys saved to `freebuff/.env.local` (gitignored — safe from commit)
 
 ### 2️⃣ Gemini API Key — Saved
@@ -69,5 +69,5 @@ Fixed python path issue (cron used wrong Python without pandas):
 4. **Supabase** — Set up database for Pro features (cloud sync, user accounts)
 
 ## Quick Links
-- Stripe payment: https://buy.stripe.com/5kQ00lejT79186sdvh8Ra00
+- Gumroad payment: https://gumroad.com/l/ezteprg
 - GitHub: https://github.com/adbhutrd/FTMO-challenge-TRacker.git

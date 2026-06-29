@@ -2,7 +2,7 @@
 
 ## The Problem
 
-The boss (Enish) and Buffy (AI CEO) were having productive conversations through the CLI. But every ~30 minutes, the session would expire. The boss would have to re-explain everything — the business, the tools, the context. **It was like talking to someone with amnesia.**
+The boss (Adbhut) and Buffy (AI CEO) were having productive conversations through the CLI. But every ~30 minutes, the session would expire. The boss would have to re-explain everything — the business, the tools, the context. **It was like talking to someone with amnesia.**
 
 The boss said: *"I need to talk to you regularly. Find a solution."*
 
