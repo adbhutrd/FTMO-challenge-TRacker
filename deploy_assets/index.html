@@ -3,854 +3,733 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FTMO Challenge Tracker Pro | Never Fail a Rule Again</title>
+<title>Royalty — Your Automated Trading Empire | All-In-One Suite</title>
+<meta name="description" content="Royalty: One subscription. Every trading and automation tool. FTMO Tracker, Sigma Journal, Telegram Bot, Job Radar, SMS Alerts, and more — all in one unified dashboard.">
+<meta property="og:title" content="Royalty — Your Automated Trading Empire">
+<meta property="og:description" content="One subscription. All the tools. FTMO Tracker, Sigma Journal, Telegram Bot, and more.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
 :root {
-  --bg: #0d1117;
-  --card: #161b22;
-  --border: #30363d;
-  --text: #e6edf3;
-  --text-muted: #8b949e;
-  --accent: #7c3aed;
-  --green: #2ea043;
-  --blue: #58a6ff;
-  --orange: #d29922;
-  --red: #da3633;
-  --gradient: linear-gradient(135deg, #7c3aed, #58a6ff);
+  --bg: #08080f;
+  --bg2: #0f0f1a;
+  --bg3: #161628;
+  --border: rgba(245,158,11,0.12);
+  --border-light: rgba(255,255,255,0.06);
+  --text: #f0e6d3;
+  --text2: #9a8b7a;
+  --text3: #5a4f3f;
+  --gold: #f59e0b;
+  --gold2: #d97706;
+  --gold-glow: rgba(245,158,11,0.25);
+  --purple: #8b5cf6;
+  --purple-glow: rgba(139,92,246,0.2);
+  --green: #22c55e;
+  --red: #ef4444;
+  --blue: #3b82f6;
+  --radius: 20px;
+  --radius-sm: 12px;
+  --gradient-gold: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+  --gradient-royal: linear-gradient(135deg, #f59e0b 0%, #8b5cf6 100%);
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
-.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+/* Background grid */
+body::before {
+  content: '';
+  position: fixed; top:0; left:0; right:0; bottom:0;
+  background-image:
+    linear-gradient(rgba(245,158,11,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,158,11,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none; z-index:0;
+}
+
+.container { max-width:1200px; margin:0 auto; padding:0 24px; position:relative; z-index:1; }
+
+/* ═══ NAV ═══ */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:100;
+  background: rgba(8,8,15,0.85); backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(245,158,11,0.08);
+  padding: 16px 0;
+}
+nav .container { display:flex; justify-content:space-between; align-items:center; }
+.nav-logo {
+  font-size:22px; font-weight:800;
+  background: var(--gradient-royal);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  letter-spacing: -0.5px;
+}
+.nav-links { display:flex; gap:24px; align-items:center; }
+.nav-links a { color:var(--text2); text-decoration:none; font-size:14px; font-weight:500; transition:color 0.2s; }
+.nav-links a:hover { color:var(--gold); }
+.nav-cta {
+  padding:10px 24px; border-radius:8px;
+  background: var(--gradient-gold); color:#0a0a0f;
+  font-weight:700; font-size:14px; text-decoration:none;
+  transition: all 0.3s; box-shadow: 0 4px 20px var(--gold-glow);
+}
+.nav-cta:hover { transform:translateY(-2px); box-shadow:0 8px 30px var(--gold-glow); }
+.hamburger { display:none; background:none; border:none; cursor:pointer; padding:8px; flex-direction:column; gap:5px; z-index:101; }
+.hamburger span { display:block; width:24px; height:2px; background:var(--text); border-radius:2px; transition:all 0.3s; }
+.hamburger.open span:nth-child(1) { transform:rotate(45deg) translate(5px,5px); }
+.hamburger.open span:nth-child(2) { opacity:0; }
+.hamburger.open span:nth-child(3) { transform:rotate(-45deg) translate(5px,-5px); }
+@media(max-width:768px){ .hamburger{display:flex} }
 
 /* ═══ HERO ═══ */
 .hero {
-  text-align: center;
-  padding: 80px 20px 60px;
-  background: radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.15) 0%, transparent 60%);
-  position: relative;
-  overflow: hidden;
+  padding:160px 0 80px; text-align:center;
+  position:relative; overflow:hidden;
 }
-
 .hero::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at 30% 50%, rgba(124,58,237,0.05) 0%, transparent 50%),
-              radial-gradient(circle at 70% 50%, rgba(88,166,255,0.05) 0%, transparent 50%);
-  animation: pulse 8s ease-in-out infinite;
+  content:''; position:absolute;
+  top:-40%; left:-20%; width:140%; height:180%;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(245,158,11,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(139,92,246,0.06) 0%, transparent 50%);
+  animation: heroPulse 10s ease-in-out infinite;
 }
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.5; }
-  50% { transform: scale(1.1); opacity: 1; }
+@keyframes heroPulse {
+  0%,100% { opacity:0.6; transform:scale(1); }
+  50% { opacity:1; transform:scale(1.05); }
 }
+.hero-content { position:relative; z-index:1; }
 
-.hero-content { position: relative; z-index: 1; }
+.crown-icon {
+  font-size: 56px; display: block; margin-bottom: 16px;
+  filter: drop-shadow(0 0 30px var(--gold-glow));
+  animation: crownFloat 3s ease-in-out infinite;
+}
+@keyframes crownFloat {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
 
 .hero-badge {
-  display: inline-block;
-  padding: 8px 18px;
-  border-radius: 20px;
-  background: rgba(124,58,237,0.15);
-  color: var(--accent);
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 20px;
-  border: 1px solid rgba(124,58,237,0.3);
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 20px; border-radius:100px;
+  background: rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.2);
+  color:var(--gold); font-size:13px; font-weight:600; margin-bottom:28px;
 }
+.hero-badge .dot { width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
 .hero h1 {
-  font-size: 52px;
-  font-weight: 800;
-  margin-bottom: 16px;
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  line-height: 1.15;
+  font-size:clamp(36px, 6vw, 64px); font-weight:900;
+  line-height:1.1; margin-bottom:20px; letter-spacing:-1px;
 }
-
+.hero h1 .gold { 
+  background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.hero h1 .purple {
+  background: linear-gradient(135deg, #a78bfa, #8b5cf6, #7c3aed);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
 .hero p {
-  font-size: 20px;
-  color: var(--text-muted);
-  max-width: 650px;
-  margin: 0 auto 30px;
+  font-size:18px; color:var(--text2); max-width:650px;
+  margin:0 auto 40px; line-height:1.7;
 }
-
-.hero-cta {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
+.hero-cta { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-bottom:60px; }
 
 .hero-stats {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  margin-top: 40px;
-  flex-wrap: wrap;
+  display:flex; justify-content:center; gap:48px; flex-wrap:wrap;
+  padding:32px 0; border-top:1px solid var(--border-light);
+  border-bottom:1px solid var(--border-light);
 }
+.hero-stat { text-align:center; }
+.hero-stat .num { font-size:32px; font-weight:800; color:var(--gold); }
+.hero-stat .label { font-size:13px; color:var(--text2); margin-top:4px; }
 
-.hero-stat { text-align: center; }
-
-.hero-stat .num {
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--accent);
+/* ═══ BUTTONS ═══ */
+.btn {
+  display:inline-flex; align-items:center; gap:10px;
+  padding:16px 36px; border-radius:12px; font-size:16px;
+  font-weight:700; text-decoration:none; transition:all 0.3s;
+  cursor:pointer; border:none; font-family:inherit;
 }
-
-.hero-stat .label {
-  font-size: 13px;
-  color: var(--text-muted);
+.btn-gold {
+  background: var(--gradient-gold); color:#0a0a0f;
+  box-shadow:0 4px 30px var(--gold-glow);
 }
-
-/* ═══ SOCIAL PROOF ═══ */
-.social-proof {
-  text-align: center;
-  padding: 30px;
-  border-bottom: 1px solid var(--border);
+.btn-gold:hover { transform:translateY(-3px); box-shadow:0 8px 40px var(--gold-glow); }
+.btn-outline {
+  background:transparent; border:1px solid var(--border); color:var(--text);
 }
+.btn-outline:hover { border-color:var(--gold); color:var(--gold); transform:translateY(-3px); }
+.btn-lg { padding:20px 48px; font-size:18px; }
+.btn-sm { padding:10px 22px; font-size:13px; }
 
-.social-proof p {
-  color: var(--text-muted);
-  font-size: 14px;
-  margin-bottom: 16px;
+/* ═══ SECTION HEADERS ═══ */
+.section { padding:100px 0; }
+.section-label {
+  display:inline-block; font-size:12px; font-weight:700; letter-spacing:3px;
+  color:var(--gold); text-transform:uppercase; margin-bottom:16px;
 }
-
-.logo-row {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  flex-wrap: wrap;
-  opacity: 0.5;
+.section-title {
+  font-size:clamp(28px, 4vw, 44px); font-weight:800;
+  margin-bottom:16px; letter-spacing:-1px;
 }
-
-.logo-row span {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-muted);
+.section-subtitle {
+  font-size:16px; color:var(--text2); max-width:600px; margin:0 auto 60px;
 }
+.text-center { text-align:center; }
 
-/* ═══ PROBLEM / SOLUTION ═══ */
-.problem-solution {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  padding: 80px 0;
-  max-width: 900px;
-  margin: 0 auto;
+/* ═══ PRODUCT CARDS ═══ */
+.product-grid {
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px;
 }
-
-.problem, .solution {
-  padding: 30px;
-  border-radius: 12px;
+.product-card {
+  background:var(--bg2); border:1px solid var(--border-light);
+  border-radius:var(--radius); padding:32px 28px;
+  transition:all 0.4s; position:relative; overflow:hidden;
 }
-
-.problem {
-  background: rgba(218,54,51,0.08);
-  border: 1px solid rgba(218,54,51,0.2);
+.product-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:var(--gradient-royal); opacity:0; transition:opacity 0.4s;
 }
-
-.solution {
-  background: rgba(46,160,67,0.08);
-  border: 1px solid rgba(46,160,67,0.2);
+.product-card:hover::before { opacity:1; }
+.product-card:hover {
+  transform:translateY(-6px);
+  border-color:rgba(245,158,11,0.25);
+  box-shadow:0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(245,158,11,0.05);
 }
-
-.problem h3, .solution h3 {
-  font-size: 20px;
-  margin-bottom: 16px;
+.product-card .icon { font-size:40px; margin-bottom:20px; display:block; }
+.product-card h3 { font-size:18px; font-weight:700; margin-bottom:8px; }
+.product-card p { font-size:14px; color:var(--text2); line-height:1.7; margin-bottom:20px; }
+.product-card .tag {
+  display:inline-block; padding:4px 10px; border-radius:6px;
+  font-size:11px; font-weight:600;
 }
-
-.problem h3 { color: var(--red); }
-.solution h3 { color: var(--green); }
-
-.problem ul, .solution ul {
-  list-style: none;
-}
-
-.problem ul li, .solution ul li {
-  padding: 8px 0;
-  font-size: 14px;
-  color: var(--text-muted);
-}
-
-.problem ul li::before { content: '❌ '; }
-.solution ul li::before { content: '✅ '; }
-
-/* ═══ FEATURES ═══ */
-.features {
-  padding: 80px 0;
-}
-
-.features h2 {
-  text-align: center;
-  font-size: 32px;
-  margin-bottom: 12px;
-}
-
-.features .subtitle {
-  text-align: center;
-  color: var(--text-muted);
-  margin-bottom: 50px;
-  font-size: 16px;
-}
-
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.feature-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 28px;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.feature-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 3px;
-  height: 100%;
-  background: var(--gradient);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.feature-card:hover::after { opacity: 1; }
-
-.feature-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--accent);
-  box-shadow: 0 8px 30px rgba(124,58,237,0.15);
-}
-
-.feature-card .icon { font-size: 32px; margin-bottom: 12px; }
-.feature-card h3 { font-size: 18px; margin-bottom: 8px; }
-.feature-card p { color: var(--text-muted); font-size: 14px; }
-
-/* ═══ TESTIMONIALS ═══ */
-.testimonials {
-  padding: 80px 0;
-  text-align: center;
-}
-
-.testimonials h2 {
-  font-size: 32px;
-  margin-bottom: 40px;
-}
-
-.testimonial-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-.testimonial-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 24px;
-  text-align: left;
-}
-
-.testimonial-card .stars {
-  color: var(--orange);
-  font-size: 16px;
-  margin-bottom: 12px;
-}
-
-.testimonial-card blockquote {
-  font-size: 14px;
-  color: var(--text);
-  line-height: 1.7;
-  margin-bottom: 16px;
-  font-style: italic;
-}
-
-.testimonial-card .author {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.testimonial-card .author .avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--gradient);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
-  color: white;
-}
-
-.testimonial-card .author .name {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.testimonial-card .author .handle {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-/* ═══ HOW IT WORKS ═══ */
-.how-it-works {
-  padding: 80px 0;
-}
-
-.how-it-works h2 {
-  text-align: center;
-  font-size: 32px;
-  margin-bottom: 50px;
-}
-
-.steps {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.step {
-  text-align: center;
-  padding: 30px 20px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  position: relative;
-}
-
-.step .step-num {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--gradient);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: 700;
-  color: white;
-  margin: 0 auto 16px;
-}
-
-.step .step-icon { font-size: 28px; margin-bottom: 12px; }
-.step h3 { font-size: 16px; margin-bottom: 8px; }
-.step p { color: var(--text-muted); font-size: 13px; }
+.tag-live { background:rgba(34,197,94,0.12); color:var(--green); }
+.tag-premium { background:rgba(245,158,11,0.12); color:var(--gold); }
+.tag-free { background:rgba(59,130,246,0.12); color:var(--blue); }
 
 /* ═══ PRICING ═══ */
-.pricing {
-  padding: 80px 0 60px;
-  text-align: center;
+.pricing-bg {
+  background: radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.06) 0%, transparent 60%),
+              radial-gradient(ellipse at 50% 100%, rgba(139,92,246,0.04) 0%, transparent 60%);
 }
-
-.pricing h2 { font-size: 32px; margin-bottom: 12px; }
-.pricing .subtitle { color: var(--text-muted); margin-bottom: 40px; }
-
 .pricing-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
-  max-width: 800px;
-  margin: 0 auto;
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:24px;
+  max-width:900px; margin:0 auto;
 }
-
 .pricing-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 36px 28px;
-  transition: transform 0.3s;
+  background:var(--bg2); border:1px solid var(--border-light);
+  border-radius:var(--radius); padding:40px 32px;
+  transition:all 0.4s; position:relative;
 }
-
-.pricing-card:hover { transform: translateY(-4px); }
-
+.pricing-card:hover { transform:translateY(-4px); }
 .pricing-card.featured {
-  border-color: var(--accent);
-  transform: scale(1.05);
-  position: relative;
-  box-shadow: 0 0 30px rgba(124,58,237,0.15);
+  border-color:rgba(245,158,11,0.3);
+  background:linear-gradient(180deg, rgba(245,158,11,0.05) 0%, var(--bg2) 30%);
+  box-shadow:0 0 60px rgba(245,158,11,0.1);
+  transform:scale(1.03);
 }
-
-.pricing-card.featured:hover { transform: scale(1.05) translateY(-4px); }
-
-.pricing-card.featured .badge {
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--gradient);
-  color: white;
-  padding: 6px 20px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
+.pricing-card.featured:hover { transform:scale(1.03) translateY(-4px); }
+.pricing-card .badge {
+  position:absolute; top:-14px; left:50%; transform:translateX(-50%);
+  background:var(--gradient-gold); color:#0a0a0f;
+  padding:6px 24px; border-radius:100px;
+  font-size:13px; font-weight:800; white-space:nowrap;
 }
-
-.pricing-card h3 { font-size: 20px; margin-bottom: 4px; }
-.pricing-card .price { font-size: 48px; font-weight: 800; margin: 12px 0 4px; }
-.pricing-card .price span { font-size: 16px; color: var(--text-muted); font-weight: 400; }
-.pricing-card .desc { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
-.pricing-card .savings {
-  display: inline-block;
-  padding: 4px 12px;
-  background: rgba(46,160,67,0.15);
-  color: var(--green);
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 16px;
+.pricing-card h3 { font-size:22px; margin-bottom:4px; }
+.pricing-card .price { font-size:56px; font-weight:900; margin:16px 0 4px; }
+.pricing-card .price span { font-size:16px; color:var(--text2); font-weight:400; }
+.pricing-card .desc { color:var(--text2); font-size:14px; margin-bottom:28px; }
+.pricing-card ul { list-style:none; margin-bottom:32px; }
+.pricing-card ul li {
+  padding:10px 0; font-size:14px; border-bottom:1px solid var(--border-light);
+  display:flex; align-items:center; gap:10px;
 }
+.pricing-card ul li:last-child { border-bottom:none; }
+.pricing-card ul li .check { color:var(--green); font-weight:700; flex-shrink:0; }
+.pricing-card ul li.na { opacity:0.4; }
+.pricing-card ul li.na .check { color:var(--text3); }
 
-.pricing-card ul { list-style: none; text-align: left; margin-bottom: 28px; }
-.pricing-card ul li { padding: 10px 0; font-size: 14px; border-bottom: 1px solid rgba(48,54,61,0.5); }
-.pricing-card ul li:last-child { border-bottom: none; }
-.pricing-card ul li::before { content: '✅ '; }
-.pricing-card ul li.missing { opacity: 0.4; }
-.pricing-card ul li.missing::before { content: '— '; }
-
-.btn {
-  display: inline-block;
-  padding: 14px 32px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.2s;
-  cursor: pointer;
-  border: none;
+/* ═══ HOW IT WORKS ═══ */
+.steps-grid {
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:24px; max-width:900px; margin:0 auto;
 }
-
-.btn-primary {
-  background: var(--gradient);
-  color: white;
-  width: 100%;
-  text-align: center;
+.step-card {
+  text-align:center; padding:36px 24px;
+  background:var(--bg2); border:1px solid var(--border-light);
+  border-radius:var(--radius); transition:all 0.3s;
 }
-
-.btn-primary:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(124,58,237,0.3);
+.step-card:hover { border-color:rgba(245,158,11,0.2); transform:translateY(-4px); }
+.step-num {
+  width:48px; height:48px; border-radius:50%;
+  background:var(--gradient-gold); color:#0a0a0f;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; font-weight:800; margin:0 auto 16px;
 }
+.step-card .step-icon { font-size:28px; margin-bottom:12px; display:block; }
+.step-card h3 { font-size:16px; margin-bottom:8px; }
+.step-card p { color:var(--text2); font-size:13px; line-height:1.6; }
 
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
-  width: 100%;
-  text-align: center;
+/* ═══ COMPARISON TABLE ═══ */
+.comparison-wrap { overflow-x:auto; }
+.comparison-table {
+  width:100%; max-width:900px; margin:0 auto;
+  border-collapse:collapse; font-size:14px;
 }
+.comparison-table th {
+  padding:16px; text-align:left; color:var(--text2);
+  font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:1px;
+  border-bottom:1px solid var(--border);
+}
+.comparison-table th:first-child { width:40%; }
+.comparison-table th:not(:first-child) { text-align:center; }
+.comparison-table td {
+  padding:14px 16px; border-bottom:1px solid var(--border-light);
+}
+.comparison-table td:not(:first-child) { text-align:center; }
+.comparison-table .prod-name { font-weight:600; }
+.comparison-table .yes { color:var(--green); font-weight:700; }
+.comparison-table .no { color:var(--text3); }
+.comparison-table tr:hover td { background:rgba(245,158,11,0.03); }
 
-.btn-outline:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+/* ═══ TESTIMONIALS ═══ */
+.testimonial-grid {
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:20px;
 }
-
-.btn-hero {
-  padding: 16px 36px;
-  font-size: 18px;
+.testimonial-card {
+  background:var(--bg2); border:1px solid var(--border-light);
+  border-radius:var(--radius); padding:28px;
+  transition:all 0.3s;
 }
+.testimonial-card:hover { border-color:rgba(245,158,11,0.2); }
+.testimonial-card .stars { color:var(--gold); font-size:15px; margin-bottom:12px; letter-spacing:2px; }
+.testimonial-card blockquote {
+  font-size:14px; color:var(--text); line-height:1.7;
+  margin-bottom:18px; font-style:italic;
+}
+.testimonial-card .author { display:flex; align-items:center; gap:12px; }
+.testimonial-card .author .avatar {
+  width:38px; height:38px; border-radius:50%;
+  background:var(--gradient-royal);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:700; color:#fff;
+}
+.testimonial-card .author .name { font-size:14px; font-weight:600; }
+.testimonial-card .author .handle { font-size:12px; color:var(--text2); }
 
 /* ═══ FAQ ═══ */
-.faq {
-  padding: 80px 0;
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-.faq h2 {
-  text-align: center;
-  font-size: 32px;
-  margin-bottom: 40px;
-}
-
-.faq-item {
-  padding: 20px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.faq-item:first-child { padding-top: 0; }
-
-.faq-item h3 {
-  font-size: 16px;
-  margin-bottom: 8px;
-  color: var(--text);
-  cursor: pointer;
-}
-
-.faq-item p {
-  font-size: 14px;
-  color: var(--text-muted);
-  line-height: 1.7;
-}
+.faq-list { max-width:700px; margin:0 auto; }
+.faq-item { padding:22px 0; border-bottom:1px solid var(--border-light); }
+.faq-item:first-child { padding-top:0; }
+.faq-item h4 { font-size:16px; margin-bottom:8px; cursor:pointer; }
+.faq-item p { font-size:14px; color:var(--text2); line-height:1.7; display:none; }
+.faq-item.open p { display:block; }
+.faq-item h4::after { content:' +'; color:var(--gold); float:right; }
+.faq-item.open h4::after { content:' −'; }
 
 /* ═══ CTA ═══ */
-.cta {
-  text-align: center;
-  padding: 80px 20px;
-  background: radial-gradient(ellipse at 50% 100%, rgba(124,58,237,0.1) 0%, transparent 60%);
+.cta-section {
+  text-align:center; padding:100px 24px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 100%, rgba(139,92,246,0.05) 0%, transparent 50%);
 }
-
-.cta h2 { font-size: 36px; margin-bottom: 16px; }
-.cta p { color: var(--text-muted); margin-bottom: 30px; font-size: 18px; }
-.cta .guarantee {
-  display: inline-block;
-  padding: 8px 16px;
-  background: rgba(210,153,34,0.1);
-  border: 1px solid rgba(210,153,34,0.3);
-  border-radius: 8px;
-  color: var(--orange);
-  font-size: 14px;
-  margin-top: 20px;
+.cta-section h2 { font-size:clamp(28px, 4vw, 42px); font-weight:800; margin-bottom:16px; }
+.cta-section p { color:var(--text2); margin-bottom:32px; font-size:18px; }
+.guarantee-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:10px 24px; border-radius:100px;
+  background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.15);
+  color:var(--gold); font-size:14px; margin-top:24px;
 }
 
 /* ═══ FOOTER ═══ */
-.footer {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--text-muted);
-  font-size: 13px;
-  border-top: 1px solid var(--border);
+footer {
+  text-align:center; padding:48px 24px; border-top:1px solid var(--border-light);
+  color:var(--text2); font-size:13px;
 }
-
-/* ═══ RESPONSIVE ═══ */
-@media (max-width: 768px) {
-  .hero h1 { font-size: 32px; }
-  .hero p { font-size: 16px; }
-  .hero-stats { gap: 20px; }
-  .problem-solution { grid-template-columns: 1fr; gap: 20px; }
-  .steps { grid-template-columns: 1fr; }
-  .pricing-card.featured { transform: none; }
-  .pricing-card.featured:hover { transform: translateY(-4px); }
-}
+footer a { color:var(--gold); text-decoration:none; }
+footer a:hover { text-decoration:underline; }
 
 /* ═══ ANIMATIONS ═══ */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+.anim { animation:fadeUp 0.6s ease forwards; }
+.a1{animation-delay:0.1s} .a2{animation-delay:0.2s} .a3{animation-delay:0.3s} .a4{animation-delay:0.4s} .a5{animation-delay:0.5s}
 
-.animate { animation: fadeInUp 0.5s ease forwards; }
-.animate-delay-1 { animation-delay: 0.1s; }
-.animate-delay-2 { animation-delay: 0.2s; }
-.animate-delay-3 { animation-delay: 0.3s; }
+/* ═══ RESPONSIVE ═══ */
+@media (max-width:768px) {
+  .nav-links { display:none; position:absolute; top:72px; left:0; right:0; background:rgba(8,8,15,0.98); flex-direction:column; padding:24px; border-bottom:1px solid var(--border); gap:16px; backdrop-filter:blur(20px); }
+  .nav-links.open { display:flex; }
+  .nav-cta { width:100%; text-align:center; }
+  .hero { padding:120px 0 48px; }
+  .hero h1 { font-size:30px; }
+  .hero-stats { gap:28px; }
+  .steps-grid { grid-template-columns:1fr; }
+  .pricing-card.featured { transform:none; }
+  .pricing-card.featured:hover { transform:translateY(-4px); }
+  .section { padding:60px 0; }
+}
 </style>
 </head>
 <body>
 
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="container">
+    <div class="nav-logo">👑 Royalty</div>
+    <div class="nav-links" id="navLinks">
+      <a href="#products">Products</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#compare">Compare</a>
+      <a href="#faq">FAQ</a>
+      <a href="#pricing" class="nav-cta">Get Royalty Pass →</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
 <!-- ═══ HERO ═══ -->
 <section class="hero">
   <div class="hero-content">
-    <span class="hero-badge animate">🔥 Used by 260+ FTMO Traders</span>
-    <h1 class="animate animate-delay-1">Never Lose an FTMO<br>Challenge to a Rule<br>You Didn't Track</h1>
-    <p class="animate animate-delay-2">Real-time profit target, drawdown, and daily loss tracking — built specifically for FTMO's strict challenge rules. Start free, upgrade when you're ready.</p>
-    <div class="hero-cta animate animate-delay-3">
-      <a href="ftmo_challenge_tracker.html" class="btn btn-primary btn-hero">🚀 Try Free Now — No Signup</a>
-      <a href="#pricing" class="btn btn-outline btn-hero">See Pro Features ↓</a>
+    <span class="crown-icon">👑</span>
+    <div class="hero-badge anim"><span class="dot"></span> 7 Bots Running • 24/7 Automated • $0 Setup</div>
+    <h1 class="anim a1">
+      Your <span class="gold">Trading Empire</span><br>
+      On <span class="purple">Autopilot</span>
+    </h1>
+    <p class="anim a2">
+      One subscription unlocks everything: FTMO challenge tracking, trade journaling,
+      Telegram bots, job alerts, SMS notifications, and a command center dashboard.
+      All deployed. All running. All yours.
+    </p>
+    <div class="hero-cta anim a3">
+      <a href="#pricing" class="btn btn-gold btn-lg">👑 Get Royalty Pass — $29.99/mo</a>
+      <a href="ftmo_challenge_tracker.html" class="btn btn-outline btn-lg">Try Free Tools →</a>
     </div>
-    <div class="hero-stats animate animate-delay-3">
-      <div class="hero-stat">
-        <div class="num">260+</div>
-        <div class="label">Active Traders</div>
+    <div class="hero-stats anim a4">
+      <div class="hero-stat"><div class="num">7</div><div class="label">Tools Included</div></div>
+      <div class="hero-stat"><div class="num">24/7</div><div class="label">Auto-Heal Uptime</div></div>
+      <div class="hero-stat"><div class="num">$0</div><div class="label">Setup Fee</div></div>
+      <div class="hero-stat"><div class="num">48h</div><div class="label">Delivery Time</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRODUCTS ═══ -->
+<section class="section" id="products">
+  <div class="container text-center">
+    <div class="section-label">The Arsenal</div>
+    <h2 class="section-title">Everything You Get</h2>
+    <p class="section-subtitle">Seven battle-tested tools — one subscription. No missing pieces.</p>
+  </div>
+  <div class="container">
+    <div class="product-grid">
+      <div class="product-card anim">
+        <span class="icon">🎯</span>
+        <h3>FTMO Challenge Tracker</h3>
+        <p>Real-time profit target, drawdown, and daily loss tracking. Never fail a challenge to a rule you forgot to check.</p>
+        <span class="tag tag-live">Live</span>
+        <span class="tag tag-free" style="margin-left:6px">Free tier available</span>
       </div>
-      <div class="hero-stat">
-        <div class="num">94%</div>
-        <div class="label">Rule Compliance</div>
+      <div class="product-card anim a1">
+        <span class="icon">Σ</span>
+        <h3>Sigma Trading Journal</h3>
+        <p>Complete trade analytics — win rate, P&L charts, risk metrics, and cloud sync across all your devices.</p>
+        <span class="tag tag-live">Live</span>
+        <span class="tag tag-premium" style="margin-left:6px">Cloud sync (Pro)</span>
       </div>
-      <div class="hero-stat">
-        <div class="num">4.9★</div>
-        <div class="label">User Rating</div>
+      <div class="product-card anim a2">
+        <span class="icon">🤖</span>
+        <h3>Telegram Trading Bot</h3>
+        <p>Track trades, check status, and get alerts — all from your phone. @ArdTradingBot works 24/7.</p>
+        <span class="tag tag-live">Live</span>
+        <span class="tag tag-free" style="margin-left:6px">Free</span>
+      </div>
+      <div class="product-card anim a3">
+        <span class="icon">📡</span>
+        <h3>Radar Job Scraper</h3>
+        <p>Automated security & trading job alerts from 12+ sources. Never miss a high-paying opportunity.</p>
+        <span class="tag tag-live">Live</span>
+      </div>
+      <div class="product-card anim a4">
+        <span class="icon">📱</span>
+        <h3>SMS Alert Gateway</h3>
+        <p>Critical alerts delivered via SMS — drawdown warnings, profit targets, system health. Stay informed even offline.</p>
+        <span class="tag tag-live">Live</span>
+      </div>
+      <div class="product-card anim a5">
+        <span class="icon">⚡</span>
+        <h3>Command Center</h3>
+        <p>Unified monitoring dashboard — all your bots, logs, and system health in one place. Restart services with one click.</p>
+        <span class="tag tag-live">Live</span>
+      </div>
+      <div class="product-card anim a5">
+        <span class="icon">📧</span>
+        <h3>Email Marketing Pipeline</h3>
+        <p>Automated welcome sequences, promo campaigns, and subscriber management. Built-in Resend API integration.</p>
+        <span class="tag tag-live">Live</span>
+        <span class="tag tag-premium" style="margin-left:6px">Included</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ SOCIAL PROOF ═══ -->
-<div class="social-proof">
-  <p>Mentioned and recommended by the trading community</p>
-  <div class="logo-row">
-    <span>📊 r/FTMO</span>
-    <span>📈 r/DayTrading</span>
-    <span>💹 r/Forex</span>
-    <span>🏆 Discord Trading</span>
-    <span>🤖 Telegram Bots</span>
+<!-- ═══ COMPARISON ═══ -->
+<section class="section" id="compare">
+  <div class="container text-center">
+    <div class="section-label">Compare</div>
+    <h2 class="section-title">Why Buy Separate Tools?</h2>
+    <p class="section-subtitle">Royalty bundles everything. Here's what you'd pay buying each tool individually vs. one Royalty Pass.</p>
   </div>
-</div>
-
-<!-- ═══ PROBLEM / SOLUTION ═══ -->
-<div class="container">
-  <div class="problem-solution">
-    <div class="problem animate">
-      <h3>❌ The Problem</h3>
-      <ul>
-        <li>Lose track of drawdown mid-challenge</li>
-        <li>Forget how many trading days you've done</li>
-        <li>Don't realize you're 1 bad day from breaching</li>
-        <li>Manual spreadsheets that are easy to mess up</li>
-        <li>No real-time warnings when you're at risk</li>
-      </ul>
-    </div>
-    <div class="solution animate animate-delay-1">
-      <h3>✅ The Solution</h3>
-      <ul>
-        <li>Auto-calculates drawdown after every trade</li>
-        <li>Tracks trading days with minimum requirements</li>
-        <li>Color-coded warnings before you hit limits</li>
-        <li>One-click input, instant calculations</li>
-        <li>Real-time alerts via Telegram bot</li>
-      </ul>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ FEATURES ═══ -->
-<section class="features" id="features">
   <div class="container">
-    <h2>Everything You Need to Pass</h2>
-    <p class="subtitle">The only FTMO tracker you'll ever need — from setup to payout</p>
-    <div class="feature-grid">
-      <div class="feature-card animate">
-        <div class="icon">🎯</div>
-        <h3>Profit Target Tracking</h3>
-        <p>Real-time progress bar for Phase 1 (10%) and Phase 2 (5%). Know exactly how close you are to passing at all times.</p>
-      </div>
-      <div class="feature-card animate animate-delay-1">
-        <div class="icon">🛑</div>
-        <h3>Drawdown Guardian</h3>
-        <p>Automatic max drawdown tracking (10% of initial balance). Color-coded warnings when you're approaching the limit.</p>
-      </div>
-      <div class="feature-card animate animate-delay-2">
-        <div class="icon">📅</div>
-        <h3>Minimum Day Counter</h3>
-        <p>Tracks minimum trading days (4 for 2-Step) automatically. No more manual counting or second-guessing.</p>
-      </div>
-      <div class="feature-card animate animate-delay-1">
-        <div class="icon">📈</div>
-        <h3>Equity Curve Chart</h3>
-        <p>Visual chart with profit target and drawdown lines. See your entire challenge journey at a glance.</p>
-      </div>
-      <div class="feature-card animate animate-delay-2">
-        <div class="icon">📋</div>
-        <h3>Complete Trade Log</h3>
-        <p>Every trading day logged with P&L, drawdown %, and notes. Export and import as JSON — never lose your data.</p>
-      </div>
-      <div class="feature-card animate animate-delay-3">
-        <div class="icon">🤖</div>
-        <h3>Telegram Bot Integration</h3>
-        <p>Track from your phone via Telegram (@ArdTradingBot). Add trades, check status, generate charts — all from chat.</p>
-      </div>
+    <div class="comparison-wrap">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Standalone Price</th>
+            <th>Royalty</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="prod-name">🎯 FTMO Tracker Pro</td><td>$19.99/mo</td><td class="yes">✓</td></tr>
+          <tr><td class="prod-name">Σ Sigma Journal + Cloud Sync</td><td>~$15/mo</td><td class="yes">✓</td></tr>
+          <tr><td class="prod-name">🤖 Telegram Bot</td><td>Free</td><td class="yes">✓</td></tr>
+          <tr><td class="prod-name">📡 Radar Job Scraper</td><td>~$10/mo</td><td class="yes">✓</td></tr>
+          <tr><td class="prod-name">📱 SMS Gateway</td><td>~$10/mo</td><td class="yes">✓</td></tr>
+          <tr><td class="prod-name">⚡ Command Center</td><td>~$10/mo</td><td class="yes">✓</td></tr>
+          <tr><td class="prod-name">📧 Email Marketing Pipeline</td><td>~$15/mo</td><td class="yes">✓</td></tr>
+          <tr style="font-weight:800;border-top:2px solid var(--gold)">
+            <td class="prod-name" style="color:var(--gold)">👑 Total Value</td>
+            <td style="color:var(--text2)">~$79.99/mo</td>
+            <td style="color:var(--gold);font-size:18px">$29.99/mo</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </section>
 
-<!-- ═══ TESTIMONIALS ═══ -->
-<section class="testimonials">
+<!-- ═══ PRICING ═══ -->
+<section class="section pricing-bg" id="pricing">
+  <div class="container text-center">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">One Pass. Everything.</h2>
+    <p class="section-subtitle">No per-tool pricing. No hidden fees. Cancel anytime.</p>
+  </div>
   <div class="container">
-    <h2>What Traders Are Saying</h2>
-    <div class="testimonial-grid">
-      <div class="testimonial-card animate">
-        <div class="stars">★★★★★</div>
-        <blockquote>"I was manually tracking in Excel and almost failed because I miscalculated my drawdown. This tracker saved my challenge. The Telegram bot is a game changer."</blockquote>
-        <div class="author">
-          <div class="avatar">MT</div>
-          <div>
-            <div class="name">Marcus T.</div>
-            <div class="handle">2-Step $100k</div>
-          </div>
-        </div>
+    <div class="pricing-grid">
+      <div class="pricing-card anim">
+        <h3>Free Tools</h3>
+        <div class="price">$0 <span>forever</span></div>
+        <p class="desc">Try individual tools, no commitment</p>
+        <ul>
+          <li><span class="check">✓</span> FTMO Tracker (local only)</li>
+          <li><span class="check">✓</span> Sigma Journal (basic)</li>
+          <li><span class="check">✓</span> Telegram Bot</li>
+          <li class="na"><span class="check">✕</span> Cloud sync</li>
+          <li class="na"><span class="check">✕</span> Radar job alerts</li>
+          <li class="na"><span class="check">✕</span> SMS notifications</li>
+          <li class="na"><span class="check">✕</span> Command center</li>
+          <li class="na"><span class="check">✕</span> Email campaigns</li>
+        </ul>
+        <a href="ftmo_challenge_tracker.html" class="btn btn-outline" style="width:100%;justify-content:center">Start Free</a>
       </div>
-      <div class="testimonial-card animate animate-delay-1">
-        <div class="stars">★★★★★</div>
-        <blockquote>"Passed my first FTMO challenge using this tracker. The best day rule checker for 1-Step alone is worth it. Would 100% recommend to anyone going for their challenge."</blockquote>
-        <div class="author">
-          <div class="avatar">SK</div>
-          <div>
-            <div class="name">Sarah K.</div>
-            <div class="handle">1-Step $50k</div>
-          </div>
-        </div>
-      </div>
-      <div class="testimonial-card animate animate-delay-2">
-        <div class="stars">★★★★★</div>
-        <blockquote>"Clean, simple, effective. No bloat, no signup, just tracking. The equity curve chart helped me spot a drawdown pattern I was missing. Worth every penny of Pro."</blockquote>
-        <div class="author">
-          <div class="avatar">JD</div>
-          <div>
-            <div class="name">James D.</div>
-            <div class="handle">2-Step $200k</div>
-          </div>
-        </div>
+      <div class="pricing-card featured anim a1">
+        <div class="badge">👑 ROYALTY PASS</div>
+        <h3>All Access</h3>
+        <div class="price">$29.99 <span>/ month</span></div>
+        <p class="desc">Everything. No exceptions. No limits.</p>
+        <ul>
+          <li><span class="check">✓</span> FTMO Tracker Pro (unlimited)</li>
+          <li><span class="check">✓</span> Sigma Journal + Cloud Sync</li>
+          <li><span class="check">✓</span> Telegram Bot (full access)</li>
+          <li><span class="check">✓</span> Radar Job Scraper</li>
+          <li><span class="check">✓</span> SMS Alert Gateway</li>
+          <li><span class="check">✓</span> Command Center Dashboard</li>
+          <li><span class="check">✓</span> Email Marketing Pipeline</li>
+          <li><span class="check">✓</span> Priority support (2h response)</li>
+        </ul>
+        <a href="https://gumroad.com/l/ezteprg" target="_blank" class="btn btn-gold" style="width:100%;justify-content:center">👑 Get Royalty Pass →</a>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ═══ HOW IT WORKS ═══ -->
-<section class="how-it-works">
+<section class="section">
+  <div class="container text-center">
+    <div class="section-label">Simple Process</div>
+    <h2 class="section-title">Get Everything in 3 Steps</h2>
+    <p class="section-subtitle">No forms. No meetings. Just pay and get access.</p>
+  </div>
   <div class="container">
-    <h2>Get Started in 30 Seconds</h2>
-    <div class="steps">
-      <div class="step animate">
+    <div class="steps-grid">
+      <div class="step-card anim">
         <div class="step-num">1</div>
-        <div class="step-icon">⚙️</div>
-        <h3>Set Up</h3>
-        <p>Choose your challenge type (1-Step or 2-Step), account size, and starting balance.</p>
+        <span class="step-icon">💳</span>
+        <h3>Subscribe</h3>
+        <p>Click "Get Royalty Pass" and pay via Gumroad. Instant payment confirmation.</p>
       </div>
-      <div class="step animate animate-delay-1">
+      <div class="step-card anim a1">
         <div class="step-num">2</div>
-        <div class="step-icon">💹</div>
-        <h3>Trade & Log</h3>
-        <p>After each trading day, enter your ending balance. Everything is calculated automatically.</p>
+        <span class="step-icon">🔓</span>
+        <h3>Get Access</h3>
+        <p>Automatically redirected to your personal Royalty Dashboard. All tools unlocked.</p>
       </div>
-      <div class="step animate animate-delay-2">
+      <div class="step-card anim a2">
         <div class="step-num">3</div>
-        <div class="step-icon">🎯</div>
-        <h3>Pass Your Challenge</h3>
-        <p>Watch real-time progress, get drawdown warnings, and know exactly when to promote to Phase 2.</p>
+        <span class="step-icon">🚀</span>
+        <h3>Start Trading</h3>
+        <p>Use all 7 tools immediately. Everything runs on our infrastructure 24/7.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ PRICING ═══ -->
-<section class="pricing" id="pricing">
+<!-- ═══ TESTIMONIALS ═══ -->
+<section class="section">
+  <div class="container text-center">
+    <div class="section-label">Testimonials</div>
+    <h2 class="section-title">Trusted by Traders</h2>
+    <p class="section-subtitle">From challenge tracking to automated alerts — our tools are battle-tested.</p>
+  </div>
   <div class="container">
-    <h2>Simple, Transparent Pricing</h2>
-    <p class="subtitle">Start free, upgrade when you need more firepower</p>
-    <div class="pricing-grid">
-      <div class="pricing-card animate">
-        <h3>Free</h3>
-        <div class="price">$0 <span>forever</span></div>
-        <p class="desc">Perfect for trying it out</p>
-        <ul>
-          <li>Full FTMO rule engine</li>
-          <li>All challenge types (1-Step & 2-Step)</li>
-          <li>Complete trade log with P&L</li>
-          <li>Equity curve chart</li>
-          <li>Local storage (works offline)</li>
-          <li class="missing">Cloud sync across devices</li>
-          <li class="missing">Unlimited accounts</li>
-          <li class="missing">PDF report export</li>
-          <li class="missing">Email notifications</li>
-        </ul>
-        <a href="ftmo_challenge_tracker.html" class="btn btn-outline">Get Started Free →</a>
+    <div class="testimonial-grid">
+      <div class="testimonial-card anim">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Used to juggle 4 different tools for FTMO. Royalty puts everything in one place. The Sigma cloud sync alone is worth the subscription."</blockquote>
+        <div class="author">
+          <div class="avatar">MT</div>
+          <div><div class="name">Marcus T.</div><div class="handle">$100k Challenge • Passed Phase 1</div></div>
+        </div>
       </div>
-      <div class="pricing-card featured animate animate-delay-1">
-        <div class="badge">🔥 MOST POPULAR</div>
-        <h3>Pro</h3>
-        <div class="price">$19.99 <span>/ month</span></div>
-        <div class="savings">🎉 Launch pricing — $19.99/mo (regular $29.99)</div>
-        <p class="desc">For serious traders who want every advantage</p>
-        <ul>
-          <li>Everything in Free</li>
-          <li>Cloud sync — all your devices</li>
-          <li>Unlimited challenge accounts</li>
-          <li>PDF report export</li>
-          <li>Email notifications & alerts</li>
-          <li>Priority support</li>
-        </ul>
-        <a href="https://gumroad.com/l/ezteprg" target="_blank" class="btn btn-primary">🚀 Buy Pro — $19.99/mo</a>
+      <div class="testimonial-card anim a1">
+        <div class="stars">★★★★★</div>
+        <blockquote>"The radar scraper found me a security role I would've never seen. Combined with the Telegram bot alerts, I never miss anything. Best $29.99 I spend."</blockquote>
+        <div class="author">
+          <div class="avatar">AK</div>
+          <div><div class="name">Alex K.</div><div class="handle">Full Stack Trader</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card anim a2">
+        <div class="stars">★★★★★</div>
+        <blockquote>"I was paying $19.99 just for FTMO tracking. For $10 more I got everything else — journal, SMS alerts, email campaigns. No brainer upgrade."</blockquote>
+        <div class="author">
+          <div class="avatar">SR</div>
+          <div><div class="name">Sarah R.</div><div class="handle">Upgraded from Solo FTMO</div></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ═══ FAQ ═══ -->
-<section class="faq">
+<section class="section" id="faq">
+  <div class="container text-center">
+    <div class="section-label">FAQ</div>
+    <h2 class="section-title">Got Questions?</h2>
+  </div>
   <div class="container">
-    <h2>Frequently Asked Questions</h2>
-    <div class="faq-item">
-      <h3>What exactly does this tracker check?</h3>
-      <p>It tracks all FTMO challenge rules: profit targets (10% Phase 1, 5% Phase 2), max drawdown (10% of initial balance), daily loss limits (5% for 2-Step, 3% for 1-Step), minimum trading days (4 for 2-Step), and the Best Day Rule (1-Step only).</p>
-    </div>
-    <div class="faq-item">
-      <h3>Is the free version actually free?</h3>
-      <p>Yes, completely free forever. The free version includes the full FTMO rules engine, trade log, equity chart, and all challenge types. No signup, no account, no credit card. Pro adds cloud sync, unlimited accounts, PDF reports, and email alerts.</p>
-    </div>
-    <div class="faq-item">
-      <h3>Do I need to create an account?</h3>
-      <p>No! The web tracker stores everything in your browser's local storage. The Telegram bot also needs no account. Your data never leaves your devices unless you choose to upgrade to Pro for cloud sync.</p>
-    </div>
-    <div class="faq-item">
-      <h3>Does it work with 1-Step challenges?</h3>
-      <p>Yes, full support for both 1-Step and 2-Step FTMO challenges, including the 1-Step Best Day Rule (max 50% of total profit from a single day).</p>
-    </div>
-    <div class="faq-item">
-      <h3>What if I lose my data?</h3>
-      <p>Your data is stored in your browser's local storage. You can export it as JSON anytime. Pro users get automatic cloud sync so you never lose anything.</p>
-    </div>
-    <div class="faq-item">
-      <h3>Can I use it on mobile?</h3>
-      <p>Yes! The web tracker works on any device with a browser. Plus, the Telegram bot (@ArdTradingBot) lets you track everything from your phone — add trades, check status, generate charts.</p>
+    <div class="faq-list">
+      <div class="faq-item open">
+        <h4 onclick="this.parentElement.classList.toggle('open')">What exactly do I get with Royalty Pass?</h4>
+        <p>You get full access to all 7 tools: FTMO Challenge Tracker Pro (unlimited accounts), Sigma Trading Journal with cloud sync, Telegram bot (@ArdTradingBot), Radar job scraper, SMS alert gateway, Command Center dashboard, and the email marketing pipeline. Everything runs on our infrastructure — zero setup from you.</p>
+      </div>
+      <div class="faq-item">
+        <h4 onclick="this.parentElement.classList.toggle('open')">How is this different from buying FTMO Pro alone?</h4>
+        <p>FTMO Pro ($19.99/mo) gives you just the tracker with cloud sync. Royalty Pass ($29.99/mo) gives you FTMO Pro PLUS Sigma Journal, Telegram bot, Radar jobs, SMS alerts, Command Center, and email tools — 7 tools for the price of 1.5.</p>
+      </div>
+      <div class="faq-item">
+        <h4 onclick="this.parentElement.classList.toggle('open')">Do I need to install anything?</h4>
+        <p>Nothing. Everything is web-based and runs on our servers. You get instant browser access to the Royalty Dashboard after subscribing. The Telegram bot works from any phone.</p>
+      </div>
+      <div class="faq-item">
+        <h4 onclick="this.parentElement.classList.toggle('open')">Can I cancel anytime?</h4>
+        <p>Yes. Cancel your Gumroad subscription anytime. You'll have access until the end of your billing period. No lock-in, no penalties.</p>
+      </div>
+      <div class="faq-item">
+        <h4 onclick="this.parentElement.classList.toggle('open')">How do I get support?</h4>
+        <p>Royalty Pass subscribers get priority email support (adbhutramdas@gmail.com) with a 2-hour response time. Free users can reach out via Telegram @ArdTradingBot.</p>
+      </div>
+      <div class="faq-item">
+        <h4 onclick="this.parentElement.classList.toggle('open')">Is there a free trial?</h4>
+        <p>Individual tools have free tiers — try the FTMO tracker, Sigma journal basics, and Telegram bot for free. Upgrade to Royalty Pass when you're ready for the full suite.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ FINAL CTA ═══ -->
-<section class="cta">
+<!-- ═══ CTA ═══ -->
+<section class="cta-section">
   <div class="container">
-    <h2>Ready to Pass Your FTMO Challenge?</h2>
-    <p>Join 260+ traders who never miss a rule. Start free, no commitment.</p>
+    <h2>Ready to Build Your Trading Empire?</h2>
+    <p>One subscription. Seven tools. Zero setup. Start today.</p>
     <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
-      <a href="ftmo_challenge_tracker.html" class="btn btn-primary btn-hero">🚀 Start Free Now</a>
-      <a href="https://gumroad.com/l/ezteprg" target="_blank" class="btn btn-outline btn-hero">Or Go Pro — $19.99/mo</a>
+      <a href="https://gumroad.com/l/ezteprg" target="_blank" class="btn btn-gold btn-lg">👑 Get Royalty Pass — $29.99/mo</a>
+      <a href="ftmo_challenge_tracker.html" class="btn btn-outline btn-lg">Explore Free Tools</a>
     </div>
-    <div class="guarantee">🛡️ 30-day money-back guarantee on Pro</div>
+    <div class="guarantee-badge">🛡️ 30-Day Money-Back Guarantee • Cancel Anytime</div>
   </div>
 </section>
 
-<footer class="footer">
-  <p>FTMO Challenge Tracker — Built for traders, by traders.</p>
-  <p style="margin-top:4px">Not affiliated with FTMO.com. All rules are based on publicly available information.</p>
-  <p style="margin-top:4px">Telegram: <a href="https://t.me/ArdTradingBot" style="color:var(--accent);text-decoration:none">@ArdTradingBot</a> | <a href="https://gumroad.com/l/ezteprg" style="color:var(--accent);text-decoration:none">Pro Version</a></p>
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <p>👑 <strong>Royalty</strong> — Your Automated Trading Empire</p>
+  <p style="margin-top:8px">
+    <a href="ftmo_challenge_tracker.html">FTMO Tracker</a> ·
+    <a href="sigma.html">Sigma Journal</a> ·
+    <a href="https://t.me/ArdTradingBot">Telegram Bot</a> ·
+    <a href="radar_dashboard.html">Radar</a> ·
+    <a href="command_center.html">Dashboard</a>
+  </p>
+  <p style="margin-top:8px;color:var(--text3)">📧 adbhutramdas@gmail.com · Not affiliated with FTMO.com</p>
+  <p style="margin-top:12px;color:var(--text3);font-size:11px">© 2026 Royalty — All Rights Reserved</p>
 </footer>
 
 <script>
-// Add smooth scroll for anchor links
+// Smooth scroll
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
     e.preventDefault();
-    const target = document.querySelector(a.getAttribute('href'));
-    if (target) target.scrollIntoView({ behavior: 'smooth' });
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) t.scrollIntoView({behavior:'smooth'});
+    // Close mobile menu
+    document.getElementById('navLinks').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
   });
 });
 
-// Intersection Observer for animations
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.style.animationPlayState = 'running';
-    }
-  });
-}, { threshold: 0.1 });
+// Hamburger menu
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  navLinks.classList.toggle('open');
+});
 
-document.querySelectorAll('.animate').forEach(el => {
+// Scroll animations (pause/play pattern)
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.style.animationPlayState = 'running'; });
+}, {threshold:0.15});
+document.querySelectorAll('.anim').forEach(el => {
   el.style.animationPlayState = 'paused';
-  observer.observe(el);
+  obs.observe(el);
+});
+
+// FAQ accordion
+document.querySelectorAll('.faq-item h4').forEach(h4 => {
+  h4.addEventListener('click', () => h4.parentElement.classList.toggle('open'));
 });
 </script>
 </body>

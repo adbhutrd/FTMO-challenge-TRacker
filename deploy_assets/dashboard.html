@@ -3,305 +3,432 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>System Dashboard — Adbhut Ram Das</title>
+<title>Royalty Dashboard — Your Trading Empire</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root {
+  --bg:#08080f; --bg2:#0f0f1a; --bg3:#161628;
+  --border:rgba(245,158,11,0.1); --border-light:rgba(255,255,255,0.05);
+  --text:#f0e6d3; --text2:#9a8b7a; --text3:#5a4f3f;
+  --gold:#f59e0b; --gold2:#d97706;
+  --gold-glow:rgba(245,158,11,0.25);
+  --purple:#8b5cf6; --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
+  --gradient-gold:linear-gradient(135deg,#f59e0b,#d97706,#b45309);
+  --gradient-royal:linear-gradient(135deg,#f59e0b,#8b5cf6);
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #0a0a0f; color: #e1e1e6; line-height: 1.5; padding: 20px;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg); color:var(--text); line-height:1.6; min-height:100vh;
 }
-.container { max-width: 1000px; margin: 0 auto; }
 
-h1 {
-  font-size: 28px; font-weight: 800; margin-bottom: 4px;
-  background: linear-gradient(135deg, #7c3aed, #58a6ff);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+body::before {
+  content:''; position:fixed; top:0;left:0;right:0;bottom:0;
+  background-image:
+    linear-gradient(rgba(245,158,11,0.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(245,158,11,0.02) 1px,transparent 1px);
+  background-size:50px 50px; pointer-events:none; z-index:0;
 }
-.subtitle { color: #8888a0; font-size: 14px; margin-bottom: 30px; }
 
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px; }
-
-.card {
-  background: #12121c; border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 16px; padding: 20px; transition: all 0.2s;
+/* ═══ ACCESS GATE ═══ */
+#accessGate {
+  position:fixed; top:0;left:0;right:0;bottom:0;
+  background:var(--bg); z-index:9999;
+  display:flex; align-items:center; justify-content:center;
+  text-align:center; padding:24px;
 }
-.card:hover { border-color: rgba(255,255,255,0.12); transform: translateY(-2px); }
-.card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.card-icon { font-size: 20px; }
-.card-title { font-size: 14px; font-weight: 600; color: #e1e1e6; }
-.status { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 100px; }
-.status-live { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); }
-.status-down { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
-.status-warning { background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
-.status-pending { background: rgba(59,130,246,0.1); color: #3b82f6; border: 1px solid rgba(59,130,246,0.2); }
-.card-body { font-size: 13px; color: #8888a0; }
-.card-body .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
-.card-body .row:last-child { border-bottom: none; }
-.card-body .label { color: #666; }
-.card-body .value { color: #e1e1e6; font-weight: 500; }
-.card-body .value.green { color: #22c55e; }
-.card-body .value.red { color: #ef4444; }
-.card-body .value.yellow { color: #f59e0b; }
-
-.link-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
-  text-decoration: none; transition: all 0.2s; margin-top: 12px;
+#accessGate.hidden { display:none; }
+.gate-card {
+  max-width:480px; width:100%;
+  background:var(--bg2); border:1px solid rgba(245,158,11,0.2);
+  border-radius:24px; padding:48px 36px;
+  box-shadow:0 0 80px rgba(245,158,11,0.05);
 }
-.link-btn.primary { background: #7c3aed; color: white; }
-.link-btn.primary:hover { background: #6d28d9; transform: translateY(-1px); }
-.link-btn.secondary { border: 1px solid rgba(255,255,255,0.1); color: #e1e1e6; }
-.link-btn.secondary:hover { border-color: #7c3aed; color: #7c3aed; }
-.link-btn.red { background: #ef4444; color: white; }
-.link-btn.red:hover { background: #dc2626; }
+.gate-card .crown { font-size:56px; margin-bottom:16px; }
+.gate-card h1 { font-size:28px; font-weight:800; margin-bottom:8px; }
+.gate-card p { color:var(--text2); font-size:14px; margin-bottom:28px; line-height:1.7; }
+.gate-card .btn-row { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
 
-.section-title { font-size: 16px; font-weight: 700; margin: 30px 0 16px; color: #e1e1e6; display: flex; align-items: center; gap: 8px; }
-
-.quick-links {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-bottom: 24px;
+.btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:14px 32px; border-radius:10px; font-size:15px;
+  font-weight:700; text-decoration:none; transition:all 0.3s;
+  cursor:pointer; border:none; font-family:inherit;
 }
-.quick-link {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 16px; background: #12121c; border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 10px; text-decoration: none; color: #e1e1e6; font-size: 13px; font-weight: 500;
-  transition: all 0.2s;
+.btn-gold {
+  background:var(--gradient-gold); color:#0a0a0f;
+  box-shadow:0 4px 24px var(--gold-glow);
 }
-.quick-link:hover { border-color: #7c3aed; transform: translateY(-1px); }
-.quick-link .icon { font-size: 18px; }
-.quick-link .url { color: #8888a0; font-size: 11px; margin-top: 2px; }
+.btn-gold:hover { transform:translateY(-2px); box-shadow:0 8px 36px var(--gold-glow); }
+.btn-outline {
+  background:transparent; border:1px solid rgba(245,158,11,0.2); color:var(--text);
+}
+.btn-outline:hover { border-color:var(--gold); color:var(--gold); }
 
-@media (max-width: 600px) {
-  .grid { grid-template-columns: 1fr; }
+/* ═══ MAIN DASHBOARD ═══ */
+#mainDashboard { display:none; }
+#mainDashboard.visible { display:block; }
+
+.container { max-width:1200px; margin:0 auto; padding:0 24px; position:relative; z-index:1; }
+
+/* ═══ HEADER ═══ */
+.header {
+  padding:24px 0; border-bottom:1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:center;
+  flex-wrap:wrap; gap:16px; margin-bottom:40px;
+}
+.header-left { display:flex; align-items:center; gap:12px; }
+.header-logo {
+  font-size:24px; font-weight:800;
+  background:var(--gradient-royal);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.header-badge {
+  padding:6px 14px; border-radius:100px;
+  background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.2);
+  color:var(--green); font-size:12px; font-weight:600;
+  display:flex; align-items:center; gap:6px;
+}
+.header-badge .dot { width:6px;height:6px;border-radius:50%;background:var(--green); }
+.header-right { display:flex; gap:12px; align-items:center; }
+.header-time { color:var(--text2); font-size:13px; }
+
+/* ═══ WELCOME ═══ */
+.welcome {
+  text-align:center; padding:40px 0 60px;
+}
+.welcome .crown-lg { font-size:64px; display:block; margin-bottom:16px; }
+.welcome h2 { font-size:36px; font-weight:800; margin-bottom:8px; }
+.welcome p { color:var(--text2); font-size:16px; }
+
+/* ═══ STATS ROW ═══ */
+.stats-row {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:16px;
+  margin-bottom:48px;
+}
+.stat-box {
+  background:var(--bg2); border:1px solid var(--border-light);
+  border-radius:16px; padding:24px; text-align:center;
+  transition:all 0.3s;
+}
+.stat-box:hover {
+  border-color:rgba(245,158,11,0.2);
+  transform:translateY(-2px);
+  box-shadow:0 8px 30px rgba(0,0,0,0.3);
+}
+.stat-box .stat-icon { font-size:28px; margin-bottom:8px; display:block; }
+.stat-box .stat-num { font-size:28px; font-weight:800; color:var(--gold); }
+.stat-box .stat-label { font-size:12px; color:var(--text2); margin-top:4px; }
+
+/* ═══ APP GRID ═══ */
+.section-title {
+  font-size:20px; font-weight:700; margin-bottom:20px;
+  display:flex; align-items:center; gap:10px;
+}
+.section-title .line { flex:1; height:1px; background:var(--border); }
+
+.app-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+  gap:16px; margin-bottom:48px;
+}
+
+.app-card {
+  background:var(--bg2); border:1px solid var(--border-light);
+  border-radius:18px; padding:28px 24px;
+  transition:all 0.4s; cursor:pointer; text-decoration:none;
+  color:var(--text); display:block; position:relative; overflow:hidden;
+}
+.app-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:var(--gradient-royal); opacity:0; transition:opacity 0.4s;
+}
+.app-card:hover::before { opacity:1; }
+.app-card:hover {
+  transform:translateY(-6px);
+  border-color:rgba(245,158,11,0.3);
+  box-shadow:0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(245,158,11,0.06);
+}
+.app-card .app-icon { font-size:42px; margin-bottom:16px; display:block; }
+.app-card h3 { font-size:17px; font-weight:700; margin-bottom:6px; }
+.app-card p { font-size:13px; color:var(--text2); line-height:1.6; }
+.app-card .app-arrow {
+  display:inline-flex; align-items:center; gap:4px;
+  margin-top:12px; font-size:12px; font-weight:600; color:var(--gold);
+  opacity:0; transform:translateX(-8px); transition:all 0.3s;
+}
+.app-card:hover .app-arrow { opacity:1; transform:translateX(0); }
+
+.app-card .badge-row { margin-top:12px; display:flex; gap:6px; flex-wrap:wrap; }
+.tag {
+  display:inline-block; padding:3px 8px; border-radius:5px;
+  font-size:10px; font-weight:600;
+}
+.tag-pro { background:rgba(245,158,11,0.12); color:var(--gold); }
+.tag-free { background:rgba(59,130,246,0.12); color:var(--blue); }
+.tag-new { background:rgba(139,92,246,0.12); color:var(--purple); }
+
+/* ═══ REFERRAL BANNER ═══ */
+.referral-banner {
+  background:linear-gradient(135deg,rgba(245,158,11,0.06),rgba(139,92,246,0.04));
+  border:1px solid rgba(245,158,11,0.15); border-radius:18px;
+  padding:32px; text-align:center; margin-bottom:48px;
+}
+.referral-banner h3 { font-size:20px; font-weight:700; margin-bottom:8px; }
+.referral-banner p { color:var(--text2); font-size:14px; margin-bottom:20px; }
+.referral-link-box {
+  display:inline-flex; align-items:center; gap:12px;
+  background:var(--bg3); border:1px solid var(--border-light);
+  border-radius:10px; padding:12px 20px;
+  font-family:monospace; font-size:13px; color:var(--gold);
+}
+
+/* ═══ FOOTER ═══ */
+footer {
+  text-align:center; padding:40px 24px;
+  border-top:1px solid var(--border-light);
+  color:var(--text2); font-size:13px; margin-top:40px;
+}
+footer a { color:var(--gold); text-decoration:none; }
+
+/* ═══ ANIMATIONS ═══ */
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.anim { animation:fadeUp 0.5s ease forwards; opacity:0; }
+.d1{animation-delay:0.1s} .d2{animation-delay:0.2s} .d3{animation-delay:0.3s}
+.d4{animation-delay:0.4s} .d5{animation-delay:0.5s} .d6{animation-delay:0.6s} .d7{animation-delay:0.7s}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:768px) {
+  .stats-row { grid-template-columns:repeat(2,1fr); }
+  .app-grid { grid-template-columns:1fr; }
+  .header { flex-direction:column; text-align:center; }
 }
 </style>
 </head>
 <body>
-<div class="container">
 
-  <h1>⚡ System Dashboard</h1>
-  <p class="subtitle">Real-time status of all income-generating systems · Last refreshed: <span id="timestamp">just now</span></p>
-
-  <!-- Quick Links -->
-  <div class="section-title">🔗 Quick Access</div>
-  <div class="quick-links">
-    <a href="index.html" class="quick-link">
-      <span class="icon">🏠</span>
-      <div>Main Site<div class="url">Landing page / FTMO tracker</div></div>
-    </a>
-    <a href="ftmo_challenge_tracker.html" class="quick-link">
-      <span class="icon">📊</span>
-      <div>FTMO Tracker<div class="url">Track your challenge</div></div>
-    </a>
-    <a href="tracker_dashboard.html" class="quick-link">
-      <span class="icon">💰</span>
-      <div>Income Dashboard<div class="url">Track earnings</div></div>
-    </a>
-    <a href="portfolio.html" class="quick-link">
-      <span class="icon">🛡️</span>
-      <div>Portfolio<div class="url">Security services</div></div>
-    </a>
-    <a href="sell.html" class="quick-link">
-      <span class="icon">🔥</span>
-      <div>Buy Pro<div class="url">$19.99/mo subscription</div></div>
-    </a>
-    <a href="waitlist.html" class="quick-link">
-      <span class="icon">📬</span>
-      <div>Waitlist<div class="url">Join early access</div></div>
-    </a>
-    <a href="https://gumroad.com/l/ezteprg" target="_blank" class="quick-link">
-      <span class="icon">🛒</span>
-      <div>Gumroad Checkout<div class="url">gumroad.com</div></div>
-    </a>
-    <a href="https://app.gumroad.com/dashboard" target="_blank" class="quick-link">
-      <span class="icon">⚙️</span>
-      <div>Gumroad Dashboard<div class="url">Sales & payouts</div></div>
-    </a>
-  </div>
-
-  <!-- System Status -->
-  <div class="section-title">🤖 Bot Status</div>
-  <div class="grid">
-    <div class="card">
-      <div class="card-header">
-        <span class="card-icon">📈</span>
-        <span class="card-title">Meme-Coin Trading Bot</span>
-        <span class="status status-live">✅ Running</span>
-      </div>
-      <div class="card-body">
-        <div class="row"><span class="label">Schedule</span><span class="value">Every 15 min</span></div>
-        <div class="row"><span class="label">Status</span><span class="value green">✅ Cron path fixed</span></div>
-        <div class="row"><span class="label">Symbols</span><span class="value">DOGE, SHIB, PEPE, BONK, WIF</span></div>
-      </div>
+<!-- ═══ ACCESS GATE ═══ -->
+<div id="accessGate">
+  <div class="gate-card">
+    <div class="crown">👑</div>
+    <h1>Royalty Dashboard</h1>
+    <p>This is the unified control panel for all your trading and automation tools. Subscribe to Royalty Pass to get instant access.</p>
+    <div class="btn-row">
+      <a href="index.html" class="btn btn-outline">← Back to Home</a>
+      <a href="https://gumroad.com/l/ezteprg" target="_blank" class="btn btn-gold">👑 Get Royalty Pass — $29.99/mo</a>
     </div>
-
-    <div class="card">
-      <div class="card-header">
-        <span class="card-icon">🔍</span>
-        <span class="card-title">Bug Bounty Monitor</span>
-        <span class="status status-live">✅ Running</span>
-      </div>
-      <div class="card-body">
-        <div class="row"><span class="label">Schedule</span><span class="value">Every hour</span></div>
-        <div class="row"><span class="label">Platforms</span><span class="value">HackerOne, Bugcrowd</span></div>
-        <div class="row"><span class="label">Last Check</span><span class="value green">OK</span></div>
-        <a href="https://hackerone.com/enishshah2" target="_blank" class="link-btn secondary">🔗 HackerOne</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <span class="card-icon">📱</span>
-        <span class="card-title">Social Content Bot</span>
-        <span class="status status-live">✅ Running</span>
-      </div>
-      <div class="card-body">
-        <div class="row"><span class="label">Schedule</span><span class="value">8am & 6pm daily</span></div>
-        <div class="row"><span class="label">Platforms</span><span class="value">Twitter, LinkedIn, Reddit</span></div>
-        <div class="row"><span class="label">Last Run</span><span class="value green">OK</span></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <span class="card-icon">📧</span>
-        <span class="card-title">Email Marketing</span>
-        <span class="status status-pending">⏸️ Needs Key</span>
-      </div>
-      <div class="card-body">
-        <div class="row"><span class="label">Schedule</span><span class="value">Every 6 hours</span></div>
-        <div class="row"><span class="label">Subscribers</span><span class="value">0 (no emails collected)</span></div>
-        <div class="row"><span class="label">Gmail Key</span><span class="value red">Not set</span></div>
-        <div class="row"><span class="label">Send</span><span class="value yellow">export GMAIL_APP_PASSWORD=...</span></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <span class="card-icon">🤖</span>
-        <span class="card-title">CEO Bot</span>
-        <span class="status status-down">❌ Broken</span>
-      </div>
-      <div class="card-body">
-        <div class="row"><span class="label">Function</span><span class="value">Reddit/Twitter posting</span></div>
-        <div class="row"><span class="label">Issue</span><span class="value red">Login timeout (needs browser)</span></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <span class="card-icon">📊</span>
-        <span class="card-title">Full Orchestrator</span>
-        <span class="status status-live">✅ Running</span>
-      </div>
-      <div class="card-body">
-        <div class="row"><span class="label">Schedule</span><span class="value">Every 6 hours</span></div>
-        <div class="row"><span class="label">Last Cycle</span><span class="value green">3/4 bots OK</span></div>
-        <div class="row"><span class="label">Status</span><span class="value green">Active</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Site Status -->
-  <div class="section-title">🌐 Site Status</div>
-  <div class="grid">
-    <div class="card">
-      <div class="card-header">
-        <span class="card-icon">🌍</span>
-        <span class="card-title">FTMO Website</span>
-        <span class="status status-down">❌ Offline</span>
-      </div>
-      <div class="card-body">
-        <div class="row"><span class="label">URL</span><span class="value">rad-beignet-b47738.netlify.app</span></div>
-        <div class="row"><span class="label">Status</span><span class="value red">HTTP 401</span></div>
-        <div class="row"><span class="label">Fix</span><span class="value yellow">Run: netlify login → deploy --prod</span></div>
-        <a href="https://bright-palmier-d43338.netlify.app" target="_blank" class="link-btn secondary">🔗 Visit Site</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <span class="card-icon">🛒</span>
-        <span class="card-title">Gumroad Payment</span>
-        <span class="status status-live">✅ Live</span>
-      </div>
-      <div class="card-body">
-        <div class="row"><span class="label">Product</span><span class="value">FTMO Tracker Pro</span></div>
-        <div class="row"><span class="label">Price</span><span class="value green">$19.99/month</span></div>
-        <div class="row"><span class="label">Status</span><span class="value green">Verified & Working</span></div>
-        <a href="https://gumroad.com/l/ezteprg" target="_blank" class="link-btn primary">🛒 Open Checkout</a>
-        <a href="https://app.gumroad.com/dashboard" target="_blank" class="link-btn secondary">⚙️ Gumroad Dashboard</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <span class="card-icon">☁️</span>
-        <span class="card-title">Netlify Deploy</span>
-        <span class="status status-warning">⚠️ Needs Login</span>
-      </div>
-      <div class="card-body">
-        <div class="row"><span class="label">Status</span><span class="value yellow">Anonymous daily limit hit</span></div>
-        <div class="row"><span class="label">Fix</span><span class="value">cd ~/deploy_assets && netlify login</span></div>
-        <pre style="background:#0a0a0f;padding:10px;border-radius:8px;font-size:12px;margin-top:8px;overflow-x:auto">npx netlify-cli deploy --dir=. --prod</pre>
-      </div>
-    </div>
-  </div>
-
-  <!-- Quick Commands -->
-  <div class="section-title">⚡ Quick Commands</div>
-  <div class="grid">
-    <div class="card">
-      <div class="card-header">
-        <span class="card-icon">🔄</span>
-        <span class="card-title">Fix Meme-Coin Bot</span>
-      </div>
-      <div class="card-body">
-        <pre style="background:#0a0a0f;padding:10px;border-radius:8px;font-size:12px;overflow-x:auto">cd ~/meme-coin-bot && python3 bot/main.py --once</pre>
-        <p style="margin-top:8px;font-size:12px;color:#888">Run manually to test. Cron issue: cron uses a different Python path. Fix: update crontab to use full python path.</p>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <span class="card-icon">☁️</span>
-        <span class="card-title">Deploy Site</span>
-      </div>
-      <div class="card-body">
-        <pre style="background:#0a0a0f;padding:10px;border-radius:8px;font-size:12px;overflow-x:auto">cd ~/deploy_assets
-npx netlify-cli login
-npx netlify-cli deploy --dir=. --prod</pre>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <span class="card-icon">📧</span>
-        <span class="card-title">Enable Email</span>
-      </div>
-      <div class="card-body">
-        <pre style="background:#0a0a0f;padding:10px;border-radius:8px;font-size:12px;overflow-x:auto">export GMAIL_APP_PASSWORD='your-16-char-password'
-python3 -m tools.email_marketing.campaigns pipeline</pre>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <span class="card-icon">📋</span>
-        <span class="card-title">Check Cron Logs</span>
-      </div>
-      <div class="card-body">
-        <pre style="background:#0a0a0f;padding:10px;border-radius:8px;font-size:12px;overflow-x:auto">tail -20 ~/income/logs/cron_meme_bot.log
-tail -20 ~/income/logs/cron_programs.log
-tail -20 ~/income/logs/cron_orchestrator.log</pre>
-      </div>
-    </div>
-  </div>
-
-  <div style="text-align:center;padding:30px 0;color:#555;font-size:12px">
-    System Dashboard · Adbhut Ram Das · Updated <span id="timestamp2">just now</span>
+    <p style="margin-top:20px;font-size:12px;color:var(--text3)">
+      Already subscribed? Make sure you're coming from the Gumroad confirmation page.
+    </p>
   </div>
 </div>
 
+<!-- ═══ MAIN DASHBOARD ═══ -->
+<div id="mainDashboard">
+  <div class="container">
+    <!-- HEADER -->
+    <div class="header anim">
+      <div class="header-left">
+        <div class="header-logo">👑 Royalty</div>
+        <div class="header-badge"><span class="dot"></span> All Systems Online</div>
+      </div>
+      <div class="header-right">
+        <span class="header-time" id="clock"></span>
+        <a href="index.html" class="btn btn-outline" style="padding:8px 16px;font-size:12px">← Home</a>
+      </div>
+    </div>
+
+    <!-- WELCOME -->
+    <div class="welcome anim d1">
+      <span class="crown-lg">👑</span>
+      <h2>Welcome to Your Empire</h2>
+      <p>All your tools, one dashboard. Everything runs 24/7 on our infrastructure.</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-box anim d2">
+        <span class="stat-icon">🎯</span>
+        <div class="stat-num" id="trackerCount">0</div>
+        <div class="stat-label">FTMO Challenges</div>
+      </div>
+      <div class="stat-box anim d3">
+        <span class="stat-icon">Σ</span>
+        <div class="stat-num" id="tradeCount">0</div>
+        <div class="stat-label">Journal Trades</div>
+      </div>
+      <div class="stat-box anim d4">
+        <span class="stat-icon">📡</span>
+        <div class="stat-num">12+</div>
+        <div class="stat-label">Job Sources</div>
+      </div>
+      <div class="stat-box anim d5">
+        <span class="stat-icon">⚡</span>
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">Uptime Monitor</div>
+      </div>
+    </div>
+
+    <!-- APP GRID -->
+    <div class="section-title anim d3"><span class="line"></span> Your Tools <span class="line"></span></div>
+    <div class="app-grid">
+      <a href="ftmo_challenge_tracker.html" class="app-card anim d3">
+        <span class="app-icon">🎯</span>
+        <h3>FTMO Challenge Tracker</h3>
+        <p>Real-time profit target, drawdown, and daily loss tracking for 1-Step & 2-Step challenges.</p>
+        <div class="badge-row"><span class="tag tag-pro">Pro</span><span class="tag tag-free">Web</span></div>
+        <span class="app-arrow">Launch →</span>
+      </a>
+      <a href="sigma.html" class="app-card anim d4">
+        <span class="app-icon">Σ</span>
+        <h3>Sigma Trading Journal</h3>
+        <p>Complete trade analytics, win rate, P&L charts, risk metrics, and cloud sync.</p>
+        <div class="badge-row"><span class="tag tag-pro">Pro</span><span class="tag tag-new">Cloud</span></div>
+        <span class="app-arrow">Launch →</span>
+      </a>
+      <a href="https://t.me/ArdTradingBot" target="_blank" class="app-card anim d4">
+        <span class="app-icon">🤖</span>
+        <h3>Telegram Trading Bot</h3>
+        <p>Track trades, check status, and get drawdown alerts — all from your phone.</p>
+        <div class="badge-row"><span class="tag tag-free">Free</span></div>
+        <span class="app-arrow">Open @ArdTradingBot →</span>
+      </a>
+      <a href="radar_dashboard.html" class="app-card anim d5">
+        <span class="app-icon">📡</span>
+        <h3>Radar Job Scraper</h3>
+        <p>Automated security and trading job alerts from 12+ sources. Never miss an opportunity.</p>
+        <div class="badge-row"><span class="tag tag-pro">Pro</span><span class="tag tag-new">New</span></div>
+        <span class="app-arrow">Launch →</span>
+      </a>
+      <a href="command_center.html" class="app-card anim d5">
+        <span class="app-icon">⚡</span>
+        <h3>Command Center</h3>
+        <p>Monitor all bots, services, and system health. Restart services with one click.</p>
+        <div class="badge-row"><span class="tag tag-pro">Pro</span></div>
+        <span class="app-arrow">Launch →</span>
+      </a>
+      <a href="sell.html" class="app-card anim d6">
+        <span class="app-icon">📧</span>
+        <h3>Email & Marketing</h3>
+        <p>Automated email campaigns, waitlist management, and subscriber analytics.</p>
+        <div class="badge-row"><span class="tag tag-pro">Pro</span></div>
+        <span class="app-arrow">Launch →</span>
+      </a>
+      <a href="earn.html" class="app-card anim d6">
+        <span class="app-icon">💼</span>
+        <h3>Done-For-You Services</h3>
+        <p>Custom bot development, pentesting, bug bounty setup — delivered in 48h.</p>
+        <div class="badge-row"><span class="tag tag-pro">Paid</span></div>
+        <span class="app-arrow">Launch →</span>
+      </a>
+    </div>
+
+    <!-- REFERRAL -->
+    <div class="referral-banner anim d7">
+      <h3>💰 Earn 20% Referral Commission</h3>
+      <p>Share your Royalty link. Anyone who subscribes through it — you get 20% every month they stay subscribed.</p>
+      <div class="referral-link-box" id="refLink" style="cursor:pointer" onclick="copyRef()" title="Click to copy">
+        <span id="refUrl">https://bright-palmier-d43338.netlify.app/?ref=royalty</span>
+        <span style="font-size:12px;color:var(--text3)">📋</span>
+      </div>
+      <div id="copyFeedback" style="margin-top:8px;font-size:12px;color:var(--green);display:none">✅ Copied!</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>👑 <strong>Royalty</strong> — Your Automated Trading Empire</p>
+    <p style="margin-top:4px">
+      <a href="index.html">Home</a> ·
+      <a href="https://gumroad.com/l/ezteprg">Manage Subscription</a> ·
+      <a href="mailto:adbhutramdas@gmail.com">Support</a>
+    </p>
+    <p style="margin-top:4px;color:var(--text3);font-size:11px">© 2026 Royalty — All Rights Reserved</p>
+  </footer>
+</div>
+
 <script>
-document.getElementById('timestamp').textContent = new Date().toLocaleString();
-document.getElementById('timestamp2').textContent = new Date().toLocaleString();
+// ═══ ACCESS CONTROL ═══
+const ROYALTY_KEY = 'royalty_access_granted';
+
+function checkAccess() {
+  // Check URL parameter (from Gumroad redirect)
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('access') === 'granted') {
+    localStorage.setItem(ROYALTY_KEY, 'true');
+    // Clean URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+    return true;
+  }
+  // Check localStorage
+  if (localStorage.getItem(ROYALTY_KEY) === 'true') return true;
+  return false;
+}
+
+function showDashboard() {
+  document.getElementById('accessGate').classList.add('hidden');
+  document.getElementById('mainDashboard').classList.add('visible');
+  updateClock();
+  loadStats();
+  setInterval(updateClock, 30000);
+}
+
+function showGate() {
+  document.getElementById('mainDashboard').style.display = 'none';
+}
+
+// ═══ CLOCK ═══
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
+
+// ═══ STATS ═══
+function loadStats() {
+  // Count FTMO challenge data
+  try {
+    const ftmoData = localStorage.getItem('ftmo_challenge_data');
+    if (ftmoData) {
+      const d = JSON.parse(ftmoData);
+      document.getElementById('trackerCount').textContent = d.accounts ? Object.keys(d.accounts).length : '1';
+    }
+  } catch(e) {}
+
+  // Count Sigma trades
+  try {
+    const sigmaState = localStorage.getItem('sigmaState');
+    if (sigmaState) {
+      const d = JSON.parse(sigmaState);
+      document.getElementById('tradeCount').textContent = d.trades ? d.trades.length : '0';
+    }
+  } catch(e) {}
+}
+
+// ═══ REFERRAL ═══
+function copyRef() {
+  const refUrl = window.location.origin + '/?ref=royalty';
+  document.getElementById('refUrl').textContent = refUrl;
+  navigator.clipboard.writeText(refUrl).then(() => {
+    const fb = document.getElementById('copyFeedback');
+    fb.style.display = 'block';
+    setTimeout(() => { fb.style.display = 'none'; }, 2000);
+  }).catch(() => {});
+}
+
+// Set referral URL on load
+(function() {
+  document.getElementById('refUrl').textContent = window.location.origin + '/?ref=royalty';
+})();
+
+// ═══ INIT ═══
+if (checkAccess()) {
+  showDashboard();
+} else {
+  showGate();
+}
 </script>
 </body>
 </html>
