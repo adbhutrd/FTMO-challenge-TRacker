@@ -554,7 +554,7 @@ tbody tr:last-child td { border-bottom: none; }
           <tr><td colspan="13" class="empty-state">
             <div class="icon">📭</div>
             <p>No trades logged yet</p>
-            <div class="hint">Log your first trade above to start tracking your performance</div>
+            <div class="hint">Log your first trade above, or <a href="#" onclick="loadSampleData();return false" style="color:var(--accent);text-decoration:underline">load sample data</a> to see how analytics work</div>
           </td></tr>
         </tbody>
       </table>
@@ -1465,7 +1465,7 @@ document.addEventListener('keydown', function(e) {
 function generateSampleData() {
   const emotions = ['calm', 'confident', 'anxious', 'calm', 'confident', 'calm', 'calm', 'confident', 'calm', 'confident', 'calm', 'calm'];
   const setups = ['breakout', 'pullback', 'trend-follow', 'breakout', 'reversal', 'pullback', 'breakout', 'trend-follow', 'pullback', 'scalp', 'swing', 'momentum'];
-  const symbols = ['EURUSD', 'BTC', 'AAPL', 'EURUSD', 'TSLA', 'BTC', 'EURUSD', 'AAPL', 'MSFT', 'EURUSD', 'BTC', 'GOOGL'];
+  const symbols = ['AAPL', 'TSLA', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'AAPL', 'TSLA', 'MSFT', 'NVDA', 'GOOGL', 'AMZN', 'META', 'AAPL'];
   const trades = [];
   
   // Generate 15 sample trades showing a trader improving over time (~60% win rate, positive equity)
@@ -1478,18 +1478,19 @@ function generateSampleData() {
     // First few trades mixed, then improving win rate
     const isWin = i < 3 ? Math.random() > 0.5 : (i < 8 ? Math.random() > 0.35 : Math.random() > 0.25);
     
-    const entry = direction === 'long' ? 100 + Math.random() * 40 : 140 - Math.random() * 40;
-    const move = isWin ? (1 + Math.random() * 3) : -(0.5 + Math.random() * 2);
-    const exit = direction === 'long' ? entry + move : entry - move;
-    const size = Math.floor(200 + Math.random() * 800);
+    const basePrice = 80 + Math.random() * 420; // Realistic stock range $80-$500
+    const entry = direction === 'long' ? basePrice : basePrice + 5;
+    const move = isWin ? (1 + Math.random() * 4) * (direction === 'long' ? 1 : -1) : -(0.5 + Math.random() * 3) * (direction === 'long' ? 1 : -1);
+    const exit = entry + move;
+    const size = Math.floor(100 + Math.random() * 400);
     
     trades.push({
-      date, direction: isWin ? direction : direction,
+      date, direction,
       entry: Math.round(entry * 100) / 100,
       exit: Math.round(exit * 100) / 100,
       size,
-      stop: Math.round((direction === 'long' ? entry - 1.5 - Math.random() * 2 : entry + 1.5 + Math.random() * 2) * 100) / 100,
-      target: Math.round((direction === 'long' ? entry + 3 + Math.random() * 4 : entry - 3 - Math.random() * 4) * 100) / 100,
+      stop: Math.round((entry - 1.5 - Math.random() * 2) * 100) / 100,
+      target: Math.round((entry + 3 + Math.random() * 4) * 100) / 100,
       fees: Math.round(5 + Math.random() * 8),
       symbol: symbols[i % symbols.length],
       setup: setups[i % setups.length],
