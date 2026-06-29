@@ -351,11 +351,25 @@ tbody tr:last-child td { border-bottom: none; }
     </div>
   </div>
 
+  <!-- Pro Upsell Banner -->
+  <div class="section animate" style="background:linear-gradient(135deg, rgba(245,158,11,0.06), rgba(217,119,6,0.03));border-color:rgba(245,158,11,0.25);padding:0;margin-bottom:20px">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:16px 24px;gap:12px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:28px">🔥</span>
+        <div>
+          <div style="font-weight:700;font-size:14px">Sigma Pro — <span style="color:var(--yellow)">$29.99/month</span></div>
+          <div style="font-size:12px;color:var(--text2)">Cloud sync, unlimited history, PDF reports, Telegram alerts</div>
+        </div>
+      </div>
+      <a href="#waitlistSection" onclick="document.getElementById('waitlistSection').scrollIntoView({behavior:'smooth'})" class="btn btn-gold" style="text-decoration:none;flex-shrink:0;padding:10px 24px">🔥 Upgrade to Pro</a>
+    </div>
+  </div>
+
   <!-- Equity Curve -->
   <div class="section animate">
     <div class="section-header">
       <h2><span class="icon">📈</span> Equity Curve</h2>
-      <span class="subtitle" id="equityDaysLabel">0 trades · last 30 days</span>
+      <span class="subtitle" id="equityDaysLabel">0 trades</span>
     </div>
     <div class="chart-box" id="equityChartContainer">
       <canvas id="equityChart"></canvas>
@@ -1434,6 +1448,43 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ═══════════════════════════════════════════════════════════════════
+//  SAMPLE DATA (for new users)
+// ═══════════════════════════════════════════════════════════════════
+
+function generateSampleData() {
+  const emotions = ['calm', 'confident', 'anxious', 'calm', 'confident', 'calm', 'fearful', 'confident', 'calm', 'greedy', 'calm', 'bored'];
+  const setups = ['breakout', 'pullback', 'trend-follow', 'breakout', 'reversal', 'pullback', 'range', 'trend-follow', 'breakout', 'scalp', 'pullback', 'momentum'];
+  const symbols = ['EURUSD', 'BTC', 'AAPL', 'EURUSD', 'TSLA', 'BTC', 'EURUSD', 'AAPL', 'MSFT', 'EURUSD', 'BTC', 'GOOGL'];
+  const trades = [];
+  
+  // Generate 12 sample trades over the past month with realistic P&L
+  for (let i = 0; i < 12; i++) {
+    const day = new Date();
+    day.setDate(day.getDate() - (12 - i) * 2);
+    const date = day.toISOString().split('T')[0];
+    const direction = i < 7 ? 'long' : 'short';
+    const entry = direction === 'long' ? 100 + Math.random() * 50 : 150 - Math.random() * 50;
+    const exit = entry + (direction === 'long' ? (Math.random() - 0.4) * 5 : -(Math.random() - 0.4) * 5);
+    const size = Math.floor(100 + Math.random() * 900);
+    const stop = direction === 'long' ? entry - Math.random() * 3 - 1 : entry + Math.random() * 3 + 1;
+    const target = direction === 'long' ? entry + Math.random() * 6 + 2 : entry - Math.random() * 6 - 2;
+    
+    trades.push({
+      date, direction, entry: Math.round(entry * 100) / 100,
+      exit: Math.round(exit * 100) / 100,
+      size, stop: Math.round(stop * 100) / 100,
+      target: Math.round(target * 100) / 100,
+      fees: Math.round(Math.random() * 10 + 2),
+      symbol: symbols[i % symbols.length],
+      setup: setups[i],
+      emotion: emotions[i],
+      notes: ['Followed plan', 'Good entry, early exit', 'Held too long', 'Perfect setup', 'Emotional exit', 'Stuck to plan'][i % 6],
+    });
+  }
+  return trades;
+}
+
+// ═══════════════════════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════════════════════
 
@@ -1443,6 +1494,15 @@ function init() {
 
   // Load saved state
   loadState();
+
+  // If first-time user with no trades, offer sample data
+  if (state.trades.length === 0) {
+    const wantsSample = confirm('Welcome to Sigma! 🎉 Would you like to load sample trades to see how the analytics work? Click Cancel to start fresh.');
+    if (wantsSample) {
+      state.trades = generateSampleData();
+      saveState();
+    }
+  }
 
   // Nav tab switching
   document.querySelectorAll('.nav-tab').forEach(tab => {
