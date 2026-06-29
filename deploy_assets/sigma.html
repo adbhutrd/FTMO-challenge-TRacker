@@ -311,6 +311,17 @@ tbody tr:last-child td { border-bottom: none; }
 <!-- ══ Tab: Dashboard ══ -->
 <div class="tab-content active" id="tab-dashboard">
 
+  <!-- Welcome Onboarding Card (hidden after first use) -->
+  <div class="section animate" id="welcomeCard" style="background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(139,92,246,0.04));border-color:var(--accent);display:none;text-align:center;padding:32px">
+    <div style="font-size:48px;margin-bottom:12px">Σ</div>
+    <h2 style="font-size:20px;font-weight:800;margin-bottom:8px">Welcome to <span style="background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Sigma</span></h2>
+    <p style="color:var(--text2);font-size:14px;max-width:440px;margin:0 auto 20px">Track every trade, analyze your patterns, and measure your edge. Start by logging a trade or load sample data to see the analytics in action.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="loadSampleData()">📊 Load Sample Trades</button>
+      <button class="btn btn-outline" onclick="dismissWelcome()">Start Fresh →</button>
+    </div>
+  </div>
+
   <!-- Stats Row -->
   <div class="stats-row animate" id="statsRow">
     <div class="stat-card">
@@ -361,7 +372,7 @@ tbody tr:last-child td { border-bottom: none; }
           <div style="font-size:12px;color:var(--text2)">Cloud sync, unlimited history, PDF reports, Telegram alerts</div>
         </div>
       </div>
-      <a href="#waitlistSection" onclick="document.getElementById('waitlistSection').scrollIntoView({behavior:'smooth'})" class="btn btn-gold" style="text-decoration:none;flex-shrink:0;padding:10px 24px">🔥 Upgrade to Pro</a>
+      <a href="https://gumroad.com/l/ezteprg" target="_blank" class="btn btn-gold" style="text-decoration:none;flex-shrink:0;padding:10px 24px">🔥 Buy Pro Now</a>
     </div>
   </div>
 
@@ -1452,36 +1463,54 @@ document.addEventListener('keydown', function(e) {
 // ═══════════════════════════════════════════════════════════════════
 
 function generateSampleData() {
-  const emotions = ['calm', 'confident', 'anxious', 'calm', 'confident', 'calm', 'fearful', 'confident', 'calm', 'greedy', 'calm', 'bored'];
-  const setups = ['breakout', 'pullback', 'trend-follow', 'breakout', 'reversal', 'pullback', 'range', 'trend-follow', 'breakout', 'scalp', 'pullback', 'momentum'];
+  const emotions = ['calm', 'confident', 'anxious', 'calm', 'confident', 'calm', 'calm', 'confident', 'calm', 'confident', 'calm', 'calm'];
+  const setups = ['breakout', 'pullback', 'trend-follow', 'breakout', 'reversal', 'pullback', 'breakout', 'trend-follow', 'pullback', 'scalp', 'swing', 'momentum'];
   const symbols = ['EURUSD', 'BTC', 'AAPL', 'EURUSD', 'TSLA', 'BTC', 'EURUSD', 'AAPL', 'MSFT', 'EURUSD', 'BTC', 'GOOGL'];
   const trades = [];
   
-  // Generate 12 sample trades over the past month with realistic P&L
-  for (let i = 0; i < 12; i++) {
+  // Generate 15 sample trades showing a trader improving over time (~60% win rate, positive equity)
+  for (let i = 0; i < 15; i++) {
     const day = new Date();
-    day.setDate(day.getDate() - (12 - i) * 2);
+    day.setDate(day.getDate() - (15 - i) * 2 - 1);
     const date = day.toISOString().split('T')[0];
-    const direction = i < 7 ? 'long' : 'short';
-    const entry = direction === 'long' ? 100 + Math.random() * 50 : 150 - Math.random() * 50;
-    const exit = entry + (direction === 'long' ? (Math.random() - 0.4) * 5 : -(Math.random() - 0.4) * 5);
-    const size = Math.floor(100 + Math.random() * 900);
-    const stop = direction === 'long' ? entry - Math.random() * 3 - 1 : entry + Math.random() * 3 + 1;
-    const target = direction === 'long' ? entry + Math.random() * 6 + 2 : entry - Math.random() * 6 - 2;
+    const direction = i % 3 === 0 ? 'short' : 'long';
+    
+    // First few trades mixed, then improving win rate
+    const isWin = i < 3 ? Math.random() > 0.5 : (i < 8 ? Math.random() > 0.35 : Math.random() > 0.25);
+    
+    const entry = direction === 'long' ? 100 + Math.random() * 40 : 140 - Math.random() * 40;
+    const move = isWin ? (1 + Math.random() * 3) : -(0.5 + Math.random() * 2);
+    const exit = direction === 'long' ? entry + move : entry - move;
+    const size = Math.floor(200 + Math.random() * 800);
     
     trades.push({
-      date, direction, entry: Math.round(entry * 100) / 100,
+      date, direction: isWin ? direction : direction,
+      entry: Math.round(entry * 100) / 100,
       exit: Math.round(exit * 100) / 100,
-      size, stop: Math.round(stop * 100) / 100,
-      target: Math.round(target * 100) / 100,
-      fees: Math.round(Math.random() * 10 + 2),
+      size,
+      stop: Math.round((direction === 'long' ? entry - 1.5 - Math.random() * 2 : entry + 1.5 + Math.random() * 2) * 100) / 100,
+      target: Math.round((direction === 'long' ? entry + 3 + Math.random() * 4 : entry - 3 - Math.random() * 4) * 100) / 100,
+      fees: Math.round(5 + Math.random() * 8),
       symbol: symbols[i % symbols.length],
-      setup: setups[i],
-      emotion: emotions[i],
-      notes: ['Followed plan', 'Good entry, early exit', 'Held too long', 'Perfect setup', 'Emotional exit', 'Stuck to plan'][i % 6],
+      setup: setups[i % setups.length],
+      emotion: isWin ? (emotions[i % emotions.length]) : 'anxious',
+      notes: isWin
+        ? ['Followed plan perfectly', 'Stuck to stop loss', 'Good risk management', 'Patient entry'][i % 4]
+        : ['Emotional exit', 'Chased the move', 'Cut winner short', 'Entered too early'][i % 4],
     });
   }
   return trades;
+}
+
+function loadSampleData() {
+  state.trades = generateSampleData();
+  saveState();
+  document.getElementById('welcomeCard').style.display = 'none';
+  renderAll();
+}
+
+function dismissWelcome() {
+  document.getElementById('welcomeCard').style.display = 'none';
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1495,13 +1524,9 @@ function init() {
   // Load saved state
   loadState();
 
-  // If first-time user with no trades, offer sample data
+  // If first-time user with no trades, show welcome card (not blocking confirm!)
   if (state.trades.length === 0) {
-    const wantsSample = confirm('Welcome to Sigma! 🎉 Would you like to load sample trades to see how the analytics work? Click Cancel to start fresh.');
-    if (wantsSample) {
-      state.trades = generateSampleData();
-      saveState();
-    }
+    document.getElementById('welcomeCard').style.display = 'block';
   }
 
   // Nav tab switching
