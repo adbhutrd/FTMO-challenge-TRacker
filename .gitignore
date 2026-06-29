@@ -5,6 +5,7 @@ Thumbs.db
 *.swo
 
 # Python
+venv/
 __pycache__/
 *.pyc
 *.pyo
@@ -74,6 +75,7 @@ config.local.yaml
 .agent-browser/
 
 # STANDALONE PROJECTS (not tracked individually)
+java11/
 MayaDice/
 agentic-aama/
 archive/
@@ -102,6 +104,7 @@ supabase/
 bin/
 
 # OLD/ARCHIVED
+~/
 archive/
 
 # LICENSE (root level is a copy)
