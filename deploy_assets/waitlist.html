@@ -201,6 +201,10 @@ button:hover { opacity: 0.9; }
   totalCount.textContent = waitlist.length;
   viewCount.textContent = waitlist.length;
 
+  const apiBase = window.location.port === '8080' || window.location.port === '3000' 
+    ? `${window.location.protocol}//${window.location.hostname}:8080`
+    : 'http://localhost:8080';
+
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     const email = emailInput.value.trim();
@@ -212,13 +216,20 @@ button:hover { opacity: 0.9; }
       try { localStorage.setItem('ftmoWaitlist', JSON.stringify(waitlist)); } catch(e) {}
     }
 
-    // Send via FormSubmit
+    // Send to local command center API (primary)
+    fetch(`${apiBase}/api/waitlist`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, source: 'waitlist-page' })
+    }).catch(function(){});
+
+    // Send via FormSubmit as backup
     const fd = new FormData();
     fd.append('email', email);
     fd.append('_subject', 'FTMO Waitlist Signup (standalone page)');
     fd.append('_captcha', 'false');
     try {
-      fetch('https://formsubmit.co/ajax/enishshah2@gmail.com', { method: 'POST', body: fd }).catch(function(){});
+      fetch('https://formsubmit.co/ajax/adbhutramdas@gmail.com', { method: 'POST', body: fd }).catch(function(){});
     } catch(e) {}
 
     form.style.display = 'none';

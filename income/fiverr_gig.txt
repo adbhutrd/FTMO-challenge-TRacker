@@ -1,0 +1,55 @@
+# Fiverr Gig — Web Application Penetration Testing
+
+## Gig Title (SEO)
+I will perform web application penetration testing and security audit
+
+## Gig Description
+
+Don't wait until a breach costs you thousands.
+
+I'm Adbhut Ram Das — MSc Cyber Security (Distinction) based in Reading, UK. I specialize in finding critical vulnerabilities in web applications before attackers do. I've tested applications across multiple industries and my reports help developers fix issues fast.
+
+Why manual testing? Automated scanners miss 70% of critical vulnerabilities. I perform deep manual testing combined with industry-standard tools to find what others miss — including logic flaws, IDOR, BOLA, and authentication bypasses that scanners can't detect.
+
+## Packages
+
+### BASIC — $100
+- 1 web app (up to 5 pages)
+- Automated vulnerability scan + manual validation
+- OWASP Top 10 coverage
+- PDF summary report
+- 24-hour delivery
+
+### STANDARD — $250 ⭐ BEST SELLER
+- 1 web app (up to 20 pages)
+- Full manual pentest + automated scanning
+- OWASP Top 10 + API testing + auth testing
+- Full PDF report with CVSS scoring & remediation
+- 48-hour delivery
+
+### PREMIUM — $500
+- Full web app + API (unlimited pages)
+- Deep manual pentest + business logic + API (BOLA/IDOR/auth)
+- Executive + technical report with remediation roadmap
+- 1 round of re-testing after fixes
+- 72-hour delivery
+
+## FAQ
+
+Q: Do you test for OWASP Top 10?
+A: Yes! Every test covers XSS, SQLi, CSRF, SSRF, IDOR, and more. All findings manually verified.
+
+Q: What do I receive?
+A: Professional PDF report with executive summary, findings with PoC evidence, CVSS 3.1 scores, and step-by-step remediation.
+
+Q: Is this legal?
+A: Yes — I require written authorization from the domain owner before testing.
+
+Q: Can you test my API?
+A: Yes. Standard & Premium packages include API security testing (REST/GraphQL).
+
+Q: How long does it take?
+A: Basic: 24h. Standard: 48h. Premium: 72h.
+
+## Contact
+enishshah2@gmail.com

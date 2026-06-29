@@ -30,6 +30,7 @@ import time
 import re
 import glob
 import socket
+import sqlite3
 from datetime import datetime
 from pathlib import Path
 
@@ -392,6 +393,344 @@ def get_full_status():
 
 
 # ════════════════════════════════════════════════════════════════
+#  Email Marketing / Waitlist API
+# ════════════════════════════════════════════════════════════════
+
+EMAIL_DB_PATH = os.path.join(HOME, "income", "email_marketing.db")
+
+
+def handle_waitlist(body):
+    """Handle waitlist signup - add to email database."""
+    email = body.get("email", "").strip().lower()
+    name = body.get("name", "").strip()
+    source = body.get("source", "waitlist")
+
+    if not email or "@" not in email:
+        return {"status": "error", "message": "Valid email required"}
+
+    try:
+        sys.path.insert(0, INCOME_DIR)
+        from tools.email_marketing.contacts import ContactDB
+        from tools.email_marketing.campaigns import CampaignManager
+
+        db = ContactDB(EMAIL_DB_PATH)
+        contact_id = db.add_contact(email, name, source, tags=["waitlist", "ftmo-pro"])
+
+        if contact_id:
+            # Enroll in welcome sequence
+            try:
+                manager = CampaignManager()
+                manager.db = db
+                manager.setup_welcome_sequence()
+                conn = db._get_conn()
+                seq = conn.execute(
+                    "SELECT id FROM sequences WHERE name = 'Welcome Sequence' LIMIT 1"
+                ).fetchone()
+                if seq:
+                    db.enroll_in_sequence(contact_id, seq["id"])
+            except Exception as seq_err:
+                # Sequence enrollment is non-critical, but log it for debugging
+                print(f'  ⚠️ Sequence enrollment failed: {seq_err}')
+
+            return {
+                "status": "ok",
+                "message": "Added to waitlist",
+                "contact_id": contact_id,
+                "total": db.get_subscriber_count()["active"]
+            }
+        else:
+            # Already exists - just update source
+            db.update_contact(email, {"source": source})
+            return {
+                "status": "ok",
+                "message": "Already on waitlist",
+                "total": db.get_subscriber_count()["active"]
+            }
+    except Exception as e:
+        return {"status": "error", "message": f"Database error: {e}"}
+
+
+def handle_campaign_action(body):
+    """Handle campaign management actions."""
+    action = body.get("action", "")
+    try:
+        sys.path.insert(0, INCOME_DIR)
+        from tools.email_marketing.campaigns import CampaignManager
+        manager = CampaignManager()
+
+        if action == "create-welcome":
+            seq_id = manager.setup_welcome_sequence()
+            return {"status": "ok", "message": f"Welcome sequence ready (ID: {seq_id})"}
+        elif action == "send-campaign":
+            campaign_id = body.get("campaign_id")
+            if not campaign_id:
+                return {"status": "error", "message": "campaign_id required"}
+            result = manager.send_campaign(campaign_id)
+            return {"status": "ok", "result": result}
+        elif action == "run-pipeline":
+            result = manager.run_pipeline()
+            return {"status": "ok", "result": result}
+        elif action == "create-promo":
+            title = body.get("title", "Special Offer")
+            cid = manager.create_promo_campaign(
+                title=title,
+                body_text=body.get("body", ""),
+                cta_url=body.get("cta_url", "https://gumroad.com/l/ezteprg"),
+                cta_text=body.get("cta_text", "Get Pro Access →"),
+                target_tag=body.get("target_tag", "ftmo-pro"),
+                urgency=body.get("urgency", ""),
+            )
+            return {"status": "ok", "campaign_id": cid}
+        else:
+            return {"status": "error", "message": f"Unknown action: {action}"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+def get_email_stats():
+    """Get email marketing statistics."""
+    try:
+        sys.path.insert(0, INCOME_DIR)
+        from tools.email_marketing.contacts import ContactDB
+        db = ContactDB(EMAIL_DB_PATH)
+        return {"status": "ok", "stats": db.get_stats(), "resend_key_set": bool(os.environ.get("RESEND_API_KEY", ""))}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ════════════════════════════════════════════════════════════════
+#  Sigma Cloud Sync API
+# ════════════════════════════════════════════════════════════════
+
+SIGMA_DB_PATH = os.path.join(HOME, "income", "sigma_sync.db")
+
+# Free tier limits
+SIGMA_FREE_MAX_TRADES = 20
+SIGMA_PRO_MAX_TRADES = 999999
+
+
+def _init_sigma_db():
+    """Initialize Sigma sync database."""
+    conn = sqlite3.connect(SIGMA_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    conn.executescript("""
+        CREATE TABLE IF NOT EXISTS sigma_users (
+            email TEXT PRIMARY KEY,
+            sync_key TEXT NOT NULL UNIQUE,
+            tier TEXT DEFAULT 'free',
+            registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            last_sync TIMESTAMP,
+            trade_count INTEGER DEFAULT 0
+        );
+        CREATE TABLE IF NOT EXISTS sigma_trade_data (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_email TEXT NOT NULL,
+            data TEXT NOT NULL,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(user_email)
+        );
+    """)
+    conn.commit()
+    return conn
+
+
+def _generate_sync_key():
+    """Generate a random sync key."""
+    import hashlib
+    raw = f"{time.time()}{os.urandom(16).hex()}"
+    return hashlib.sha256(raw.encode()).hexdigest()[:24]
+
+
+def _verify_sigma_user(email, sync_key):
+    """Verify user exists and key matches."""
+    conn = _init_sigma_db()
+    row = conn.execute(
+        "SELECT * FROM sigma_users WHERE email = ? AND sync_key = ?",
+        (email.strip().lower(), sync_key)
+    ).fetchone()
+    conn.close()
+    if row:
+        return dict(row)
+    return None
+
+
+def handle_sigma_register(body):
+    """Register a user for Sigma cloud sync."""
+    email = body.get("email", "").strip().lower()
+    if not email or "@" not in email:
+        return {"status": "error", "message": "Valid email required"}
+
+    conn = _init_sigma_db()
+    try:
+        # Check if already registered
+        existing = conn.execute("SELECT * FROM sigma_users WHERE email = ?", (email,)).fetchone()
+        if existing:
+            conn.close()
+            return {
+                "status": "ok",
+                "message": "Already registered",
+                "tier": existing["tier"],
+                "sync_key": existing["sync_key"],
+                "trade_count": existing["trade_count"],
+                "last_sync": existing["last_sync"],
+            }
+
+        sync_key = _generate_sync_key()
+        conn.execute(
+            "INSERT INTO sigma_users (email, sync_key, tier) VALUES (?, ?, 'free')",
+            (email, sync_key)
+        )
+        conn.commit()
+        conn.close()
+
+        return {
+            "status": "ok",
+            "message": "Registered successfully",
+            "sync_key": sync_key,
+            "tier": "free",
+            "trade_count": 0,
+            "max_trades": SIGMA_FREE_MAX_TRADES,
+        }
+    except Exception as e:
+        conn.close()
+        return {"status": "error", "message": str(e)}
+
+
+def handle_sigma_upload(body):
+    """Upload trade data to cloud."""
+    email = body.get("email", "").strip().lower()
+    sync_key = body.get("sync_key", "")
+    trade_data = body.get("data", "")  # JSON string of trades
+
+    if not email or not sync_key or not trade_data:
+        return {"status": "error", "message": "email, sync_key, and data required"}
+
+    user = _verify_sigma_user(email, sync_key)
+    if not user:
+        return {"status": "error", "message": "Invalid credentials. Register first."}
+
+    # Parse trades to count them
+    try:
+        parsed = json.loads(trade_data)
+        trades = parsed if isinstance(parsed, list) else parsed.get("trades", [])
+        trade_count = len(trades)
+    except:
+        return {"status": "error", "message": "Invalid trade data format"}
+
+    # Check tier limits
+    max_trades = SIGMA_PRO_MAX_TRADES if user["tier"] == "pro" else SIGMA_FREE_MAX_TRADES
+    if trade_count > max_trades:
+        return {
+            "status": "error",
+            "message": f"Tier limit exceeded. Free: {SIGMA_FREE_MAX_TRADES} trades. Upgrade to Pro for unlimited.",
+            "tier": user["tier"],
+            "max_trades": max_trades,
+            "your_count": trade_count,
+        }
+
+    conn = _init_sigma_db()
+    try:
+        conn.execute(
+            """INSERT INTO sigma_trade_data (user_email, data, updated_at)
+               VALUES (?, ?, datetime('now'))
+               ON CONFLICT(user_email)
+               DO UPDATE SET data = excluded.data, updated_at = datetime('now')""",
+            (email, json.dumps({"trades": trades}))
+        )
+        conn.execute(
+            "UPDATE sigma_users SET last_sync = datetime('now'), trade_count = ? WHERE email = ?",
+            (trade_count, email)
+        )
+        conn.commit()
+        conn.close()
+
+        return {
+            "status": "ok",
+            "message": "Synced successfully",
+            "trade_count": trade_count,
+            "tier": user["tier"],
+        }
+    except Exception as e:
+        conn.close()
+        return {"status": "error", "message": str(e)}
+
+
+def handle_sigma_download(email, sync_key):
+    """Download trade data from cloud."""
+    if not email or not sync_key:
+        return {"status": "error", "message": "email and sync_key required"}
+
+    user = _verify_sigma_user(email, sync_key)
+    if not user:
+        return {"status": "error", "message": "Invalid credentials. Register first."}
+
+    conn = _init_sigma_db()
+    row = conn.execute(
+        "SELECT * FROM sigma_trade_data WHERE user_email = ?", (email,)
+    ).fetchone()
+    conn.close()
+
+    if row:
+        data = json.loads(row["data"])
+        return {
+            "status": "ok",
+            "data": data,
+            "tier": user["tier"],
+            "last_sync": row["updated_at"],
+            "trade_count": user["trade_count"],
+        }
+    else:
+        return {
+            "status": "ok",
+            "data": {"trades": []},
+            "tier": user["tier"],
+            "trade_count": 0,
+            "message": "No data in cloud yet",
+        }
+
+
+def handle_sigma_status(email, sync_key):
+    """Check sync status and limits."""
+    if not email or not sync_key:
+        return {"status": "error", "message": "email and sync_key required"}
+
+    user = _verify_sigma_user(email, sync_key)
+    if not user:
+        return {"status": "error", "message": "Invalid credentials"}
+
+    max_trades = SIGMA_PRO_MAX_TRADES if user["tier"] == "pro" else SIGMA_FREE_MAX_TRADES
+
+    return {
+        "status": "ok",
+        "tier": user["tier"],
+        "trade_count": user["trade_count"],
+        "max_trades": max_trades,
+        "last_sync": user["last_sync"],
+        "registered_at": user["registered_at"],
+    }
+
+
+def handle_sigma_upgrade(body):
+    """Upgrade a user to Pro tier (admin, triggered manually after payment verification)."""
+    email = body.get("email", "").strip().lower()
+    admin_key = body.get("admin_key", "")
+
+    # Simple admin auth - matches env var or a hardcoded key
+    if admin_key != os.environ.get("SIGMA_ADMIN_KEY", "sigma-pro-admin-2026"):
+        return {"status": "error", "message": "Unauthorized"}
+
+    conn = _init_sigma_db()
+    try:
+        conn.execute("UPDATE sigma_users SET tier = 'pro' WHERE email = ?", (email,))
+        conn.commit()
+        conn.close()
+        return {"status": "ok", "message": f"{email} upgraded to Pro"}
+    except Exception as e:
+        conn.close()
+        return {"status": "error", "message": str(e)}
+
+
+# ════════════════════════════════════════════════════════════════
 #  HTTP Request Handler
 # ════════════════════════════════════════════════════════════════
 
@@ -478,6 +817,12 @@ class CommandCenterHandler(http.server.BaseHTTPRequestHandler):
                 self._send_json(get_system_health())
             elif path == "/api/health":
                 self._send_json({"status": "ok", "time": datetime.now().isoformat()})
+            elif path == "/api/email/stats":
+                self._send_json(get_email_stats())
+            elif path == "/api/sigma/download":
+                self._send_json(handle_sigma_download(query.get("email",""), query.get("key","")))
+            elif path == "/api/sigma/status":
+                self._send_json(handle_sigma_status(query.get("email",""), query.get("key","")))
             elif path == "/" or not path:
                 self._send_html(get_dashboard_html())
             else:
@@ -527,6 +872,18 @@ class CommandCenterHandler(http.server.BaseHTTPRequestHandler):
         try:
             if path == "/api/action":
                 self._send_json(perform_action(body))
+            elif path == "/api/waitlist":
+                result = handle_waitlist(body)
+                self._send_json(result)
+            elif path == "/api/email/campaign":
+                result = handle_campaign_action(body)
+                self._send_json(result)
+            elif path == "/api/sigma/register":
+                self._send_json(handle_sigma_register(body))
+            elif path == "/api/sigma/upload":
+                self._send_json(handle_sigma_upload(body))
+            elif path == "/api/sigma/upgrade":
+                self._send_json(handle_sigma_upgrade(body))
             else:
                 self._send_json({"error": "Not found"}, 404)
         except Exception as e:

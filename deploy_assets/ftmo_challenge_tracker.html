@@ -527,6 +527,7 @@ tbody tr:hover { background: rgba(255,255,255,0.02); }
       <form id="waitlistForm" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
         <input type="email" id="waitlistEmail" placeholder="your@email.com" required
           style="flex:1;min-width:200px;padding:12px 18px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:14px;outline:none">
+        <input type="hidden" id="waitlistName" value="">
         <button type="submit" class="btn btn-primary" style="padding:12px 28px;font-size:14px">📩 Join Waitlist</button>
       </form>
       
@@ -1065,6 +1066,10 @@ function initWaitlist() {
   
   countSpan.textContent = waitlist.length;
   
+  const apiBase = window.location.port === '8080' || window.location.port === '3000' 
+    ? `${window.location.protocol}//${window.location.hostname}:8080`
+    : 'http://localhost:8080';
+
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     const email = emailInput.value.trim();
@@ -1078,15 +1083,20 @@ function initWaitlist() {
       } catch(e) {}
     }
     
-    // Send via FormSubmit (replace your@email.com with your actual email)
+    // Send to local command center API (primary)
+    fetch(`${apiBase}/api/waitlist`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, source: 'ftmo-tracker' })
+    }).catch(function(){});  // Silent fail if server not reachable
+    
+    // Also send via FormSubmit as email backup
     const formData = new FormData();
     formData.append('email', email);
     formData.append('_subject', 'New FTMO Waitlist Signup');
     formData.append('_captcha', 'false');
-    
-    // Try to send via FormSubmit (silent fail if not configured)
     try {
-      fetch('https://formsubmit.co/ajax/enishshah2@gmail.com', {
+      fetch('https://formsubmit.co/ajax/adbhutramdas@gmail.com', {
         method: 'POST',
         body: formData
       }).catch(function(){});

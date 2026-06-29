@@ -1,0 +1,13 @@
+# Contact Information
+# For payout notifications
+
+Email: adbhutramdas@gmail.com
+Platforms: HackerOne, Bugcrowd, Fiverr, Upwork
+Preferred: Bank transfer > PayPal > Wise
+
+# Notification Preferences
+Alert on:
+- New program scopes
+- Report status changes  
+- Payment received
+- Time log summary (daily)

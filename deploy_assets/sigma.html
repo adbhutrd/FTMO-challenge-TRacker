@@ -301,6 +301,7 @@ tbody tr:last-child td { border-bottom: none; }
     <button class="btn btn-sm btn-secondary" onclick="exportData()" title="Export all trading data">📥 Export</button>
     <button class="btn btn-sm btn-secondary" onclick="document.getElementById('importInput').click()" title="Import trading data">📤 Import</button>
     <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
+    <button class="btn btn-sm" id="syncStatusBtn" onclick="toggleSyncPanel()" style="background:var(--bg3);color:var(--text2);border:1px solid var(--border);display:none" title="Cloud Sync Status">☁️ Offline</button>
     <button class="btn btn-gold btn-sm" onclick="document.getElementById('waitlistSection').scrollIntoView({behavior:'smooth'})">🔥 Pro $29.99/mo</button>
   </div>
 </header>
@@ -738,6 +739,64 @@ tbody tr:last-child td { border-bottom: none; }
     <div class="pro-feature"><span class="check">✓</span> Telegram trade alerts</div>
     <div class="pro-feature"><span class="check">✓</span> Broker API auto-import</div>
     <div class="pro-feature"><span class="check">✓</span> AI trade analysis <span class="soon">(coming)</span></div>
+  </div>
+</div>
+
+<!-- ═══════════ CLOUD SYNC PANEL ═══════════ -->
+<div id="syncPanel" style="display:none;margin-top:24px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)">
+  <div class="section-header">
+    <h2><span class="icon">☁️</span> Cloud Sync <span id="syncTierBadge" style="font-size:11px;font-weight:400;padding:2px 10px;border-radius:4px;background:var(--bg3);color:var(--text2)">Free</span></h2>
+    <button class="btn btn-ghost btn-sm" onclick="toggleSyncPanel()">✕ Close</button>
+  </div>
+
+  <!-- Register Form (shown when not registered) -->
+  <div id="syncRegisterForm" style="max-width:480px">
+    <p style="color:var(--text2);font-size:13px;margin-bottom:16px">Register your email to enable cloud sync. Your trade data is encrypted and backed up to the server.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <input type="email" id="syncEmail" placeholder="your@email.com" required
+        style="flex:1;min-width:200px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none">
+      <button class="btn btn-primary" onclick="registerSync()">🔑 Register</button>
+      <button class="btn btn-secondary" onclick="loginSync()">🔐 I Have a Key</button>
+    </div>
+    <div id="syncKeyInput" style="display:none;margin-top:10px">
+      <div style="display:flex;gap:10px">
+        <input type="text" id="syncKeyField" placeholder="Paste your sync key" required
+          style="flex:1;min-width:200px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none;font-family:var(--font-mono)">
+        <button class="btn btn-primary" onclick="loginWithKey()">Login</button>
+      </div>
+    </div>
+    <div id="syncRegisterStatus" style="margin-top:10px;font-size:13px"></div>
+  </div>
+
+  <!-- Sync Dashboard (shown when registered) -->
+  <div id="syncDashboard" style="display:none">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px">
+      <div style="background:var(--bg);border-radius:var(--radius-sm);padding:14px;text-align:center">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:4px">Local Trades</div>
+        <div style="font-size:22px;font-weight:700;font-family:var(--font-mono)" id="syncLocalCount">0</div>
+      </div>
+      <div style="background:var(--bg);border-radius:var(--radius-sm);padding:14px;text-align:center">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:4px">Cloud Trades</div>
+        <div style="font-size:22px;font-weight:700;font-family:var(--font-mono)" id="syncCloudCount">0</div>
+      </div>
+      <div style="background:var(--bg);border-radius:var(--radius-sm);padding:14px;text-align:center">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:4px">Limit</div>
+        <div style="font-size:22px;font-weight:700;font-family:var(--font-mono)" id="syncLimit">20</div>
+      </div>
+    </div>
+
+    <div id="syncUpgradeBanner" style="background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(217,119,6,0.04));border:1px solid rgba(245,158,11,0.2);border-radius:var(--radius-sm);padding:16px;margin-bottom:16px;display:none;text-align:center">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:8px">🎯 <strong style="color:var(--yellow)">Free limit: 20 trades.</strong> Upgrade to Pro for unlimited sync, all devices, PDF reports.</p>
+      <a href="https://gumroad.com/l/ezteprg" target="_blank" class="btn btn-gold btn-sm" style="text-decoration:none">🔥 Upgrade to Pro — $29.99/mo</a>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="syncUpload()" id="syncUploadBtn">☁️ Upload to Cloud</button>
+      <button class="btn btn-secondary" onclick="syncDownload()" id="syncDownloadBtn">📥 Download from Cloud</button>
+      <button class="btn btn-ghost" onclick="showSyncKey()" id="showSyncKeyBtn" style="font-size:12px">🔑 Show Key</button>
+    </div>
+    <div id="syncStatusMsg" style="margin-top:10px;font-size:13px;color:var(--text2)"></div>
+    <div id="syncKeyDisplay" style="display:none;margin-top:10px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:12px;color:var(--text3);word-break:break-all"></div>
   </div>
 </div>
 
@@ -1250,6 +1309,16 @@ function addTrade(e) {
 
   renderAll();
   switchTab('journal');
+
+  // Auto-sync for Pro users after each trade
+  if (syncState.email && syncState.sync_key && syncState.tier === 'pro') {
+    syncUpload();
+  } else if (syncState.email && syncState.sync_key) {
+    // Free users: auto-sync every 5 trades
+    if (state.trades.length % 5 === 0) {
+      syncUpload();
+    }
+  }
 }
 
 function deleteTrade(index) {
@@ -1515,6 +1584,241 @@ function dismissWelcome() {
 }
 
 // ═══════════════════════════════════════════════════════════════════
+//  CLOUD SYNC
+// ═══════════════════════════════════════════════════════════════════
+
+const SYNC_STORAGE_KEY = 'sigmaSyncState';
+
+let syncState = {
+  email: '',
+  sync_key: '',
+  tier: 'free',
+  trade_count: 0,
+};
+
+const API_BASE = window.location.port === '8080' || window.location.port === '3000'
+  ? `${window.location.protocol}//${window.location.hostname}:8080`
+  : 'http://localhost:8080';
+
+function loadSyncState() {
+  try {
+    const saved = localStorage.getItem(SYNC_STORAGE_KEY);
+    if (saved) syncState = { ...syncState, ...JSON.parse(saved) };
+  } catch(e) {}
+}
+
+function saveSyncState() {
+  try { localStorage.setItem(SYNC_STORAGE_KEY, JSON.stringify(syncState)); } catch(e) {}
+}
+
+function toggleSyncPanel() {
+  const panel = document.getElementById('syncPanel');
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) updateSyncUI();
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function updateSyncUI() {
+  const hasKey = syncState.email && syncState.sync_key;
+  document.getElementById('syncRegisterForm').style.display = hasKey ? 'none' : 'block';
+  document.getElementById('syncDashboard').style.display = hasKey ? 'block' : 'none';
+  document.getElementById('syncKeyInput').style.display = 'none';
+
+  const btn = document.getElementById('syncStatusBtn');
+  if (hasKey) {
+    const tierEmoji = syncState.tier === 'pro' ? '🔥' : '☁️';
+    const tierLabel = syncState.tier === 'pro' ? 'Pro' : 'Free';
+    btn.style.display = 'inline-flex';
+    btn.innerHTML = `${tierEmoji} ${tierLabel}`;
+    btn.style.color = syncState.tier === 'pro' ? 'var(--yellow)' : 'var(--accent)';
+  }
+
+  if (!hasKey) return;
+
+  document.getElementById('syncTierBadge').textContent = syncState.tier === 'pro' ? '🔥 Pro' : '☁️ Free';
+  document.getElementById('syncTierBadge').style.background = syncState.tier === 'pro' ? 'rgba(245,158,11,0.15)' : 'var(--bg3)';
+  document.getElementById('syncTierBadge').style.color = syncState.tier === 'pro' ? 'var(--yellow)' : 'var(--text2)';
+
+  document.getElementById('syncLocalCount').textContent = state.trades.length;
+  document.getElementById('syncCloudCount').textContent = syncState.trade_count || 0;
+
+  const limit = syncState.tier === 'pro' ? '∞' : '20';
+  document.getElementById('syncLimit').textContent = limit;
+  document.getElementById('syncLimit').style.color = syncState.tier === 'pro' ? 'var(--yellow)' : 'var(--text2)';
+
+  // Show upgrade banner only for free users
+  const upgradeBanner = document.getElementById('syncUpgradeBanner');
+  if (syncState.tier !== 'pro' && state.trades.length > 15) {
+    upgradeBanner.style.display = 'block';
+  } else {
+    upgradeBanner.style.display = 'none';
+  }
+}
+
+function setSyncStatus(msg, isError) {
+  const el = document.getElementById('syncRegisterStatus');
+  el.textContent = msg;
+  el.style.color = isError ? 'var(--red)' : 'var(--green)';
+  if (isError) setTimeout(() => { if (el.textContent === msg) el.textContent = ''; }, 4000);
+}
+
+function setSyncMsg(msg, isError) {
+  const el = document.getElementById('syncStatusMsg');
+  el.textContent = msg;
+  el.style.color = isError ? 'var(--red)' : 'var(--green)';
+  if (isError) setTimeout(() => { if (el.textContent === msg) el.textContent = ''; }, 4000);
+}
+
+async function registerSync() {
+  const email = document.getElementById('syncEmail').value.trim();
+  if (!email || !email.includes('@')) {
+    setSyncStatus('Please enter a valid email', true);
+    return;
+  }
+
+  setSyncStatus('Registering...');
+  try {
+    const resp = await fetch(`${API_BASE}/api/sigma/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await resp.json();
+    if (data.status === 'ok') {
+      syncState.email = email;
+      syncState.sync_key = data.sync_key;
+      syncState.tier = data.tier || 'free';
+      syncState.trade_count = data.trade_count || 0;
+      saveSyncState();
+
+      // Show sync key briefly
+      setSyncStatus(`✅ Registered! Your sync key is saved. Data: ${data.message}`);
+      document.getElementById('syncKeyDisplay').style.display = 'block';
+      document.getElementById('syncKeyDisplay').textContent = `Sync Key: ${data.sync_key}\nEmail: ${email}\nSave this key to login from other devices.`;
+
+      updateSyncUI();
+    } else {
+      setSyncStatus(`❌ ${data.message}`, true);
+    }
+  } catch(e) {
+    setSyncStatus(`❌ Connection error: ${e.message}`, true);
+  }
+}
+
+function loginSync() {
+  document.getElementById('syncKeyInput').style.display = 'flex';
+  document.getElementById('syncKeyField').focus();
+}
+
+async function loginWithKey() {
+  const email = document.getElementById('syncEmail').value.trim() || syncState.email;
+  const sync_key = document.getElementById('syncKeyField').value.trim();
+
+  if (!email || !sync_key) {
+    setSyncStatus('Email and sync key required', true);
+    return;
+  }
+
+  setSyncStatus('Verifying...');
+  try {
+    const resp = await fetch(`${API_BASE}/api/sigma/status?email=${encodeURIComponent(email)}&key=${encodeURIComponent(sync_key)}`);
+    const data = await resp.json();
+    if (data.status === 'ok') {
+      syncState.email = email;
+      syncState.sync_key = sync_key;
+      syncState.tier = data.tier || 'free';
+      syncState.trade_count = data.trade_count || 0;
+      saveSyncState();
+      setSyncStatus(`✅ Logged in as ${email} (${syncState.tier})`);
+      updateSyncUI();
+    } else {
+      setSyncStatus(`❌ ${data.message}`, true);
+    }
+  } catch(e) {
+    setSyncStatus(`❌ Connection error: ${e.message}`, true);
+  }
+}
+
+async function syncUpload() {
+  if (!syncState.email || !syncState.sync_key) {
+    setSyncMsg('Please register or login first', true);
+    return;
+  }
+
+  const tradeData = JSON.stringify({ trades: state.trades });
+  setSyncMsg('Uploading...');
+
+  try {
+    const resp = await fetch(`${API_BASE}/api/sigma/upload`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: syncState.email,
+        sync_key: syncState.sync_key,
+        data: tradeData,
+      }),
+    });
+    const data = await resp.json();
+    if (data.status === 'ok') {
+      syncState.trade_count = data.trade_count || state.trades.length;
+      saveSyncState();
+      setSyncMsg(`✅ Uploaded ${data.trade_count} trades to cloud`);
+      updateSyncUI();
+    } else if (data.message && data.message.includes('limit')) {
+      setSyncMsg(`❌ ${data.message}`, true);
+      updateSyncUI();
+    } else {
+      setSyncMsg(`❌ ${data.message}`, true);
+    }
+  } catch(e) {
+    setSyncMsg(`❌ Connection error: ${e.message}`, true);
+  }
+}
+
+async function syncDownload() {
+  if (!syncState.email || !syncState.sync_key) {
+    setSyncMsg('Please register or login first', true);
+    return;
+  }
+
+  setSyncMsg('Downloading...');
+  try {
+    const resp = await fetch(`${API_BASE}/api/sigma/download?email=${encodeURIComponent(syncState.email)}&key=${encodeURIComponent(syncState.sync_key)}`);
+    const data = await resp.json();
+    if (data.status === 'ok' && data.data && data.data.trades) {
+      const cloudTrades = data.data.trades;
+      if (cloudTrades.length === 0) {
+        setSyncMsg('No data in cloud yet. Upload first.', true);
+        return;
+      }
+      if (state.trades.length > 0) {
+        if (!confirm(`This will REPLACE your ${state.trades.length} local trades with ${cloudTrades.length} cloud trades. Continue?`)) return;
+      }
+      state.trades = cloudTrades;
+      saveState();
+      renderAll();
+      setSyncMsg(`✅ Downloaded ${cloudTrades.length} trades from cloud`);
+      updateSyncUI();
+    } else {
+      setSyncMsg(`❌ ${data.message || 'Download failed'}`, true);
+    }
+  } catch(e) {
+    setSyncMsg(`❌ Connection error: ${e.message}`, true);
+  }
+}
+
+function showSyncKey() {
+  const display = document.getElementById('syncKeyDisplay');
+  if (display.style.display === 'block') {
+    display.style.display = 'none';
+    return;
+  }
+  display.style.display = 'block';
+  display.textContent = `Email: ${syncState.email}\nSync Key: ${syncState.sync_key}\nTier: ${syncState.tier}\n\n⚠️ Save this key to access your data from other devices.`;
+}
+
+// ═══════════════════════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════════════════════
 
@@ -1524,6 +1828,10 @@ function init() {
 
   // Load saved state
   loadState();
+
+  // Load sync state
+  loadSyncState();
+  updateSyncUI();
 
   // If first-time user with no trades, show welcome card (not blocking confirm!)
   if (state.trades.length === 0) {

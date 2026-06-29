@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📊 Industry Research Radar</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --bg3: #21262d;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #6e7681;
+  --accent: #58a6ff;
+  --green: #3fb950;
+  --green-bg: rgba(63,185,80,0.1);
+  --orange: #d29922;
+  --orange-bg: rgba(210,153,34,0.1);
+  --red: #f85149;
+  --red-bg: rgba(248,81,73,0.1);
+  --purple: #bc8cff;
+  --radius: 8px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  padding: 24px;
+}
+.container { max-width: 1400px; margin: 0 auto; }
+
+/* Header */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+}
+.header h1 {
+  font-size: 24px; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.header-right { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text2); }
+.status-dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  margin-right: 6px;
+}
+.status-dot.online { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.status-dot.offline { background: var(--red); box-shadow: 0 0 6px var(--red); }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--border); background: var(--bg3); color: var(--text);
+  transition: all 0.15s; text-decoration: none;
+}
+.btn:hover { background: var(--border); }
+.btn-primary { background: var(--accent); color: #0d1117; border-color: var(--accent); }
+.btn-primary:hover { filter: brightness(1.15); }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
+/* Stats Cards */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px; text-align: center; transition: border-color 0.15s;
+}
+.stat-card:hover { border-color: var(--text3); }
+.stat-value { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+.stat-label { font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-applied .stat-value { color: var(--green); }
+.stat-new .stat-value { color: var(--accent); }
+.stat-total .stat-value { color: var(--purple); }
+
+/* Telegram Bot Card */
+.telegram-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 18px; margin-bottom: 24px;
+  transition: border-color 0.15s;
+}
+.telegram-card:hover { border-color: var(--text3); }
+.telegram-card.configured { border-color: rgba(46,160,67,0.3); }
+.telegram-card.not-configured { border-color: var(--border); }
+.telegram-main {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.telegram-icon {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, #2AABEE, #229ED9);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.telegram-info { flex: 1; min-width: 150px; }
+.telegram-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.telegram-status { font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 6px; }
+.telegram-subscribers { font-size: 12px; color: var(--text2); margin-top: 4px; }
+.telegram-subscribers strong { color: var(--text); }
+.telegram-qr {
+  width: 60px; height: 60px; border-radius: 6px; overflow: hidden;
+  background: white; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; border: 1px solid var(--border);
+}
+.telegram-qr img { width: 100%; height: 100%; object-fit: contain; }
+.qr-placeholder { font-size: 24px; opacity: 0.3; }
+.telegram-actions {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.telegram-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 14px; border-radius: 6px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--border); background: var(--bg3); color: var(--text);
+  transition: all 0.15s; text-decoration: none;
+}
+.telegram-btn:hover { background: var(--border); }
+.telegram-btn.primary {
+  background: #2AABEE; color: white; border-color: #2AABEE;
+}
+.telegram-btn.primary:hover { filter: brightness(1.1); }
+.telegram-btn.success {
+  background: var(--green); color: #0d1117; border-color: var(--green);
+}
+.telegram-btn.success:hover { filter: brightness(1.15); }
+.telegram-setup {
+  margin-top: 10px; padding: 12px; border-radius: 6px;
+  background: var(--bg3); font-size: 12px; color: var(--text2);
+  display: none;
+}
+
+/* Company Breakdown */
+.company-breakdown {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+  margin-bottom: 24px; padding: 16px;
+}
+.company-breakdown h3 { font-size: 14px; color: var(--text2); margin-bottom: 12px; }
+.company-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.company-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 100px;
+  background: var(--bg3); border: 1px solid var(--border);
+  font-size: 13px; cursor: pointer; transition: all 0.15s;
+}
+.company-chip:hover { border-color: var(--accent); }
+.company-chip.active { border-color: var(--accent); background: rgba(88,166,255,0.1); }
+.company-chip .count {
+  background: var(--bg); padding: 1px 6px; border-radius: 10px; font-size: 11px; color: var(--text2);
+}
+.company-chip .applied-count { color: var(--green); }
+
+/* Filters */
+.filters {
+  display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+  align-items: center;
+}
+.filters input, .filters select {
+  padding: 8px 12px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--bg3); color: var(--text);
+  font-size: 13px; outline: none; transition: border-color 0.15s;
+}
+.filters input:focus, .filters select:focus { border-color: var(--accent); }
+.filters input { flex: 1; min-width: 200px; }
+.filters .filter-count { font-size: 13px; color: var(--text2); }
+
+/* Jobs Table */
+.table-container {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; margin-bottom: 24px;
+}
+table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+thead {
+  background: var(--bg3); border-bottom: 1px solid var(--border);
+}
+th {
+  padding: 10px 14px; text-align: left; font-weight: 600; color: var(--text2);
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+tr:hover td { background: rgba(255,255,255,0.02); }
+tr:last-child td { border-bottom: none; }
+.job-title { font-weight: 600; color: var(--text); }
+.job-title a { color: var(--accent); text-decoration: none; }
+.job-title a:hover { text-decoration: underline; }
+.job-company {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 12px;
+}
+.company-ing { background: rgba(0,153,51,0.15); color: #00cc44; }
+.company-philips { background: rgba(0,102,204,0.15); color: #4477dd; }
+.company-adyen { background: rgba(204,0,102,0.15); color: #dd3388; }
+.company-asml { background: rgba(255,153,0,0.15); color: #ff9900; }
+.company-booking { background: rgba(0,102,178,0.15); color: #0066aa; }
+.company-elastic { background: rgba(0,191,179,0.15); color: #00bfb3; }
+.company-mollie { background: rgba(236,0,140,0.15); color: #ec008c; }
+.company-kpn { background: rgba(0,155,78,0.15); color: #009b4e; }
+.company-tomtom { background: rgba(218,41,28,0.15); color: #da291c; }
+.company-abn-amro { background: rgba(0,96,55,0.15); color: #006037; }
+.company-ncsc { background: rgba(0,71,130,0.15); color: #004782; }
+.job-date { color: var(--text2); font-size: 12px; }
+.job-url { color: var(--text2); font-size: 12px; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
+.job-url a { color: var(--text3); text-decoration: none; }
+.job-url a:hover { color: var(--accent); }
+.status-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600;
+}
+.status-applied { background: var(--green-bg); color: var(--green); }
+.status-new { background: rgba(88,166,255,0.1); color: var(--accent); }
+.btn-apply {
+  padding: 4px 10px; border-radius: 4px; font-size: 11px;
+  border: 1px solid var(--border); background: var(--bg3);
+  color: var(--text2); cursor: pointer; transition: all 0.15s;
+}
+.btn-apply:hover { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+.btn-apply.applied { background: var(--orange-bg); color: var(--orange); border-color: var(--orange); }
+.btn-apply.applied:hover { background: var(--red-bg); color: var(--red); border-color: var(--red); }
+.no-results {
+  padding: 40px; text-align: center; color: var(--text3);
+}
+.no-results .icon { font-size: 40px; margin-bottom: 12px; }
+
+/* Scan History */
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.section-header h2 {
+  font-size: 16px; font-weight: 600;
+}
+.scan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 8px; }
+.scan-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 12px; font-size: 12px;
+}
+.scan-card .scan-time { color: var(--text2); font-size: 11px; margin-bottom: 4px; }
+.scan-card .scan-company { font-weight: 600; }
+.scan-card .scan-stats { display: flex; gap: 8px; margin-top: 4px; }
+.scan-card .scan-stat { color: var(--text2); }
+
+/* Loading */
+.loading {
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px; color: var(--text3);
+}
+.spinner {
+  width: 24px; height: 24px; border: 2px solid var(--border);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 0.8s linear infinite; margin-right: 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Scan Progress Panel */
+.scan-progress {
+  background: var(--bg2); border: 1px solid var(--accent); border-radius: var(--radius);
+  padding: 16px; margin-bottom: 24px;
+  box-shadow: 0 0 20px rgba(88,166,255,0.08);
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+.progress-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px; flex-wrap: wrap; gap: 8px;
+}
+.progress-title { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text); }
+.progress-spinner {
+  width: 16px; height: 16px; border: 2px solid var(--border);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.progress-mini-stats { font-size: 12px; color: var(--text2); }
+.progress-current { color: var(--accent); font-weight: 600; }
+.progress-track {
+  width: 100%; height: 6px; background: var(--bg3); border-radius: 3px;
+  margin-bottom: 14px; overflow: hidden;
+}
+.progress-bar {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--purple));
+  transition: width 0.4s ease;
+  width: 0%;
+}
+.company-progress {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 6px;
+}
+.company-progress-item {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  transition: all 0.2s;
+}
+.company-progress-item .company-icon { flex-shrink: 0; font-size: 13px; }
+.company-progress-item .company-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.company-progress-item .status-icon { flex-shrink: 0; font-size: 12px; }
+
+/* Status variants */
+.company-progress-item.status-pending {
+  opacity: 0.5; border-color: var(--border);
+}
+.company-progress-item.status-running {
+  border-color: var(--accent); background: rgba(88,166,255,0.1);
+  box-shadow: 0 0 8px rgba(88,166,255,0.15);
+}
+.company-progress-item.status-completed {
+  border-color: var(--green); background: var(--green-bg);
+}
+.company-progress-item.status-failed {
+  border-color: var(--red); background: var(--red-bg);
+}
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  padding: 12px 20px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 600; z-index: 1000;
+  transform: translateY(100px); opacity: 0;
+  transition: all 0.3s ease;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { background: var(--green); color: #0d1117; }
+.toast.error { background: var(--red); color: white; }
+
+/* Empty State */
+.empty-state {
+  text-align: center; padding: 60px 20px; color: var(--text3);
+}
+.empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+.empty-state h3 { font-size: 18px; margin-bottom: 8px; color: var(--text2); }
+.empty-state p { font-size: 14px; max-width: 400px; margin: 0 auto; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  body { padding: 12px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  td, th { padding: 8px 10px; }
+  .job-url { max-width: 120px; }
+}
+</style>
+</head>
+<body>
+<div class="container" id="app">
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h1>📊 Industry Research Radar</h1>
+      <div style="font-size:13px;color:var(--text2);margin-top:4px">
+        Security &amp; research job tracking for Netherlands
+      </div>
+    </div>
+    <div class="header-right">
+      <span><span class="status-dot online"></span><span id="statusText">Connected</span></span>
+      <span id="lastScanText">—</span>
+      <button class="btn btn-sm" id="autoRefreshBtn" onclick="toggleAutoRefresh()">⏸️ Auto</button>
+      <button class="btn btn-sm btn-primary" id="runScanBtn" onclick="runScan()">▶️ Run Scan</button>
+      <button class="btn btn-sm" onclick="refreshAll()">🔄 Refresh</button>
+      <span id="autoRefreshIndicator" style="display:none;font-size:11px;color:var(--green)">● live</span>
+    </div>
+  </div>
+
+  <!-- Scan Progress Bar & Per-Company Status -->
+  <div id="scanProgress" class="scan-progress" style="display:none">
+    <div class="progress-header">
+      <div class="progress-title">
+        <span class="progress-spinner"></span>
+        <span>Scanning <strong id="scanProgressText">0/11</strong> companies...</span>
+      </div>
+      <div class="progress-mini-stats">
+        <span id="scanCurrentCompany" class="progress-current"></span>
+      </div>
+    </div>
+    <div class="progress-track">
+      <div class="progress-bar" id="progressBarFill"></div>
+    </div>
+    <div class="company-progress" id="companyProgressGrid">
+      <!-- Populated by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card stat-total">
+      <div class="stat-value" id="totalJobs">—</div>
+      <div class="stat-label">Total Jobs</div>
+    </div>
+    <div class="stat-card stat-new">
+      <div class="stat-value" id="newJobs">—</div>
+      <div class="stat-label">New / Unapplied</div>
+    </div>
+    <div class="stat-card stat-applied">
+      <div class="stat-value" id="appliedJobs">—</div>
+      <div class="stat-label">Applied</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="scansCount">—</div>
+      <div class="stat-label">Scans Run</div>
+    </div>
+  </div>
+
+  <!-- Telegram Bot Status -->
+  <div class="telegram-card" id="telegramCard">
+    <div class="telegram-main">
+      <div class="telegram-icon">🤖</div>
+      <div class="telegram-info">
+        <div class="telegram-title">Telegram Bot</div>
+        <div class="telegram-status" id="telegramStatus">
+          <span class="status-dot offline" id="telegramDot"></span>
+          <span id="telegramStatusText">Loading...</span>
+        </div>
+        <div class="telegram-subscribers" id="telegramSubs"></div>
+      </div>
+      <div class="telegram-qr" id="telegramQR">
+        <div class="qr-placeholder">🔗</div>
+      </div>
+      <div class="telegram-actions" id="telegramActions"></div>
+    </div>
+  </div>
+
+  <!-- Company Breakdown -->
+  <div class="company-breakdown" id="companyBreakdown">
+    <h3>🏢 Jobs by Company</h3>
+    <div class="company-chips" id="companyChips"></div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <input type="text" id="searchInput" placeholder="🔍 Search jobs..." oninput="debounceSearch()">
+    <select id="statusFilter" onchange="loadJobs()">
+      <option value="all">All Status</option>
+      <option value="new">New / Unapplied</option>
+      <option value="applied">Applied</option>
+    </select>
+    <span class="filter-count" id="filterCount"></span>
+  </div>
+
+  <!-- Jobs Table -->
+  <div class="table-container" id="jobsContainer">
+    <div class="loading"><div class="spinner"></div> Loading jobs...</div>
+  </div>
+
+  <!-- Scan History -->
+  <div class="section-header">
+    <h2>📜 Scan History</h2>
+    <span style="font-size:12px;color:var(--text2);cursor:pointer" onclick="document.getElementById('scanHistory').classList.toggle('hidden')">Toggle</span>
+  </div>
+  <div id="scanHistory">
+    <div class="loading"><div class="spinner"></div> Loading scan history...</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────
+let allJobs = [];
+let searchTimeout = null;
+const API_BASE = '';
+
+// ── API Calls ──────────────────────────────────────────────────────
+async function fetchJSON(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+async function loadStats() {
+  try {
+    const data = await fetchJSON(`${API_BASE}/api/stats`);
+    document.getElementById('totalJobs').textContent = data.total_jobs;
+    document.getElementById('newJobs').textContent = data.new_jobs;
+    document.getElementById('appliedJobs').textContent = data.applied_jobs;
+    document.getElementById('scansCount').textContent = data.total_scans;
+    
+    if (data.last_scan && data.last_scan !== 'Never') {
+      const d = new Date(data.last_scan);
+      document.getElementById('lastScanText').textContent = 'Last scan: ' + d.toLocaleString();
+    }
+    
+    // Company chips
+    const chipsContainer = document.getElementById('companyChips');
+    chipsContainer.innerHTML = '<div class="company-chip active" data-company="all" onclick="filterByCompany(\'all\')">🏢 All <span class="count">' + data.total_jobs + '</span></div>';
+    data.by_company.forEach(c => {
+      const icon = {ING:'🏦',Philips:'💡',Adyen:'💳',ASML:'🔬','Booking.com':'🏨',Elastic:'🔎',Mollie:'💸',KPN:'📡',TomTom:'🗺️','ABN AMRO':'🏛️',NCSC:'🛡️'}[c.company] || '🏢';
+      chipsContainer.innerHTML += '<div class="company-chip" data-company="' + c.company + '" onclick="filterByCompany(\'' + c.company + '\')">' + icon + ' ' + c.company + 
+        ' <span class="count">' + c.count + '</span>' +
+        (c.applied_count > 0 ? ' <span class="applied-count">✓' + c.applied_count + '</span>' : '') +
+        '</div>';
+    });
+  } catch(e) {
+    document.getElementById('statusText').innerHTML = '<span class="status-dot offline"></span> Disconnected';
+    document.getElementById('statsGrid').innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><h3>Cannot connect to server</h3><p>Make sure the radar dashboard server is running: <code>python3 radar_dashboard.py</code></p></div>';
+  }
+}
+
+async function loadJobs() {
+  const container = document.getElementById('jobsContainer');
+  container.innerHTML = '<div class="loading"><div class="spinner"></div> Loading jobs...</div>';
+  
+  try {
+    const company = document.getElementById('companyFilter')?.value || '';
+    const status = document.getElementById('statusFilter').value;
+    const search = document.getElementById('searchInput').value;
+    
+    let url = `${API_BASE}/api/jobs?status=${encodeURIComponent(status)}`;
+    if (company) url += `&company=${encodeURIComponent(company)}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    
+    const data = await fetchJSON(url);
+    allJobs = data.jobs;
+    renderJobs(data.jobs);
+    document.getElementById('filterCount').textContent = `${data.count} job${data.count !== 1 ? 's' : ''}`;
+  } catch(e) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">❌</div><h3>Failed to load jobs</h3><p>' + e.message + '</p></div>';
+  }
+}
+
+async function loadScanHistory() {
+  const container = document.getElementById('scanHistory');
+  container.innerHTML = '<div class="loading"><div class="spinner"></div> Loading...</div>';
+  
+  try {
+    const data = await fetchJSON(`${API_BASE}/api/scans?limit=30`);
+    if (data.scans.length === 0) {
+      container.innerHTML = '<div class="empty-state"><div class="icon">📭</div><h3>No scans yet</h3><p>Run <code>python3 radar.py</code> to start scanning.</p></div>';
+      return;
+    }
+    
+    const companies = [...new Set(data.scans.filter(s => s.company && s.company !== 'ALL').map(s => s.company))];
+    
+    let html = '<div class="scan-grid">';
+    
+    // Show per-company scan summaries (most recent per company)
+    companies.forEach(company => {
+      const scans = data.scans.filter(s => s.company === company).slice(0, 5);
+      const totalFound = scans.reduce((sum, s) => sum + s.jobs_found, 0);
+      const totalNew = scans.reduce((sum, s) => sum + s.new_matches, 0);
+      const lastScan = scans[0];
+      const d = new Date(lastScan.scan_time);
+      
+      html += '<div class="scan-card">' +
+        '<div class="scan-time">' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) + '</div>' +
+        '<div class="scan-company">' + company + '</div>' +
+        '<div class="scan-stats">' +
+          '<span class="scan-stat">📋 ' + totalFound + ' found</span>' +
+          '<span class="scan-stat">🆕 ' + totalNew + ' new</span>' +
+        '</div></div>';
+    });
+    
+    // Add the ALL scans
+    const allScans = data.scans.filter(s => s.company === 'ALL' || !s.company).slice(0, 3);
+    allScans.forEach(s => {
+      const d = new Date(s.scan_time);
+      html += '<div class="scan-card">' +
+        '<div class="scan-time">' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) + '</div>' +
+        '<div class="scan-company">🌐 Full Scan</div>' +
+        '<div class="scan-stats">' +
+          '<span class="scan-stat">📋 ' + s.jobs_found + ' found</span>' +
+          '<span class="scan-stat">🆕 ' + s.new_matches + ' new</span>' +
+        '</div></div>';
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+  } catch(e) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">❌</div><h3>Failed to load scan history</h3><p>' + e.message + '</p></div>';
+  }
+}
+
+function renderJobs(jobs) {
+  const container = document.getElementById('jobsContainer');
+  
+  if (jobs.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><h3>No matching jobs</h3><p>Run <code>python3 radar.py --dry-run</code> to scan for jobs, or adjust your filters.</p></div>';
+    return;
+  }
+  
+  let html = `<table>
+    <thead><tr>
+      <th>Company</th>
+      <th>Title</th>
+      <th>First Seen</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr></thead><tbody>`;
+  
+  jobs.forEach(job => {
+    const companyClass = 'company-' + job.company.toLowerCase().replace('.', '').replace(' ', '-');
+    const isApplied = job.applied === 1 || job.applied === true;
+    const firstSeen = new Date(job.first_seen);
+    const dateStr = firstSeen.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+    
+    const companyIcons = {ING:'🏦',Philips:'💡',Adyen:'💳',ASML:'🔬','Booking.com':'🏨',Elastic:'🔎',Mollie:'💸',KPN:'📡',TomTom:'🗺️','ABN AMRO':'🏛️',NCSC:'🛡️'};
+    const icon = companyIcons[job.company] || '🏢';
+    
+    html += `<tr>
+      <td><span class="job-company ${companyClass}">${icon} ${job.company}</span></td>
+      <td>
+        <div class="job-title"><a href="${job.url || '#'}" target="_blank" rel="noopener">${escapeHtml(job.title)}</a></div>
+        ${job.location ? '<div style="font-size:11px;color:var(--text3)">📍 ' + escapeHtml(job.location) + '</div>' : ''}
+      </td>
+      <td class="job-date">${dateStr}</td>
+      <td>
+        <span class="status-badge ${isApplied ? 'status-applied' : 'status-new'}">
+          ${isApplied ? '✅ Applied' : '🆕 New'}
+        </span>
+      </td>
+      <td>
+        <button class="btn-apply ${isApplied ? 'applied' : ''}" 
+                onclick="toggleApply('${job.id}', ${isApplied})">
+          ${isApplied ? '↩ Unmark' : '✅ Mark Applied'}
+        </button>
+      </td>
+    </tr>`;
+  });
+  
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+async function toggleApply(jobId, currentlyApplied) {
+  const endpoint = currentlyApplied ? 'unapply' : 'apply';
+  try {
+    const res = await fetch(`${API_BASE}/api/jobs/${jobId}/${endpoint}`, { method: 'POST' });
+    const data = await res.json();
+    if (data.success) {
+      showToast(currentlyApplied ? '↩ Job unmarked' : '✅ Job marked as applied!', 'success');
+      loadJobs();
+      loadStats();
+    } else {
+      showToast('Failed to update job status', 'error');
+    }
+  } catch(e) {
+    showToast('Error: ' + e.message, 'error');
+  }
+}
+
+function filterByCompany(company) {
+  // Update chips
+  document.querySelectorAll('.company-chip').forEach(c => c.classList.remove('active'));
+  const chip = document.querySelector(`.company-chip[data-company="${company}"]`);
+  if (chip) chip.classList.add('active');
+  
+  // If "all", remove hidden company filter, otherwise add one
+  let filterEl = document.getElementById('companyFilter');
+  if (company === 'all') {
+    if (filterEl) filterEl.remove();
+  } else {
+    if (!filterEl) {
+      filterEl = document.createElement('input');
+      filterEl.type = 'hidden';
+      filterEl.id = 'companyFilter';
+      document.body.appendChild(filterEl);
+    }
+    filterEl.value = company;
+  }
+  loadJobs();
+}
+
+// ── Auto-Refresh ──────────────────────────────────────────────────
+let autoRefreshInterval = null;
+const AUTO_REFRESH_MS = 60000; // Every 60 seconds
+
+function toggleAutoRefresh() {
+  const btn = document.getElementById('autoRefreshBtn');
+  const indicator = document.getElementById('autoRefreshIndicator');
+  
+  if (autoRefreshInterval) {
+    // Stop
+    clearInterval(autoRefreshInterval);
+    autoRefreshInterval = null;
+    btn.innerHTML = '⏸️ Auto';
+    btn.style.borderColor = 'var(--border)';
+    btn.style.background = 'var(--bg3)';
+    btn.style.color = 'var(--text)';
+    indicator.style.display = 'none';
+    showToast('⏸️ Auto-refresh stopped', 'success', 1500);
+  } else {
+    // Start
+    autoRefreshInterval = setInterval(() => {
+      loadStats();
+      loadJobs();
+      loadScanHistory();
+      loadTelegramStatus();
+    }, AUTO_REFRESH_MS);
+    btn.innerHTML = '▶️ Auto';
+    btn.style.borderColor = 'var(--green)';
+    btn.style.background = 'var(--green-bg)';
+    btn.style.color = 'var(--green)';
+    indicator.style.display = 'inline';
+    showToast('▶️ Auto-refresh every 60s', 'success', 1500);
+  }
+}
+
+function debounceSearch() {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(loadJobs, 300);
+}
+
+function refreshAll() {
+  loadStats();
+  loadJobs();
+  loadScanHistory();
+  loadTelegramStatus();
+  showToast('🔄 Refreshed!', 'success', 1500);
+}
+
+async function runScan() {
+  const btn = document.getElementById('runScanBtn');
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Scanning...';
+  btn.style.opacity = '0.7';
+  showToast('▶️ Scan started! Checking for new jobs...', 'success', 2000);
+  
+  try {
+    const res = await fetch(`${API_BASE}/api/scan`, { method: 'POST' });
+    const data = await res.json();
+    
+    if (!data.triggered) {
+      btn.innerHTML = '▶️ Run Scan';
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      showToast('⏳ A scan is already running', 'error', 2000);
+      // Show the existing scan progress
+      const statusRes = await fetch(`${API_BASE}/api/scan/status`);
+      const status = await statusRes.json();
+      if (status.status === 'running') {
+        showProgressPanel(status);
+        startProgressPolling();
+      }
+      return;
+    }
+    
+    // Show the progress panel immediately with a single polling interval
+    // that handles BOTH progress display AND completion detection
+    const statusRes = await fetch(`${API_BASE}/api/scan/status`);
+    const initialStatus = await statusRes.json();
+    showProgressPanel(initialStatus);
+    
+    startProgressPolling((finalStatus) => {
+      // Completion callback — called once when scan finishes
+      btn.innerHTML = '▶️ Run Scan';
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      
+      if (finalStatus.status === 'completed') {
+        showToast('✅ Scan complete! Refreshing data...', 'success', 4000);
+        // Refresh everything after a brief delay for DB writes
+        setTimeout(() => {
+          refreshAll();
+        }, 1000);
+      } else {
+        showToast('❌ Scan ' + (finalStatus.message || 'failed'), 'error', 5000);
+      }
+    });
+    
+  } catch(e) {
+    btn.innerHTML = '▶️ Run Scan';
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    showToast('❌ Failed to start scan: ' + e.message, 'error', 4000);
+    hideProgressPanel();
+  }
+}
+
+// ── Scan Progress Display ────────────────────────────────────────
+const COMPANY_ICONS = {
+  'ASML':'🔬','Philips':'💡','ING':'🏦','Booking.com':'🏨','Adyen':'💳',
+  'Elastic':'🔎','Mollie':'💸','KPN':'📡','TomTom':'🗺️','ABN AMRO':'🏛️','NCSC':'🛡️'
+};
+const STATUS_ICONS = {pending:'⏳',running:'▶️',completed:'✅',failed:'❌'};
+let scanProgressPoll = null;
+let scanProgressTimeout = null;  // Track auto-hide timeout to prevent stale clears
+
+function renderCompanyProgress(statuses, currentCompany, completed, total) {
+  const grid = document.getElementById('companyProgressGrid');
+  const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+  document.getElementById('scanProgressText').textContent = `${completed}/${total}`;
+  document.getElementById('progressBarFill').style.width = `${pct}%`;
+  
+  // Show current company name with animated dots
+  if (currentCompany) {
+    const icon = COMPANY_ICONS[currentCompany] || '🏢';
+    document.getElementById('scanCurrentCompany').innerHTML = `${icon} ${currentCompany}`;
+  }
+  
+  if (!statuses) return;
+  
+  let html = '';
+  for (const [company, st] of Object.entries(statuses)) {
+    const icon = COMPANY_ICONS[company] || '🏢';
+    const stIcon = STATUS_ICONS[st] || '⏳';
+    html += `<div class="company-progress-item status-${st}">
+      <span class="company-icon">${icon}</span>
+      <span class="company-name">${company}</span>
+      <span class="status-icon">${stIcon}</span>
+    </div>`;
+  }
+  grid.innerHTML = html;
+}
+
+function showProgressPanel(status) {
+  const panel = document.getElementById('scanProgress');
+  panel.style.display = 'block';
+  renderCompanyProgress(
+    status.company_statuses,
+    status.current_company,
+    status.completed_companies || 0,
+    status.total_companies || 11
+  );
+}
+
+function hideProgressPanel() {
+  const panel = document.getElementById('scanProgress');
+  panel.style.display = 'none';
+  
+  // Clean up the progress poll if running
+  if (scanProgressPoll) {
+    clearInterval(scanProgressPoll);
+    scanProgressPoll = null;
+  }
+  // Clean up any pending auto-hide timeout
+  if (scanProgressTimeout) {
+    clearTimeout(scanProgressTimeout);
+    scanProgressTimeout = null;
+  }
+}
+
+function startProgressPolling(onComplete) {
+  // Stop any existing poll first
+  if (scanProgressPoll) clearInterval(scanProgressPoll);
+  // Cancel any pending auto-hide timeout from a previous scan
+  if (scanProgressTimeout) {
+    clearTimeout(scanProgressTimeout);
+    scanProgressTimeout = null;
+  }
+  
+  // Poll every 2 seconds for real-time progress.
+  // This single poll handles BOTH progress display AND completion detection,
+  // eliminating redundant API calls from a separate completion poll in runScan().
+  scanProgressPoll = setInterval(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/scan/status`);
+      const status = await res.json();
+      
+      if (status.status === 'running') {
+        showProgressPanel(status);
+      } else if (status.status === 'completed' || status.status === 'failed') {
+        // Show final state briefly, then hide
+        showProgressPanel(status);
+        clearInterval(scanProgressPoll);
+        scanProgressPoll = null;
+        
+        // Call the completion callback if provided
+        if (onComplete) onComplete(status);
+        
+        // Auto-hide the panel after 4 seconds (track timeout to prevent stale clears)
+        if (scanProgressTimeout) clearTimeout(scanProgressTimeout);
+        scanProgressTimeout = setTimeout(() => {
+          scanProgressTimeout = null;
+          hideProgressPanel();
+        }, 4000);
+      }
+    } catch(e) {
+      // Network errors — ignore during polling
+    }
+  }, 2000);
+}
+
+function showToast(message, type = 'success', duration = 2000) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.className = 'toast ' + type + ' show';
+  setTimeout(() => toast.classList.remove('show'), duration);
+}
+
+// ── Telegram Bot Status ──────────────────────────────────────────
+const TELEGRAM_QR_API = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=';
+
+async function loadTelegramStatus() {
+  const card = document.getElementById('telegramCard');
+  const dot = document.getElementById('telegramDot');
+  const statusText = document.getElementById('telegramStatusText');
+  const subsEl = document.getElementById('telegramSubs');
+  const qrEl = document.getElementById('telegramQR');
+  const actionsEl = document.getElementById('telegramActions');
+  
+  try {
+    const data = await fetchJSON(`${API_BASE}/api/telegram/status`);
+    
+    if (data.configured && data.bot_username) {
+      // Configured and online
+      card.className = 'telegram-card configured';
+      dot.className = 'status-dot online';
+      statusText.textContent = `@${data.bot_username}`;
+      
+      const subCount = data.subscriber_count || 0;
+      subsEl.innerHTML = subCount > 0
+        ? `🔔 <strong>${subCount}</strong> subscriber${subCount !== 1 ? 's' : ''} · alerts active`
+        : `🔕 No subscribers yet — use /alerts in the bot to enable`;
+      
+      // Process health
+      if (data.bot_running) {
+        const lastAct = data.last_activity ? new Date(data.last_activity).toLocaleTimeString() : '?';
+        const statusLine = document.querySelector('.telegram-status');
+        if (statusLine) {
+          statusLine.innerHTML = `<span class="status-dot online"></span> @${data.bot_username} · <span style="color:var(--green)">● running</span> <span style="color:var(--text3);font-size:11px">(last ping: ${lastAct})</span>`;
+        }
+      } else {
+        const statusLine = document.querySelector('.telegram-status');
+        if (statusLine) {
+          statusLine.innerHTML = `<span class="status-dot offline"></span> @${data.bot_username} · <span style="color:var(--red)">● stopped</span>`;
+        }
+      }
+      
+      // QR code
+      const botLink = `https://t.me/${data.bot_username}`;
+      qrEl.innerHTML = `<img src="${TELEGRAM_QR_API}${encodeURIComponent(botLink)}" alt="QR" title="Scan to open @${data.bot_username}" loading="lazy">`;
+      
+      // Action buttons
+      actionsEl.innerHTML = `
+        <a href="${botLink}" target="_blank" class="telegram-btn primary">✈️ Open in Telegram</a>
+        <button class="telegram-btn success" onclick="showToast('💡 Send /alerts in the Telegram bot to toggle notifications', 'success', 4000)">🔔 Configure Alerts</button>
+      `;
+    } else if (data.configured && !data.bot_username) {
+      // Token set but API not reachable
+      card.className = 'telegram-card';
+      dot.className = 'status-dot offline';
+      statusText.textContent = 'Bot API unreachable — check token';
+      subsEl.innerHTML = '';
+      qrEl.innerHTML = '<div class="qr-placeholder">⚠️</div>';
+      actionsEl.innerHTML = '';
+    } else {
+      // Not configured
+      card.className = 'telegram-card not-configured';
+      dot.className = 'status-dot offline';
+      statusText.textContent = 'Not configured';
+      subsEl.innerHTML = '';
+      qrEl.innerHTML = '<div class="qr-placeholder">❌</div>';
+      actionsEl.innerHTML = `
+        <button class="telegram-btn" onclick="showTelegramSetup()">📋 Show Setup Guide</button>
+      `;
+      
+      // Add setup instructions
+      const existingSetup = card.querySelector('.telegram-setup');
+      if (!existingSetup) {
+        const setupDiv = document.createElement('div');
+        setupDiv.className = 'telegram-setup';
+        setupDiv.id = 'telegramSetup';
+        setupDiv.innerHTML = `
+          <strong>📋 Setup Telegram Bot</strong><br><br>
+          1. Message <strong>@BotFather</strong> on Telegram<br>
+          2. Send <code>/newbot</code> and follow the prompts<br>
+          3. Copy the token you receive<br>
+          4. Set it as an environment variable:<br><br>
+          <code style="background:var(--bg);padding:6px 10px;border-radius:4px;display:inline-block">
+          export RADAR_TELEGRAM_BOT_TOKEN='your_token_here'
+          </code><br><br>
+          5. Restart the dashboard server<br>
+          6. Run the bot: <code>python3 radar_bot.py</code>
+        `;
+        card.appendChild(setupDiv);
+      }
+    }
+  } catch(e) {
+    card.className = 'telegram-card';
+    dot.className = 'status-dot offline';
+    statusText.textContent = 'Error loading status';
+  }
+}
+
+function showTelegramSetup() {
+  const setup = document.getElementById('telegramSetup');
+  if (setup) {
+    if (setup.style.display === 'block') {
+      setup.style.display = 'none';
+    } else {
+      setup.style.display = 'block';
+    }
+  }
+}
+
+// ── Init ───────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  loadStats().then(() => {
+    setTimeout(() => {
+      loadJobs();
+      loadScanHistory();
+      loadTelegramStatus();
+    }, 100);
+  });
+});
+</script>
+</body>
+</html>

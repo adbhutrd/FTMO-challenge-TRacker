@@ -1,0 +1,51 @@
+# Upwork — Penetration Testing Services
+
+## Profile Title
+Web Application Security Engineer & Penetration Tester | MSc Cyber Security
+
+## Profile Overview
+
+I help businesses find and fix security vulnerabilities before they become costly breaches.
+
+I'm Adbhut Ram Das, a cyber security professional with an MSc in Cyber Security (Distinction). I specialize in web application penetration testing, API security assessment, and vulnerability research. My clients range from startups to established SaaS companies.
+
+What I do:
+- Web Application Pentesting — Full OWASP Top 10 with manual verification
+- API Security Audits — REST, GraphQL, WebSocket — BOLA, IDOR, auth, rate limiting
+- Vulnerability Assessment — Scanner + expert manual validation
+- Professional Reporting — Executive summary, CVSS scoring, step-by-step remediation
+
+Why work with me:
+- MSc Cyber Security (Distinction)
+- 5+ bug bounty platforms (HackerOne, Bugcrowd, Intigriti)
+- Custom 5-phase automation pipeline (BugFlow)
+- 3-day turnaround
+- Clear communication — complex vulnerabilities explained in plain English
+
+Methodology: OWASP Testing Guide, OWASP API Security Top 10, NIST SP 800-115
+
+## Proposal Template
+
+Hi [Client Name],
+
+I'm a penetration tester with an MSc in Cyber Security (Distinction) and I'd love to help secure your application.
+
+I specialize in the exact areas you need:
+- Web application security testing (OWASP Top 10)
+- API vulnerability assessment (BOLA, IDOR, auth bypass)
+- Professional reporting with clear remediation steps
+
+I use a proven methodology:
+1. Reconnaissance & attack surface mapping
+2. Automated scanning with manual validation
+3. Deep-dive manual testing (auth, logic, API)
+4. Professional report with CVSS scoring & fix instructions
+
+I can review your scope within 2 hours and deliver the full report within 3 days.
+
+My rate is $75/hour or I can quote a fixed price based on scope.
+
+Best,
+Adbhut Ram Das
+MSc Cyber Security (Distinction)
+enishshah2@gmail.com

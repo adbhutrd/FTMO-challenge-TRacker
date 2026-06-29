@@ -1,0 +1,12 @@
+# FTMO Marketing Engine - Auto-generated
+# Generated: 2026-06-22 05:27
+
+# Marketing engine - check every hour, post if scheduled
+0 * * * * cd /home/enishshah2 && python3 income/tools/marketing_engine.py --schedule >> /home/enishshah2/income/logs/cron_marketing.log 2>&1
+
+# Post to Reddit every 3 days (specific hours)
+0 9,15,20 * * 1,3,5 cd /home/enishshah2 && python3 income/tools/marketing_engine.py --reddit >> /home/enishshah2/income/logs/cron_marketing.log 2>&1
+
+# Post to Discord on weekdays
+0 10,16,21 * * 1-5 cd /home/enishshah2 && python3 income/tools/marketing_engine.py --discord >> /home/enishshah2/income/logs/cron_marketing.log 2>&1
+

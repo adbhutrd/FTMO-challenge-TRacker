@@ -1,0 +1,11 @@
+# Active Bug Bounty Targets
+# Format: Platform|Company|Scope|Status|Notes
+
+HackerOne|GitHub|null|scoping|Subdomain check needed
+HackerOne|Shopify|null|researching|Store takeover potential
+Bugcrowd|null|null|pending|Sign up required
+Intigriti|null|null|pending|EU-friendly platform
+
+# Completed (move here after report)
+#HackerOne|Example|XSS|paid|$250 received 2025-01
+#Fiverr|ClientA|Pentest|done|£150 earned

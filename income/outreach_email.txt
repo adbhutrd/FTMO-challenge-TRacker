@@ -1,0 +1,21 @@
+Subject: Security Audit for [Company] - MSc Cyber Security Grad
+
+Hi [Name],
+
+I'm Adbhut Ram Das, MSc Cyber Security graduate (Distinction) based in Reading, UK.
+
+I specialize in:
+- Web application security testing
+- API vulnerability assessment  
+- Penetration testing (OWASP Top 10)
+- Security reporting & remediation
+
+Available for immediate start with flexible rates.
+
+Can review scope in 2 hours, full report in 3 days.
+
+References available via HackerOne profile.
+
+Best regards,
+Adbhut Ram Das
+enishshah2@gmail.com
